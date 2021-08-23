@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RogersSierra.Handlers
+namespace RogersSierra.Components
 {
-    public class WheelHandler : Handler
+    public class WheelComponent : Component
     {
         public float WheelSpeed { get; set; }
 
@@ -21,7 +21,7 @@ namespace RogersSierra.Handlers
 
         private readonly float[] _wheelLenghts;
 
-        public WheelHandler(Train train) : base(train)
+        public WheelComponent(Train train) : base(train)
         {
             // TODO: Move bones to debug model
 
@@ -73,7 +73,7 @@ namespace RogersSierra.Handlers
                 var totalAngle = revPerSpeed * 360;
                 var rotAngle = totalAngle / Game.FPS;
 
-                wheel.setRotation(FusionEnums.Coordinate.X, currentAngle - rotAngle);
+                wheel.setRotation(FusionEnums.Coordinate.X, currentAngle + rotAngle);
             }
         }
 

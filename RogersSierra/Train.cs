@@ -1,7 +1,7 @@
 ﻿using GTA;
 using GTA.Math;
 using RogersSierra.Abstract;
-using RogersSierra.Handlers;
+using RogersSierra.Components;
 using RogersSierra.Natives;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace RogersSierra
         /// <summary>
         /// List of train handlers.
         /// </summary>
-        public static List<Handler> Handlers { get; } = new List<Handler>();
+        public static List<Component> Handlers { get; } = new List<Component>();
 
         /// <summary>
         /// Invisible (lowpoly) model of the trian.
@@ -70,10 +70,10 @@ namespace RogersSierra
         /// </summary>
         private void RegisterHandlers()
         {
-            Handlers.Add(new BoilerHandler(this));
-            Handlers.Add(new BrakeHandler(this));
-            Handlers.Add(new SpeedHandler(this));
-            Handlers.Add(new WheelHandler(this));
+            Handlers.Add(new BoilerComponent(this));
+            Handlers.Add(new BrakeComponent(this));
+            Handlers.Add(new SpeedComponent(this));
+            Handlers.Add(new WheelComponent(this));
 
             for(int i = 0; i< Handlers.Count; i++)
             {

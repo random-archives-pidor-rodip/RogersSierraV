@@ -8,12 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RogersSierra.Handlers
+namespace RogersSierra.Components
 {
     /// <summary>
     /// Calculates speed of the train based on input data.
     /// </summary>
-    public class SpeedHandler : Handler
+    public class SpeedComponent : Component
     {
         /// <summary>
         /// Speed of the train.
@@ -48,19 +48,19 @@ namespace RogersSierra.Handlers
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        private WheelHandler _wheelHandler;
+        private WheelComponent _wheelHandler;
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        private BrakeHandler _brakeHandler;
+        private BrakeComponent _brakeHandler;
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        private BoilerHandler _boilerHandler;
+        private BoilerComponent _boilerHandler;
 
-        public SpeedHandler(Train train) : base(train)
+        public SpeedComponent(Train train) : base(train)
         {
             Throttle = 1;
             Gear = 1;
@@ -68,9 +68,9 @@ namespace RogersSierra.Handlers
 
         public override void OnInit()
         {
-            _wheelHandler = Train.GetHandler<WheelHandler>();
-            _brakeHandler = Train.GetHandler<BrakeHandler>();
-            _boilerHandler = Train.GetHandler<BoilerHandler>();
+            _wheelHandler = Train.GetHandler<WheelComponent>();
+            _brakeHandler = Train.GetHandler<BrakeComponent>();
+            _boilerHandler = Train.GetHandler<BoilerComponent>();
         }
 
         public override void OnTick()

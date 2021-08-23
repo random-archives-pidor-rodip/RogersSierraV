@@ -1,13 +1,16 @@
 ﻿namespace RogersSierra.Abstract
 {
-    public abstract class Handler
+    /// <summary>
+    /// Unity style component system.
+    /// </summary>
+    public abstract class Component
     {
         /// <summary>
         /// Train this handler attached to.
         /// </summary>
         public Train Train { get; }
 
-        public Handler(Train train)
+        public Component(Train train)
         {
             Train = train;
         }

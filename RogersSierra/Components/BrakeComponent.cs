@@ -5,20 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RogersSierra.Handlers
+namespace RogersSierra.Components
 {
-    public class BoilerHandler : Handler
+    class BrakeComponent : Component
     {
         /// <summary>
-        /// Pressure of the boier;
+        /// How fast train brakes.
         /// </summary>
-        public float Pressure { get; private set; }
+        public float BrakeMultiplier = 2f;
 
-        public BoilerHandler(Train train) : base(train)
+        public float Force { get; private set; }
+
+        public BrakeComponent(Train train) : base(train)
         {
 
         }
-
 
         public override void OnInit()
         {
@@ -27,7 +28,7 @@ namespace RogersSierra.Handlers
 
         public override void OnTick()
         {
-            Pressure = 10;
+
         }
 
         public override void Dispose()
