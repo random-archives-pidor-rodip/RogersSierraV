@@ -1,6 +1,6 @@
-﻿using GTA;
+﻿using FusionLibrary.Extensions;
+using GTA;
 using RogersSierra.Abstract;
-using RogersSierra.Extentions;
 using RogersSierra.Natives;
 using System;
 using System.Collections.Generic;
@@ -62,7 +62,8 @@ namespace RogersSierra.Handlers
 
         public SpeedHandler(Train train) : base(train)
         {
-
+            Throttle = 1;
+            Gear = 1;
         }
 
         public override void OnInit()
@@ -100,6 +101,8 @@ namespace RogersSierra.Handlers
             _wheelHandler.WheelSpeed = Speed / Traction;
 
             NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
+
+            GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Traction: {Traction}");
         }
 
         public override void Dispose()

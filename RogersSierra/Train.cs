@@ -35,8 +35,20 @@ namespace RogersSierra
         /// </summary>
         public bool Disposed { get; private set; }
 
-        private Train()
+        private Train(Vehicle invisibleModel, Vehicle visibleModel)
         {
+            InvisibleModel = invisibleModel;
+            VisibleModel = visibleModel;
+
+            // TODO: Remove offset
+            visibleModel.AttachTo(InvisibleModel, new Vector3(0, -4.3f, 0));
+
+            // Hide invisible model, we can't use setVisibility because 
+            // visible model will be affected too
+            InvisibleModel.Opacity = 0;
+
+            Trains.Add(this);
+
             RegisterHandlers();
         }
 
@@ -47,18 +59,10 @@ namespace RogersSierra
         /// <returns>New <see cref="Train"/> instance.</returns>
         public static Train Spawn(Vector3 position)
         {
-            var train = new Train
-            {
-                InvisibleModel = NVehicle.CreateTrain(26, position, false),
-                VisibleModel = World.CreateVehicle(Models.VisibleSierra.Model, position)
-            };
-            train.VisibleModel.AttachTo(train.InvisibleModel, new Vector3(0, -4.3f, 0));
+            var invModel = NVehicle.CreateTrain(26, position, false);
+            var visModel = World.CreateVehicle(Models.VisibleSierra.Model, position);
 
-            train.InvisibleModel.Opacity = 0;
-
-            Trains.Add(train);
-
-            return train;
+            return new Train(invModel, visModel);
         }
 
         /// <summary>
