@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FusionLibrary, Version=1.0.7899.35431, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\SteamLibrary\steamapps\common\Grand Theft Auto V\scripts\FusionLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="ScriptHookVDotNet3">
       <HintPath>S:\SteamLibrary\steamapps\common\Grand Theft Auto V\ScriptHookVDotNet3.dll</HintPath>
     </Reference>
@@ -46,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\Handler.cs" />
-    <Compile Include="CustomModel.cs" />
     <Compile Include="Extentions\FloatExtentions.cs" />
     <Compile Include="Handlers\BoilerHandler.cs" />
     <Compile Include="Handlers\BrakeHandler.cs" />
@@ -58,6 +61,8 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="FusionLibrary.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
