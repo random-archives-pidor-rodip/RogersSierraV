@@ -1,10 +1,5 @@
 ﻿using GTA;
 using RogersSierra.Abstract;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RogersSierra.Components
 {
@@ -14,7 +9,6 @@ namespace RogersSierra.Components
         /// Returns True if player is in train, otherwise False.
         /// </summary>
         public bool IsPlayerDrivingTrain { get; private set; }
-
 
         public ControlComponent(Train train) : base(train)
         {
@@ -74,11 +68,6 @@ namespace RogersSierra.Components
         private void ControlGear(float value)
         {
             Train.SpeedComponent.Gear += value;
-        }
-
-        public override void Dispose()
-        {
-
         }
     }
 }

@@ -21,10 +21,5 @@ namespace RogersSierra.Components
         {
             Pressure = 10;
         }
-
-        public override void Dispose()
-        {
-
-        }
     }
 }

@@ -27,8 +27,6 @@ namespace RogersSierra.Components
             CombinationLever = new AnimateProp(Models.CombinationLever, Train.VisibleModel, "combination_lever");
             RadiusRod = new AnimateProp(Models.RadiusRod, Train.VisibleModel, "radius_rod_mount");
 
-            AllProps(this, p => p.SpawnProp());
-
             // Calculate distance from mounting point of coupling rod to center of wheel
             var rodPos = Train.VisibleModel.GetOffsetPosition(Train.VisibleModel.Bones["rod"].Position);
             var wheelpos = Train.VisibleModel.GetOffsetPosition(Train.VisibleModel.Bones["dwheel_1"].Position);
@@ -92,11 +90,6 @@ namespace RogersSierra.Components
             //var valveAngle = 90 - Vector3.Angle(direction, Vector3.down);
 
             //PistonRod.SetRotation(Vector3.right, valveAngle, -90);
-        }
-
-        public override void Dispose()
-        {
-            AllProps(this, p => p.Dispose());
         }
     }
 }

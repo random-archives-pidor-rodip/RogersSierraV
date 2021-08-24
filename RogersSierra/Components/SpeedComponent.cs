@@ -97,10 +97,5 @@ namespace RogersSierra.Components
 
             //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Traction: {Traction}");
         }
-
-        public override void Dispose()
-        {
-
-        }
     }
 }

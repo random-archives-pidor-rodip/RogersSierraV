@@ -152,6 +152,9 @@ namespace RogersSierra
                 var component = (Component) Activator.CreateInstance(type, this);
                 field.SetValue(this, component);
 
+                // Spawn all props
+                Utils.ProcessAllValuesFieldsByType<AnimateProp>(this, x => x.SpawnProp());
+
                 Components.Add(component);
             });
         }
@@ -207,7 +210,15 @@ namespace RogersSierra
             
             for(int i = 0; i < Components.Count; i++)
             {
-                Components[i].Dispose();
+                var component = Components[i];
+
+                // Dispose AnimateProp and List<AnimateProp>
+                Utils.ProcessAllValuesFieldsByType<AnimateProp>(component, x => x.Dispose());
+                Utils.ProcessAllValuesFieldsByType<List<AnimateProp>>(component, x =>
+                {
+                    for (int k = 0; k < x.Count; k++)
+                        x[k].Dispose();
+                });
             }
             Components.Clear();
 

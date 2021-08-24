@@ -25,10 +25,5 @@ namespace RogersSierra.Components
         {
 
         }
-
-        public override void Dispose()
-        {
-
-        }
     }
 }

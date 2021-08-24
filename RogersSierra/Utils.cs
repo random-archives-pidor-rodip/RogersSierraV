@@ -26,5 +26,15 @@ namespace RogersSierra
                 }
             }
         }
+
+        public static void ProcessAllValuesFieldsByType<T>(object obj, Action<T> action)
+        {
+            ProcessAllClassFieldsByType<T>(obj, field =>
+            {
+                var fieldValue = (T)field.GetValue(obj);
+
+                action(fieldValue);
+            });
+        }
     }
 }

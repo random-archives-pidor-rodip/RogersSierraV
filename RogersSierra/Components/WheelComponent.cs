@@ -109,13 +109,5 @@ namespace RogersSierra.Components
                 wheel.setRotation(FusionEnums.Coordinate.X, newAngle.WrapAngle());
             }
         }
-
-        public override void Dispose()
-        {
-            for(int i = 0; i < _wheels.Count; i++)
-            {
-                _wheels[i].Dispose();
-            }
-        }
     }
 }
