@@ -1,9 +1,10 @@
 ﻿using FusionLibrary;
+using FusionLibrary.Extensions;
 using GTA;
 using RogersSierra.Abstract;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 
 namespace RogersSierra.Components
 {
@@ -20,12 +21,12 @@ namespace RogersSierra.Components
         /// <summary>
         /// Number of front wheels.
         /// </summary>
-        private int _numberOfFrontWheels = 2;
+        private const int _numberOfFrontWheels = 2;
 
         /// <summary>
         /// Number of driving wheels.
         /// </summary>
-        private int _numberOfMainWheels = 3;
+        private const int _numberOfMainWheels = 3;
 
         /// <summary>
         /// Wheel models
@@ -62,7 +63,7 @@ namespace RogersSierra.Components
                 var isFront = f < _numberOfFrontWheels;
 
                 var model = isFront ? Models.FrontWheel : Models.DrivingWheel;
-                var bone = isFront ? "fwheel_" : "mwheel_";
+                var bone = isFront ? "fwheel_" : "dwheel_";
                 var counter = isFront ? f++ : m++;
 
                 // Because bone numeration starts from 1
@@ -72,11 +73,14 @@ namespace RogersSierra.Components
                 var prop = new AnimateProp(model, train.VisibleModel, bone);
                 prop.SpawnProp();
 
-                if (bone == "mwheel_1")
+                if (bone == "dwheel_1")
                     _drivingWheel = prop;
 
                 // Length of cylinder is diameter * pi
-                _wheelLenghts[d++] = (float) (Utils.GetRadiusOfModel(model.Model) * 2 * Math.PI);
+                var wheelLength = (float)(model.Model.GetSize().height * Math.PI);
+                _wheelLenghts[d++] = wheelLength;
+
+                File.AppendAllText("log.txt", $"\n{wheelLength}");
 
                 _wheels.Add(prop);
 
@@ -84,25 +88,25 @@ namespace RogersSierra.Components
             }
         }
 
-        public override void OnInit()
-        {
-
-        }
-
         public override void OnTick()
         {
             for (int i = 0; i < _wheels.Count; i++)
             {
                 var wheel = _wheels[i];
-
                 var currentAngle = wheel.CurrentRotation.X;
+                var wheelLength = _wheelLenghts[i];
 
                 // Calculate wheel ratation per frame
-                var revPerSpeed = WheelSpeed / _wheelLenghts[i];
-                var totalAngle = revPerSpeed * 360;
+                var revPerSpeed = WheelSpeed / wheelLength;
+                var totalAngle = revPerSpeed * 360; //revPerSpeed * 360;
                 var rotAngle = totalAngle / Game.FPS;
 
-                wheel.setRotation(FusionEnums.Coordinate.X, currentAngle + rotAngle);
+                // 10m / 4.3m = 2,3~ full wheel turn
+                // 2,3 wheel turn = 2.3 * 360 = 828~ degrees
+                // tick calls 1/fps times per second, so 828 / 60 = 13,8 degrees per tick
+
+                var newAngle = currentAngle - rotAngle;
+                wheel.setRotation(FusionEnums.Coordinate.X, newAngle.WrapAngle());
             }
         }
 

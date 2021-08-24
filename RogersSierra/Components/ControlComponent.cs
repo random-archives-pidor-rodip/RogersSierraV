@@ -15,16 +15,10 @@ namespace RogersSierra.Components
         /// </summary>
         public bool IsPlayerDrivingTrain { get; private set; }
 
-        private SpeedComponent _speedComponent;
 
         public ControlComponent(Train train) : base(train)
         {
             
-        }
-
-        public override void OnInit()
-        {
-            _speedComponent = Train.GetComponent<SpeedComponent>();
         }
 
         public override void OnTick()
@@ -65,7 +59,7 @@ namespace RogersSierra.Components
             if (distance > 3.5 * 3.5)
                 return;
 
-            Game.Player.Character.Task.WarpIntoVehicle(Train.VisibleModel, VehicleSeat.Driver);
+            Game.Player.Character.Task.WarpIntoVehicle(Train.InvisibleModel, VehicleSeat.Driver);
 
             Train.ActiveTrain = Train;
 
@@ -74,12 +68,12 @@ namespace RogersSierra.Components
 
         private void ControlThrottle(float value)
         {
-            _speedComponent.Throttle += value;
+            Train.SpeedComponent.Throttle += value;
         }
 
         private void ControlGear(float value)
         {
-            _speedComponent.Gear += value;
+            Train.SpeedComponent.Gear += value;
         }
 
         public override void Dispose()

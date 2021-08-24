@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RogersSierra.Components
 {
-    class BrakeComponent : Component
+    public class BrakeComponent : Component
     {
         /// <summary>
         /// How fast train brakes.
@@ -17,11 +17,6 @@ namespace RogersSierra.Components
         public float Force { get; private set; }
 
         public BrakeComponent(Train train) : base(train)
-        {
-
-        }
-
-        public override void OnInit()
         {
 
         }

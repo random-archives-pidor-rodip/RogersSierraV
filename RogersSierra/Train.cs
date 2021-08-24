@@ -6,6 +6,7 @@ using RogersSierra.Components;
 using RogersSierra.Natives;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace RogersSierra
 {
@@ -45,6 +46,36 @@ namespace RogersSierra
         /// Active train that player is currently controlling.
         /// </summary>
         public static Train ActiveTrain { get; set; }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public BoilerComponent BoilerComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public BrakeComponent BrakeComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public ControlComponent ControlComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public DrivetrainComponent DrivetrainComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public SpeedComponent SpeedComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public WheelComponent WheelComponent;
 
         /// <summary>
         /// Base constructor of <see cref="Train"/>.
@@ -114,19 +145,15 @@ namespace RogersSierra
         /// </summary>
         private void RegisterHandlers()
         {
-            Components.Add(new BoilerComponent(this));
-            Components.Add(new BrakeComponent(this));
-            Components.Add(new SpeedComponent(this));
-            Components.Add(new WheelComponent(this));
-            Components.Add(new DrivetrainComponent(this));
-            Components.Add(new ControlComponent(this));
-
-            for(int i = 0; i< Components.Count; i++)
+            Utils.ProcessAllClassFieldsByType<Component>(this, field =>
             {
-                var handler = Components[i];
+                var type = field.FieldType;
 
-                handler.OnInit();
-            }
+                var component = (Component) Activator.CreateInstance(type, this);
+                field.SetValue(this, component);
+
+                Components.Add(component);
+            });
         }
         
         /// <summary>

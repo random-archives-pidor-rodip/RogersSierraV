@@ -1,6 +1,7 @@
 ﻿using FusionLibrary.Extensions;
 using GTA;
 using RogersSierra.Abstract;
+using RogersSierra.Extentions;
 using RogersSierra.Natives;
 
 namespace RogersSierra.Components
@@ -20,15 +21,31 @@ namespace RogersSierra.Components
         /// </summary>
         private float _prevSpeed;
 
+        private float _throttle;
         /// <summary>
         /// How much throttle is opened. 0 is closed, 1 is fully opened.
         /// </summary>
-        public float Throttle { get; set; }
+        public float Throttle
+        {
+            get => _throttle;
+            set
+            {
+                _throttle = value.Clamp(0, 1); // FusionUtils.Clamp(value, 0, 1);
+            }
+        }
 
+        private float _gear;
         /// <summary>
         /// Gear. Also known as Johnson bar. 1 forward, -1 backward
         /// </summary>
-        public float Gear { get; set; }
+        public float Gear
+        {
+            get => _gear;
+            set
+            {
+                _gear = value.Clamp(-1, 1);//FusionUtils.Clamp(value, 0, 1);
+            }
+        }
 
         /// <summary>
         /// Wheel traction with surface.
@@ -40,32 +57,10 @@ namespace RogersSierra.Components
         /// </summary>
         public float AccelerationMultiplier = 0.2f;
 
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        private WheelComponent _wheelHandler;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        private BrakeComponent _brakeHandler;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        private BoilerComponent _boilerHandler;
-
         public SpeedComponent(Train train) : base(train)
         {
-            Throttle = 1;
-            Gear = 1;
-        }
-
-        public override void OnInit()
-        {
-            _wheelHandler = Train.GetComponent<WheelComponent>();
-            _brakeHandler = Train.GetComponent<BrakeComponent>();
-            _boilerHandler = Train.GetComponent<BoilerComponent>();
+            //Throttle = 1;
+            //Gear = 1;
         }
 
         public override void OnTick()
@@ -80,7 +75,7 @@ namespace RogersSierra.Components
 
             // Calculate per-frame acceleration
 
-            var brakeForce = _brakeHandler.Force.Remap(0, 1, 1, 0.01f);
+            var brakeForce = Train.BrakeComponent.Force.Remap(0, 1, 1, 0.01f);
             var speedAcceleration = Throttle * Gear * brakeForce;
             var drag = Speed / 40 / brakeForce;
             var inertia = acceleration / 5;
@@ -88,14 +83,17 @@ namespace RogersSierra.Components
             speedAcceleration -= drag - inertia / Traction;
             speedAcceleration *= AccelerationMultiplier * Game.LastFrameTime;
 
-            var pressure = _boilerHandler.Pressure / 10;
+            var pressure = Train.BoilerComponent.Pressure / 10;
 
             Speed += speedAcceleration * pressure;
 
-            // Set train / wheel speed
-            _wheelHandler.WheelSpeed = Speed / Traction;
+            // DEBUG
+            //Speed = 1;
 
-            NVehicle.SetTrainSpeed(Train.InvisibleModel, 0);
+            // Set train / wheel speed
+            Train.WheelComponent.WheelSpeed = Speed / Traction;
+
+            NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
 
             //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Traction: {Traction}");
         }
