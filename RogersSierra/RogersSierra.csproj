@@ -59,6 +59,7 @@
     <Compile Include="Components\DrivetrainComponent.cs" />
     <Compile Include="Components\SpeedComponent.cs" />
     <Compile Include="Components\WheelComponent.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Natives\NVehicle.cs" />
     <Compile Include="Train.cs" />
