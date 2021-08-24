@@ -46,6 +46,8 @@ namespace RogersSierra
                 Train.Trains[i].OnTick();
             }
 
+            UserInterface.OnTick();
+
             // DEBUG ONLY, DELETE LATER!
             Function.Call(Hash.SET_DISABLE_RANDOM_TRAINS_THIS_FRAME, true);
         }
@@ -54,7 +56,11 @@ namespace RogersSierra
         {
             if(e.KeyCode == Keys.L)
             {
-                var train = Train.Spawn(Game.Player.Character.Position, false);
+                var train = Train.Spawn(Game.Player.Character.Position, true);
+            }
+            if (e.KeyCode == Keys.K)
+            {
+                Train.DeleteAllInstances();
             }
         }
 

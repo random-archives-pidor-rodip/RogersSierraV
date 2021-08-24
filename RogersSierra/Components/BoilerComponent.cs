@@ -12,16 +12,6 @@ namespace RogersSierra.Components
         /// </summary>
         public float Pressure { get; private set; }
 
-        private static TimerBarCollection _barCollection { get; }
-        private static TimerBarProgress _barPressure { get; }
-
-        static BoilerComponent()
-        {
-            _barCollection = new TimerBarCollection(
-                _barPressure = new TimerBarProgress("Boiler Pressure"));
-            CustomNativeMenu.ObjectPool.Add(_barCollection);
-        }
-
         public BoilerComponent(Train train) : base(train)
         {
 
@@ -36,10 +26,6 @@ namespace RogersSierra.Components
         public override void OnTick()
         {
             Pressure = 10;
-
-            if (!_barCollection.Visible)
-                _barCollection.Visible = true;
-            _barPressure.Progress = Pressure.Remap(0, 12, 0, 100);
         }
 
         public override void Dispose()

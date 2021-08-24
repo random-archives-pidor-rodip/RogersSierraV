@@ -42,6 +42,11 @@ namespace RogersSierra
         public readonly Decorator Decorator;
 
         /// <summary>
+        /// Active train that player is currently controlling.
+        /// </summary>
+        public static Train ActiveTrain { get; set; }
+
+        /// <summary>
         /// Base constructor of <see cref="Train"/>.
         /// </summary>
         /// <param name="invisibleModel">Invisible vehicle of train.</param>
@@ -70,6 +75,11 @@ namespace RogersSierra
             Trains.Add(this);
 
             RegisterHandlers();
+        }
+
+        public static void DeleteAllInstances()
+        {
+            Trains.ForEach(x => x.Dispose(true));
         }
 
         /// <summary>
@@ -109,6 +119,7 @@ namespace RogersSierra
             Components.Add(new SpeedComponent(this));
             Components.Add(new WheelComponent(this));
             Components.Add(new DrivetrainComponent(this));
+            Components.Add(new ControlComponent(this));
 
             for(int i = 0; i< Components.Count; i++)
             {
@@ -152,10 +163,18 @@ namespace RogersSierra
         /// <summary>
         /// Destroys train instance.
         /// </summary>
-        public void Dispose()
+        public void Dispose(bool deletePermanent = false)
         {
-            // Mark sierra as non-script one
-            Decorator.SetBool(Constants.TrainDecorator, false);
+            if (this == ActiveTrain)
+                ActiveTrain = null;
+
+            if (deletePermanent)
+                InvisibleModel.Delete();
+            else
+            {
+                // Mark sierra as non-script one
+                Decorator.SetBool(Constants.TrainDecorator, false);
+            }
 
             VisibleModel.Delete();
             
