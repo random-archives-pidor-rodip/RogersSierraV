@@ -18,7 +18,7 @@ namespace RogersSierra
         /// <summary>
         /// List of train handlers.
         /// </summary>
-        public static List<Component> Components { get; } = new List<Component>();
+        public List<Component> Components { get; } = new List<Component>();
 
         /// <summary>
         /// Invisible (lowpoly) model of the trian.
