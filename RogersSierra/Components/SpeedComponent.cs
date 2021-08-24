@@ -2,11 +2,6 @@
 using GTA;
 using RogersSierra.Abstract;
 using RogersSierra.Natives;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RogersSierra.Components
 {
@@ -68,9 +63,9 @@ namespace RogersSierra.Components
 
         public override void OnInit()
         {
-            _wheelHandler = Train.GetHandler<WheelComponent>();
-            _brakeHandler = Train.GetHandler<BrakeComponent>();
-            _boilerHandler = Train.GetHandler<BoilerComponent>();
+            _wheelHandler = Train.GetComponent<WheelComponent>();
+            _brakeHandler = Train.GetComponent<BrakeComponent>();
+            _boilerHandler = Train.GetComponent<BoilerComponent>();
         }
 
         public override void OnTick()
@@ -100,9 +95,9 @@ namespace RogersSierra.Components
             // Set train / wheel speed
             _wheelHandler.WheelSpeed = Speed / Traction;
 
-            NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
+            NVehicle.SetTrainSpeed(Train.InvisibleModel, 0);
 
-            GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Traction: {Traction}");
+            //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Traction: {Traction}");
         }
 
         public override void Dispose()

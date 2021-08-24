@@ -7,8 +7,12 @@ namespace RogersSierra
         public static CustomModel InvisibleSierra = new CustomModel("sierra_debug");
         public static CustomModel VisibleSierra = new CustomModel("sierra");
 
-        public static CustomModel FrontWheel = new CustomModel("fwheel");
-        public static CustomModel MainWheel = new CustomModel("mwheel");
+        public static CustomModel FrontWheel = new CustomModel("sierra_fwheel");
+        public static CustomModel DrivingWheel = new CustomModel("sierra_mwheel");
+
+        public static CustomModel CouplingRod = new CustomModel("sierra_rods_main");
+        public static CustomModel ConnectingRod = new CustomModel("sierra_rods_large_pistons");
+        public static CustomModel Piston = new CustomModel("sierra_large_piston");
 
         public static void RequestAll()
         {

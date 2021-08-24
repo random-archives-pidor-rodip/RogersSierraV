@@ -18,7 +18,7 @@ namespace RogersSierra
         /// <summary>
         /// List of train handlers.
         /// </summary>
-        public static List<Component> Handlers { get; } = new List<Component>();
+        public static List<Component> Components { get; } = new List<Component>();
 
         /// <summary>
         /// Invisible (lowpoly) model of the trian.
@@ -70,37 +70,38 @@ namespace RogersSierra
         /// </summary>
         private void RegisterHandlers()
         {
-            Handlers.Add(new BoilerComponent(this));
-            Handlers.Add(new BrakeComponent(this));
-            Handlers.Add(new SpeedComponent(this));
-            Handlers.Add(new WheelComponent(this));
+            Components.Add(new BoilerComponent(this));
+            Components.Add(new BrakeComponent(this));
+            Components.Add(new SpeedComponent(this));
+            Components.Add(new WheelComponent(this));
+            Components.Add(new DrivetrainComponent(this));
 
-            for(int i = 0; i< Handlers.Count; i++)
+            for(int i = 0; i< Components.Count; i++)
             {
-                var handler = Handlers[i];
+                var handler = Components[i];
 
                 handler.OnInit();
             }
         }
         
         /// <summary>
-        /// Gets handler of specified type.
+        /// Gets component of specified type.
         /// </summary>
-        /// <typeparam name="T">Handler type.</typeparam>
-        /// <returns>Handler.</returns>
-        public T GetHandler<T>()
+        /// <typeparam name="T">Component type.</typeparam>
+        /// <returns>Component.</returns>
+        public T GetComponent<T>()
         {
-            for(int i = 0; i < Handlers.Count; i++)
+            for(int i = 0; i < Components.Count; i++)
             {
-                var handler = Handlers[i];
+                var component = Components[i];
 
-                if (handler.GetType() == typeof(T))
+                if (component.GetType() == typeof(T))
                 {
-                    return (T)(object)handler;
+                    return (T)(object)component;
                 }
             }
 
-            throw new ArgumentException($"Handler: {typeof(T)} doesn't exist.");
+            throw new ArgumentException($"Component: {typeof(T)} doesn't exist.");
         }
 
         /// <summary>
@@ -108,9 +109,9 @@ namespace RogersSierra
         /// </summary>
         public void OnTick()
         {
-            for(int i = 0; i < Handlers.Count; i++)
+            for(int i = 0; i < Components.Count; i++)
             {
-                Handlers[i].OnTick();
+                Components[i].OnTick();
             }
         }
 
@@ -122,11 +123,11 @@ namespace RogersSierra
             InvisibleModel.Delete();
             VisibleModel.Delete();
             
-            for(int i = 0; i < Handlers.Count; i++)
+            for(int i = 0; i < Components.Count; i++)
             {
-                Handlers[i].Dispose();
+                Components[i].Dispose();
             }
-            Handlers.Clear();
+            Components.Clear();
 
             Disposed = true;
         }

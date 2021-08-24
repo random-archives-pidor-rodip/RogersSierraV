@@ -56,6 +56,7 @@
     <Compile Include="Abstract\Component.cs" />
     <Compile Include="Components\BoilerComponent.cs" />
     <Compile Include="Components\BrakeComponent.cs" />
+    <Compile Include="Components\DrivetrainComponent.cs" />
     <Compile Include="Components\SpeedComponent.cs" />
     <Compile Include="Components\WheelComponent.cs" />
     <Compile Include="Models.cs" />
