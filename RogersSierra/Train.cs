@@ -1,4 +1,5 @@
-﻿using GTA;
+﻿using FusionLibrary;
+using GTA;
 using GTA.Math;
 using RogersSierra.Abstract;
 using RogersSierra.Components;
@@ -35,10 +36,29 @@ namespace RogersSierra
         /// </summary>
         public bool Disposed { get; private set; }
 
-        private Train(Vehicle invisibleModel, Vehicle visibleModel)
+        /// <summary>
+        /// Decorator of this train.
+        /// </summary>
+        public readonly Decorator Decorator;
+
+        /// <summary>
+        /// Base constructor of <see cref="Train"/>.
+        /// </summary>
+        /// <param name="invisibleModel">Invisible vehicle of train.</param>
+        /// <param name="visibleModel">Visible vehicle of train.</param>
+        /// <param name="direction">Direction of train on track, leave null if train is being respawned.</param>
+        private Train(Vehicle invisibleModel, Vehicle visibleModel, bool? direction)
         {
             InvisibleModel = invisibleModel;
             VisibleModel = visibleModel;
+
+            // Apply decorator
+            Decorator = new Decorator(invisibleModel);
+            Decorator.SetBool(Constants.TrainDecorator, true);
+            
+            // Direction will be null if train is being respawned
+            if(direction != null)
+                Decorator.SetBool(Constants.TrainDirection, (bool) direction);
 
             // TODO: Remove offset
             visibleModel.AttachTo(InvisibleModel, new Vector3(0, -4.3f, 0));
@@ -56,13 +76,27 @@ namespace RogersSierra
         /// Spawns train.
         /// </summary>
         /// <param name="position">Where to spawn.</param>
+        /// <param name="direction">Direction of train.</param>
         /// <returns>New <see cref="Train"/> instance.</returns>
-        public static Train Spawn(Vector3 position)
+        public static Train Spawn(Vector3 position, bool direction)
         {
-            var invModel = NVehicle.CreateTrain(26, position, false);
+            var invModel = NVehicle.CreateTrain(26, position, direction);
             var visModel = World.CreateVehicle(Models.VisibleSierra.Model, position);
 
-            return new Train(invModel, visModel);
+            return new Train(invModel, visModel, direction);
+        }
+
+        /// <summary>
+        /// For respawning train after script reload.
+        /// </summary>
+        /// <param name="invisibleTrain">Train from previous session.</param>
+        /// <returns>New <see cref="Train"/> instance.</returns>
+        public static Train Respawn(Vehicle invisibleTrain)
+        {
+            var pos = invisibleTrain.Position;
+            var visModel = World.CreateVehicle(Models.VisibleSierra.Model, pos);
+
+            return new Train(invisibleTrain, visModel, null);
         }
 
         /// <summary>
@@ -120,7 +154,9 @@ namespace RogersSierra
         /// </summary>
         public void Dispose()
         {
-            InvisibleModel.Delete();
+            // Mark sierra as non-script one
+            Decorator.SetBool(Constants.TrainDecorator, false);
+
             VisibleModel.Delete();
             
             for(int i = 0; i < Components.Count; i++)
