@@ -2,6 +2,7 @@
 {
     /// <summary>
     /// Unity style component system.
+    /// It automatically spawns and disposes all AnimateProp (in list too) pubic fields.
     /// </summary>
     public abstract class Component
     {

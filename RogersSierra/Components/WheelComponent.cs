@@ -80,8 +80,6 @@ namespace RogersSierra.Components
                 var wheelLength = (float)(model.Model.GetSize().height * Math.PI);
                 _wheelLenghts[d++] = wheelLength;
 
-                File.AppendAllText("log.txt", $"\n{wheelLength}");
-
                 _wheels.Add(prop);
 
                 totalWheels--;
