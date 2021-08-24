@@ -12,7 +12,7 @@ namespace RogersSierra
     {
         public Main()
         {
-            Models.Init();
+            Models.RequestAll();
 
             Tick += OnTick;
             KeyDown += OnKeyDown;
@@ -30,16 +30,10 @@ namespace RogersSierra
             }
         }
 
-        private void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if(e.KeyCode == Keys.L)
             {
-                //if (Models.InvisibleSierra.Model.IsLoaded)
-                //{
-                //    GTA.UI.Screen.ShowSubtitle("Loaded.");
-                //    return;
-                //}
-                //return; 
                 var train = Train.Spawn(Game.Player.Character.Position);
             }
         }

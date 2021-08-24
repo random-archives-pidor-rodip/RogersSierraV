@@ -1,7 +1,7 @@
 ﻿using GTA;
 using GTA.Math;
 using RogersSierra.Abstract;
-using RogersSierra.Handlers;
+using RogersSierra.Components;
 using RogersSierra.Natives;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace RogersSierra
         /// <summary>
         /// List of train handlers.
         /// </summary>
-        public static List<Handler> Handlers { get; } = new List<Handler>();
+        public static List<Component> Components { get; } = new List<Component>();
 
         /// <summary>
         /// Invisible (lowpoly) model of the trian.
@@ -35,8 +35,20 @@ namespace RogersSierra
         /// </summary>
         public bool Disposed { get; private set; }
 
-        private Train()
+        private Train(Vehicle invisibleModel, Vehicle visibleModel)
         {
+            InvisibleModel = invisibleModel;
+            VisibleModel = visibleModel;
+
+            // TODO: Remove offset
+            visibleModel.AttachTo(InvisibleModel, new Vector3(0, -4.3f, 0));
+
+            // Hide invisible model, we can't use setVisibility because 
+            // visible model will be affected too
+            InvisibleModel.Opacity = 0;
+
+            Trains.Add(this);
+
             RegisterHandlers();
         }
 
@@ -47,18 +59,10 @@ namespace RogersSierra
         /// <returns>New <see cref="Train"/> instance.</returns>
         public static Train Spawn(Vector3 position)
         {
-            var train = new Train
-            {
-                InvisibleModel = NVehicle.CreateTrain(26, position, false),
-                VisibleModel = World.CreateVehicle(Models.VisibleSierra.Model, position)
-            };
-            train.VisibleModel.AttachTo(train.InvisibleModel, new Vector3(0, -4.3f, 0));
+            var invModel = NVehicle.CreateTrain(26, position, false);
+            var visModel = World.CreateVehicle(Models.VisibleSierra.Model, position);
 
-            train.InvisibleModel.Opacity = 0;
-
-            Trains.Add(train);
-
-            return train;
+            return new Train(invModel, visModel);
         }
 
         /// <summary>
@@ -66,37 +70,38 @@ namespace RogersSierra
         /// </summary>
         private void RegisterHandlers()
         {
-            Handlers.Add(new BoilerHandler(this));
-            Handlers.Add(new BrakeHandler(this));
-            Handlers.Add(new SpeedHandler(this));
-            Handlers.Add(new WheelHandler(this));
+            Components.Add(new BoilerComponent(this));
+            Components.Add(new BrakeComponent(this));
+            Components.Add(new SpeedComponent(this));
+            Components.Add(new WheelComponent(this));
+            Components.Add(new DrivetrainComponent(this));
 
-            for(int i = 0; i< Handlers.Count; i++)
+            for(int i = 0; i< Components.Count; i++)
             {
-                var handler = Handlers[i];
+                var handler = Components[i];
 
                 handler.OnInit();
             }
         }
         
         /// <summary>
-        /// Gets handler of specified type.
+        /// Gets component of specified type.
         /// </summary>
-        /// <typeparam name="T">Handler type.</typeparam>
-        /// <returns>Handler.</returns>
-        public T GetHandler<T>()
+        /// <typeparam name="T">Component type.</typeparam>
+        /// <returns>Component.</returns>
+        public T GetComponent<T>()
         {
-            for(int i = 0; i < Handlers.Count; i++)
+            for(int i = 0; i < Components.Count; i++)
             {
-                var handler = Handlers[i];
+                var component = Components[i];
 
-                if (handler.GetType() == typeof(T))
+                if (component.GetType() == typeof(T))
                 {
-                    return (T)(object)handler;
+                    return (T)(object)component;
                 }
             }
 
-            throw new ArgumentException($"Handler: {typeof(T)} doesn't exist.");
+            throw new ArgumentException($"Component: {typeof(T)} doesn't exist.");
         }
 
         /// <summary>
@@ -104,9 +109,9 @@ namespace RogersSierra
         /// </summary>
         public void OnTick()
         {
-            for(int i = 0; i < Handlers.Count; i++)
+            for(int i = 0; i < Components.Count; i++)
             {
-                Handlers[i].OnTick();
+                Components[i].OnTick();
             }
         }
 
@@ -118,11 +123,11 @@ namespace RogersSierra
             InvisibleModel.Delete();
             VisibleModel.Delete();
             
-            for(int i = 0; i < Handlers.Count; i++)
+            for(int i = 0; i < Components.Count; i++)
             {
-                Handlers[i].Dispose();
+                Components[i].Dispose();
             }
-            Handlers.Clear();
+            Components.Clear();
 
             Disposed = true;
         }
