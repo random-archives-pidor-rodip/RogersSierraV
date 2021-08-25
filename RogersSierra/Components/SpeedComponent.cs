@@ -1,7 +1,6 @@
 ﻿using FusionLibrary.Extensions;
 using GTA;
 using RogersSierra.Abstract;
-using RogersSierra.Extentions;
 using RogersSierra.Natives;
 
 namespace RogersSierra.Components
@@ -30,7 +29,7 @@ namespace RogersSierra.Components
             get => _throttle;
             set
             {
-                _throttle = value.Clamp(0, 1); // FusionUtils.Clamp(value, 0, 1);
+                _throttle = value.Clamp(0, 1);
             }
         }
 
@@ -43,7 +42,7 @@ namespace RogersSierra.Components
             get => _gear;
             set
             {
-                _gear = value.Clamp(-1, 1);//FusionUtils.Clamp(value, 0, 1);
+                _gear = value.Clamp(-1, 1);
             }
         }
 

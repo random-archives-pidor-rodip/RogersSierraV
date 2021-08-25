@@ -10,6 +10,11 @@ namespace RogersSierra.Components
         /// </summary>
         public bool IsPlayerDrivingTrain { get; private set; }
 
+        /// <summary>
+        /// Squared distance to the driver seat bone of train.
+        /// </summary>
+        public float PlayerDistanceToTrain { get;private set;  }
+
         public ControlComponent(Train train) : base(train)
         {
             
@@ -17,7 +22,12 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
-            // Write delegate system for controls
+            PlayerDistanceToTrain  =
+                Game.Player.Character.Position.DistanceToSquared(Train.VisibleModel.Bones["seat_pside_f"].Position);
+
+            GTA.UI.Screen.ShowSubtitle(PlayerDistanceToTrain.ToString());
+
+            // TODO: Write delegate system for controls
 
             if (Game.IsControlJustPressed(Control.Enter))
                 EnterControl();
@@ -33,6 +43,14 @@ namespace RogersSierra.Components
 
             if (Game.IsControlJustPressed(Control.Context))
                 ControlGear(-0.1f);
+
+            Game.DisableControlThisFrame(GTA.Control.Aim);
+            Game.DisableControlThisFrame(GTA.Control.AccurateAim);
+            Game.DisableControlThisFrame(GTA.Control.Attack);
+            Game.DisableControlThisFrame(GTA.Control.Attack2);
+            Game.DisableControlThisFrame(GTA.Control.MeleeAttack1);
+            Game.DisableControlThisFrame(GTA.Control.MeleeAttack2);
+            Game.DisableControlThisFrame(GTA.Control.VehicleAim);
         }
 
         /// <summary>
@@ -48,9 +66,7 @@ namespace RogersSierra.Components
                 return;
             }
 
-            var distance = Game.Player.Character.Position.DistanceToSquared(Train.VisibleModel.Position);
-
-            if (distance > 3.5 * 3.5)
+            if (PlayerDistanceToTrain > 3.5 * 3.5)
                 return;
 
             Game.Player.Character.Task.WarpIntoVehicle(Train.InvisibleModel, VehicleSeat.Driver);
