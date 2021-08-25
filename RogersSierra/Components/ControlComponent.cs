@@ -1,5 +1,6 @@
 ﻿using GTA;
 using RogersSierra.Abstract;
+using System.Drawing;
 
 namespace RogersSierra.Components
 {
@@ -25,7 +26,8 @@ namespace RogersSierra.Components
             PlayerDistanceToTrain  =
                 Game.Player.Character.Position.DistanceToSquared(Train.VisibleModel.Bones["seat_pside_f"].Position);
 
-            GTA.UI.Screen.ShowSubtitle(PlayerDistanceToTrain.ToString());
+            if (PlayerDistanceToTrain < 3.3 * 3.3)
+                ProcessInteraction();
 
             // TODO: Write delegate system for controls
 
@@ -43,19 +45,35 @@ namespace RogersSierra.Components
 
             if (Game.IsControlJustPressed(Control.Context))
                 ControlGear(-0.1f);
+        }
 
-            Game.DisableControlThisFrame(GTA.Control.Aim);
-            Game.DisableControlThisFrame(GTA.Control.AccurateAim);
-            Game.DisableControlThisFrame(GTA.Control.Attack);
-            Game.DisableControlThisFrame(GTA.Control.Attack2);
-            Game.DisableControlThisFrame(GTA.Control.MeleeAttack1);
-            Game.DisableControlThisFrame(GTA.Control.MeleeAttack2);
-            Game.DisableControlThisFrame(GTA.Control.VehicleAim);
+        private void ProcessInteraction()
+        {
+            Game.DisableControlThisFrame(Control.Aim);
+            Game.DisableControlThisFrame(Control.AccurateAim);
+            Game.DisableControlThisFrame(Control.Attack);
+            Game.DisableControlThisFrame(Control.Attack2);
+            Game.DisableControlThisFrame(Control.MeleeAttack1);
+            Game.DisableControlThisFrame(Control.MeleeAttack2);
+            Game.DisableControlThisFrame(Control.VehicleAim);
+
+            var source = GameplayCamera.Position;
+            var dir = GameplayCamera.Direction;
+            var flags = IntersectFlags.Everything;
+            var ignore = Game.Player.Character;
+            var raycast = World.Raycast(source, dir, flags, ignore);
+
+            World.DrawLine(source, source + dir, Color.Red);
+
+            if (!raycast.DidHit)
+                return;
+
+            GTA.UI.Screen.ShowSubtitle($"Hit entity: {raycast.HitEntity}", 100);
         }
 
         /// <summary>
         /// Controls entering in train.
-        /// </summary>
+        /// </summary>  
         private void EnterControl()
         {
             if (IsPlayerDrivingTrain)

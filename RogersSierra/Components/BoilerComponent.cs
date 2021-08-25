@@ -8,7 +8,7 @@ namespace RogersSierra.Components
     public class BoilerComponent : Component
     {
         /// <summary>
-        /// Pressure of the boier;
+        /// Pressure of the boiler
         /// </summary>
         public float Pressure { get; private set; }
 
