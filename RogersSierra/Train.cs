@@ -153,7 +153,7 @@ namespace RogersSierra
                 field.SetValue(this, component);
 
                 // Spawn all props
-                Utils.ProcessAllValuesFieldsByType<AnimateProp>(this, x => x.SpawnProp());
+                Utils.ProcessAllValuesFieldsByType<AnimateProp>(component, x => x.SpawnProp());
 
                 Components.Add(component);
             });

@@ -31,7 +31,7 @@ namespace RogersSierra.Components
         /// <summary>
         /// Wheel models
         /// </summary>
-        private readonly List<AnimateProp> _wheels = new List<AnimateProp>();
+        public readonly List<AnimateProp> _wheels = new List<AnimateProp>();
 
         /// <summary>
         /// Reference to driving wheel.
