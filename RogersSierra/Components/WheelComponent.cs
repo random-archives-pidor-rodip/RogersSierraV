@@ -46,7 +46,7 @@ namespace RogersSierra.Components
         /// <summary>
         /// Total length of every wheel.
         /// </summary>
-        private readonly float[] _wheelLenghts;
+        private readonly float[] _wheelLengths;
 
         public WheelComponent(Train train) : base(train)
         {
@@ -54,7 +54,7 @@ namespace RogersSierra.Components
 
             var totalWheels = _numberOfFrontWheels + _numberOfMainWheels;
 
-            _wheelLenghts = new float[totalWheels];
+            _wheelLengths = new float[totalWheels];
 
             int f = 0, m = 0, d = 0;
             while(totalWheels > 0)
@@ -78,7 +78,7 @@ namespace RogersSierra.Components
 
                 // Length of cylinder is diameter * pi
                 var wheelLength = (float)(model.Model.GetSize().height * Math.PI);
-                _wheelLenghts[d++] = wheelLength;
+                _wheelLengths[d++] = wheelLength;
 
                 _wheels.Add(prop);
 
@@ -91,20 +91,15 @@ namespace RogersSierra.Components
             for (int i = 0; i < _wheels.Count; i++)
             {
                 var wheel = _wheels[i];
-                var currentAngle = wheel.CurrentRotation.X;
-                var wheelLength = _wheelLenghts[i];
-
-                // Calculate wheel ratation per frame
-                var revPerSpeed = WheelSpeed / wheelLength;
-                var totalAngle = revPerSpeed * 360; //revPerSpeed * 360;
-                var rotAngle = totalAngle / Game.FPS;
 
                 // 10m / 4.3m = 2,3~ full wheel turn
                 // 2,3 wheel turn = 2.3 * 360 = 828~ degrees
                 // tick calls 1/fps times per second, so 828 / 60 = 13,8 degrees per tick
 
-                var newAngle = currentAngle - rotAngle;
-                wheel.setRotation(FusionEnums.Coordinate.X, newAngle.WrapAngle());
+                // Calculate wheel rotation per frame
+                var newAngle = WheelSpeed.AngularSpeed(_wheelLengths[i], wheel.CurrentRotation.X);
+
+                wheel.setRotation(FusionEnums.Coordinate.X, newAngle);
             }
         }
     }
