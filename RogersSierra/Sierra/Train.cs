@@ -7,7 +7,7 @@ using RogersSierra.Natives;
 using System;
 using System.Collections.Generic;
 
-namespace RogersSierra
+namespace RogersSierra.Sierra
 {
     public class Train
     {

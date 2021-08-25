@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace RogersSierra
+namespace RogersSierra.Sierra
 {
     public class Utils
     {
@@ -27,6 +27,12 @@ namespace RogersSierra
             }
         }
 
+        /// <summary>
+        /// Executes action for all field values of given type.
+        /// </summary>
+        /// <typeparam name="T">Type of field.</typeparam>
+        /// <param name="obj">Class object.</param>
+        /// <param name="action">Action to execute.</param>
         public static void ProcessAllValuesFieldsByType<T>(object obj, Action<T> action)
         {
             ProcessAllClassFieldsByType<T>(obj, field =>

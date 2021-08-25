@@ -3,7 +3,7 @@ using FusionLibrary.Extensions;
 using LemonUI.TimerBars;
 using System.Drawing;
 
-namespace RogersSierra
+namespace RogersSierra.Sierra
 {
     public class UserInterface
     {

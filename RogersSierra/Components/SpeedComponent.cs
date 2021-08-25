@@ -2,6 +2,7 @@
 using GTA;
 using RogersSierra.Abstract;
 using RogersSierra.Natives;
+using RogersSierra.Sierra;
 
 namespace RogersSierra.Components
 {
@@ -69,6 +70,8 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
+            //GTA.UI.Screen.ShowSubtitle($"Throttle: {_throttle} Gear: {_gear}");
+
             // Calculate train acceleration (v1 - v2) / t
             var acceleration = (Speed - _prevSpeed) * Game.LastFrameTime;
 

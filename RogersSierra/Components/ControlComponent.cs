@@ -1,7 +1,9 @@
 ﻿using FusionLibrary;
 using FusionLibrary.Extensions;
 using GTA;
+using GTA.Native;
 using RogersSierra.Abstract;
+using RogersSierra.Sierra;
 using System.Drawing;
 
 namespace RogersSierra.Components
@@ -50,17 +52,20 @@ namespace RogersSierra.Components
             if (Game.IsControlJustPressed(Control.Enter))
                 EnterControl();
 
-            if (Game.IsControlJustPressed(Control.VehicleAccelerate))
-                ControlThrottle(0.1f);
+            //if (Game.IsControlJustPressed(Control.VehicleAccelerate))
+            //    ControlThrottle(0.1f);
 
-            if (Game.IsControlJustPressed(Control.VehicleBrake))
-                ControlThrottle(-0.1f);
+            //if (Game.IsControlJustPressed(Control.VehicleBrake))
+            //    ControlThrottle(-0.1f);
 
-            if (Game.IsControlJustPressed(Control.Cover))
-                ControlGear(0.1f);
+            //if (Game.IsControlJustPressed(Control.Cover))
+            //    ControlGear(0.1f);
 
-            if (Game.IsControlJustPressed(Control.Context))
-                ControlGear(-0.1f);
+            //if (Game.IsControlJustPressed(Control.Context))
+            //    ControlGear(-0.1f);
+
+            Train.SpeedComponent.Throttle = Train.CabComponent.ThrottleLeverState;
+            Train.SpeedComponent.Gear = Train.CabComponent.GearLeverState;
         }
         
         /// <summary>
@@ -85,10 +90,16 @@ namespace RogersSierra.Components
                 Game.DisableControlThisFrame(Control.MeleeAttack1);
                 Game.DisableControlThisFrame(Control.MeleeAttack2);
                 Game.DisableControlThisFrame(Control.VehicleAim);
+
+                // Enable crosshair
+                Function.Call(Hash.DISPLAY_SNIPER_SCOPE_THIS_FRAME);
             }
 
-            if (Train.InteractionComponent.IsInteracting)
-                return;
+            if (Train.InteractionComponent.LastInteractableProp != null)
+            {
+                if (Train.InteractionComponent.LastInteractableProp.IsInteracting)
+                    return;
+            }
 
             var source = GameplayCamera.Position;
             var dir = GameplayCamera.Direction;
@@ -97,7 +108,7 @@ namespace RogersSierra.Components
 
             var raycast = World.Raycast(source, dir, 10, flags, ignore);
 
-            if (!raycast.DidHit)
+            if (!raycast.DidHit || raycast.HitEntity == null)
             {
                 if(_hoveredProp != null)
                 {
@@ -105,9 +116,6 @@ namespace RogersSierra.Components
                 }
                 return;
             }
-
-            if (raycast.HitEntity == null)
-                return;
 
             // Check if entity is interactable
             if(raycast.HitEntity.Decorator().GetBool(Constants.InteractableEntity) == false)

@@ -1,13 +1,11 @@
 ﻿using FusionLibrary;
-using GTA;
-using RogersSierra.Abstract;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FusionLibrary.Extensions;
+using GTA;
+using GTA.Math;
+using RogersSierra.Abstract;
+using RogersSierra.Components.InteractionUtils;
+using RogersSierra.Sierra;
+using System.Collections.Generic;
 
 namespace RogersSierra.Components
 {
@@ -16,21 +14,16 @@ namespace RogersSierra.Components
         /// <summary>
         /// All interactable props.
         /// </summary>
-        public List<AnimateProp> Props { get; }
+        public List<InteractableProp> Props { get; }
 
         /// <summary>
-        /// Currently interactable prop.
+        /// Last interactable props.
         /// </summary>
-        public AnimateProp Prop { get; private set; }
-
-        /// <summary>
-        /// Returns True if player is currently interacting with prop, otherwise False.
-        /// </summary>
-        public bool IsInteracting => Prop != null;
+        public InteractableProp LastInteractableProp { get; private set; }
 
         public InteractionComponent(Train train) : base(train)
         {
-            Props = new List<AnimateProp>();
+            Props = new List<InteractableProp>();
         }
 
         public override void OnInit()
@@ -40,23 +33,27 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
-            if (Prop == null)
-                return;
-
-            var mouseX = -Game.GetControlValueNormalized(Control.LookLeft) * 20;
-
-            Prop.SecondRotation += new GTA.Math.Vector3(0, 0, mouseX);
+            for(int i = 0; i < Props.Count; i++)
+            {
+                Props[i].OnTick();
+            }
         }
 
         /// <summary>
         /// Adds prop into list of interactable prop.
         /// </summary>
-        public void AddProp(AnimateProp prop)
+        public void AddProp(AnimateProp prop, Vector3 axis, Control control, bool invert, int minAngle, int maxAngle, float defaultAngle)
         {
-            prop.Prop.Decorator().SetBool(Constants.InteractableEntity, true);
+            var interactableProp = new InteractableProp(prop, axis, control, invert, minAngle, maxAngle, defaultAngle);
 
-            Props.Add(prop);
-            prop.Prop.Decorator().SetInt(Constants.InteractableId, Props.Count - 1);
+            Props.Add(interactableProp);
+
+            // Set ID so we later can find him
+            var decorator = prop.Prop.Decorator();
+            decorator.SetInt(Constants.InteractableId, Props.Count - 1);
+
+            // Mark prop as interactable
+            decorator.SetBool(Constants.InteractableEntity, true);
         }
 
         /// <summary>
@@ -64,10 +61,16 @@ namespace RogersSierra.Components
         /// </summary>
         public void StartInteraction(Entity propEntity)
         {
-            var id = propEntity.Decorator().GetInt(Constants.InteractableId);
-            Prop = Props[id];
+            // If somehow that happens...
+            StopInteraction();
 
-            GTA.UI.Screen.ShowSubtitle($"Started interaction with prop: {id}");
+            var decorator = propEntity.Decorator();
+            var id = decorator.GetInt(Constants.InteractableId);
+
+            var interactableProp = Props[id];
+            interactableProp.StartInteraction();
+
+            LastInteractableProp = interactableProp;
         }
 
         /// <summary>
@@ -75,7 +78,7 @@ namespace RogersSierra.Components
         /// </summary>
         public void StopInteraction()
         {
-            Prop = null;
+            LastInteractableProp?.StopInteraction();
         }
     }
 }

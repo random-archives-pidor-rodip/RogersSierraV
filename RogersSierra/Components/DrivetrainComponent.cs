@@ -2,6 +2,7 @@
 using FusionLibrary.Extensions;
 using GTA.Math;
 using RogersSierra.Abstract;
+using RogersSierra.Sierra;
 using System;
 
 namespace RogersSierra.Components

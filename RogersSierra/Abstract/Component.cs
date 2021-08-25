@@ -1,4 +1,6 @@
-﻿namespace RogersSierra.Abstract
+﻿using RogersSierra.Sierra;
+
+namespace RogersSierra.Abstract
 {
     /// <summary>
     /// Unity style component system.

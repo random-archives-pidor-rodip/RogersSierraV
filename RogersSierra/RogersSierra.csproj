@@ -77,17 +77,18 @@
     <Compile Include="Components\ControlComponent.cs" />
     <Compile Include="Components\DrivetrainComponent.cs" />
     <Compile Include="Components\InteractionComponent.cs" />
+    <Compile Include="Components\InteractionUtils\InteractableProp.cs" />
     <Compile Include="Components\SpeedComponent.cs" />
     <Compile Include="Components\WheelComponent.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="Sierra\Constants.cs" />
     <Compile Include="Extentions\MathExtentions.cs" />
-    <Compile Include="Models.cs" />
+    <Compile Include="Sierra\Models.cs" />
     <Compile Include="Natives\NVehicle.cs" />
-    <Compile Include="Train.cs" />
+    <Compile Include="Sierra\Train.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserInterface.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="Sierra\UserInterface.cs" />
+    <Compile Include="Sierra\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

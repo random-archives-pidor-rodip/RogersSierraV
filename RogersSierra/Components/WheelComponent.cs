@@ -2,6 +2,7 @@
 using FusionLibrary.Extensions;
 using GTA;
 using RogersSierra.Abstract;
+using RogersSierra.Sierra;
 using System;
 using System.Collections.Generic;
 using System.IO;
