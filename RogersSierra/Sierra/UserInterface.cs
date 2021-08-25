@@ -24,19 +24,6 @@ namespace RogersSierra.Sierra
         /// </summary>
         private static TimerBarProgress _pressureBar { get; }
 
-        //private static bool _isVisible;
-        ///// <summary>
-        ///// Is GUI shown on screen.
-        ///// </summary>
-        //public static bool IsVisible
-        //{
-        //    get => _isVisible;
-        //    set
-        //    {
-        //        _isVisible = value;
-        //    }
-        //}
-
         static UserInterface()
         {
             _throttleBar = new TimerBarProgress("Throttle");
@@ -62,7 +49,7 @@ namespace RogersSierra.Sierra
             _barCollection.Visible = true;
 
             _pressureBar.Progress = Train.ActiveTrain.BoilerComponent.Pressure.Remap(0, 20, 0, 100);
-            _throttleBar.Progress = Train.ActiveTrain.SpeedComponent.Throttle.Remap(-1, 1, 0, 100);
+            _throttleBar.Progress = Train.ActiveTrain.SpeedComponent.Throttle.Remap(0, 1, 0, 100);
             _gearBar.Progress = Train.ActiveTrain.SpeedComponent.Gear.Remap(-1, 1, 0, 100);
         }
     }

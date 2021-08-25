@@ -25,6 +25,8 @@ namespace RogersSierra.Components
         /// </summary>
         private Entity _hoveredProp;
 
+        private bool _isPlayerInCab;
+
         public ControlComponent(Train train) : base(train)
         {
 
@@ -39,6 +41,17 @@ namespace RogersSierra.Components
         {
             // TODO: Write delegate system for controls
             // TODO: Disable controls only when player is looking at interactable item
+
+            _isPlayerInCab = PlayerDistanceToTrain < 3.3 * 3.3;
+
+            if(_isPlayerInCab)
+            {
+                Train.ActiveTrain = Train;
+            }
+            else if(!_isPlayerInCab && Train.ActiveTrain == Train)
+            {
+                Train.ActiveTrain = null;
+            }
 
             PlayerDistanceToTrain =
                 Game.Player.Character.Position.DistanceToSquared(Train.VisibleModel.Bones["seat_pside_f"].Position);
@@ -81,7 +94,7 @@ namespace RogersSierra.Components
             }
 
             // Disable weapon/attack in cab near interactable items
-            if (PlayerDistanceToTrain < 3.3 * 3.3)
+            if (_isPlayerInCab)
             {
                 Game.DisableControlThisFrame(Control.Aim);
                 Game.DisableControlThisFrame(Control.AccurateAim);
@@ -151,7 +164,7 @@ namespace RogersSierra.Components
         {
             if (IsPlayerDrivingTrain)
             {
-                Train.ActiveTrain = null;
+                //Train.ActiveTrain = null;
 
                 Game.Player.Character.Task.LeaveVehicle();
 
@@ -164,7 +177,7 @@ namespace RogersSierra.Components
 
             Game.Player.Character.Task.EnterVehicle(Train.InvisibleModel, VehicleSeat.Driver);
 
-            Train.ActiveTrain = Train;
+            //Train.ActiveTrain = Train;
 
             IsPlayerDrivingTrain = true;
         }
