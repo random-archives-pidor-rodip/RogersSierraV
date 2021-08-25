@@ -27,7 +27,7 @@ namespace RogersSierra
         /// </summary>
         private void OnTick(object sender, EventArgs e)
         {
-            if(!FirstTick)
+            if (!FirstTick)
             {
                 Models.RequestAll();
 
@@ -49,7 +49,21 @@ namespace RogersSierra
             UserInterface.OnTick();
 
             // DEBUG ONLY, DELETE LATER!
-            Function.Call(Hash.SET_DISABLE_RANDOM_TRAINS_THIS_FRAME, true);
+            //Function.Call(Hash.SET_DISABLE_RANDOM_TRAINS_THIS_FRAME, true);
+
+            //Function.Call(Hash.DISABLE_AIM_CAM_THIS_UPDATE, true);
+            //Function.Call(Hash.IS_AIM_CAM_ACTIVE, false);
+            //Function.Call(Hash.IS_FIRST_PERSON_AIM_CAM_ACTIVE, false);
+            //Function.Call(Hash.IS_FIRST_PERSON_AIM_CAM_ACTIVE, false);
+            //Function.Call(Hash.IS_FIRST_PERSON_AIM_CAM_ACTIVE, false);
+
+            Game.DisableControlThisFrame(GTA.Control.Aim);
+            Game.DisableControlThisFrame(GTA.Control.AccurateAim);
+            Game.DisableControlThisFrame(GTA.Control.Attack);
+            Game.DisableControlThisFrame(GTA.Control.Attack2);
+            Game.DisableControlThisFrame(GTA.Control.MeleeAttack1);
+            Game.DisableControlThisFrame(GTA.Control.MeleeAttack2);
+            Game.DisableControlThisFrame(GTA.Control.VehicleAim);
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
