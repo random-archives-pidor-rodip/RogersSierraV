@@ -73,8 +73,10 @@
     <Compile Include="Abstract\Component.cs" />
     <Compile Include="Components\BoilerComponent.cs" />
     <Compile Include="Components\BrakeComponent.cs" />
+    <Compile Include="Components\CabComponent.cs" />
     <Compile Include="Components\ControlComponent.cs" />
     <Compile Include="Components\DrivetrainComponent.cs" />
+    <Compile Include="Components\InteractionComponent.cs" />
     <Compile Include="Components\SpeedComponent.cs" />
     <Compile Include="Components\WheelComponent.cs" />
     <Compile Include="Constants.cs" />

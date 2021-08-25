@@ -62,6 +62,11 @@ namespace RogersSierra.Components
             //Gear = 1;
         }
 
+        public override void OnInit()
+        {
+
+        }
+
         public override void OnTick()
         {
             // Calculate train acceleration (v1 - v2) / t

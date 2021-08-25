@@ -17,6 +17,11 @@ namespace RogersSierra.Components
 
         }
 
+        public override void OnInit()
+        {
+
+        }
+
         public override void OnTick()
         {
             Pressure = 10;

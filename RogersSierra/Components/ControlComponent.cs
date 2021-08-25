@@ -1,4 +1,6 @@
-﻿using GTA;
+﻿using FusionLibrary;
+using FusionLibrary.Extensions;
+using GTA;
 using RogersSierra.Abstract;
 using System.Drawing;
 
@@ -16,20 +18,34 @@ namespace RogersSierra.Components
         /// </summary>
         public float PlayerDistanceToTrain { get;private set;  }
 
+        /// <summary>
+        /// Potentially interactable entity. 
+        /// </summary>
+        private Entity _hoveredProp;
+
         public ControlComponent(Train train) : base(train)
         {
-            
+
+        }
+
+        public override void OnInit()
+        {
+
         }
 
         public override void OnTick()
         {
-            PlayerDistanceToTrain  =
+            // TODO: Write delegate system for controls
+            // TODO: Disable controls only when player is looking at interactable item
+
+            PlayerDistanceToTrain =
                 Game.Player.Character.Position.DistanceToSquared(Train.VisibleModel.Bones["seat_pside_f"].Position);
 
-            if (PlayerDistanceToTrain < 3.3 * 3.3)
-                ProcessInteraction();
+            ProcessInteraction(false);
 
-            // TODO: Write delegate system for controls
+            // Stop interaction after left button was released
+            if (Game.IsControlJustReleased(Control.Attack))
+                ProcessInteraction(true);
 
             if (Game.IsControlJustPressed(Control.Enter))
                 EnterControl();
@@ -46,29 +62,78 @@ namespace RogersSierra.Components
             if (Game.IsControlJustPressed(Control.Context))
                 ControlGear(-0.1f);
         }
-
-        private void ProcessInteraction()
+        
+        /// <summary>
+        /// Handles finding and starting interaction with prop.
+        /// </summary>
+        /// <param name="stop">If True, interaction will be stopped.</param>
+        private void ProcessInteraction(bool stop)
         {
-            Game.DisableControlThisFrame(Control.Aim);
-            Game.DisableControlThisFrame(Control.AccurateAim);
-            Game.DisableControlThisFrame(Control.Attack);
-            Game.DisableControlThisFrame(Control.Attack2);
-            Game.DisableControlThisFrame(Control.MeleeAttack1);
-            Game.DisableControlThisFrame(Control.MeleeAttack2);
-            Game.DisableControlThisFrame(Control.VehicleAim);
+            if(stop)
+            {
+                Train.InteractionComponent.StopInteraction();
+                return;
+            }
+
+            // Disable weapon/attack in cab near interactable items
+            if (PlayerDistanceToTrain < 3.3 * 3.3)
+            {
+                Game.DisableControlThisFrame(Control.Aim);
+                Game.DisableControlThisFrame(Control.AccurateAim);
+                Game.DisableControlThisFrame(Control.Attack);
+                Game.DisableControlThisFrame(Control.Attack2);
+                Game.DisableControlThisFrame(Control.MeleeAttack1);
+                Game.DisableControlThisFrame(Control.MeleeAttack2);
+                Game.DisableControlThisFrame(Control.VehicleAim);
+            }
+
+            if (Train.InteractionComponent.IsInteracting)
+                return;
 
             var source = GameplayCamera.Position;
             var dir = GameplayCamera.Direction;
             var flags = IntersectFlags.Everything;
             var ignore = Game.Player.Character;
-            var raycast = World.Raycast(source, dir, flags, ignore);
 
-            World.DrawLine(source, source + dir, Color.Red);
+            var raycast = World.Raycast(source, dir, 10, flags, ignore);
 
             if (!raycast.DidHit)
+            {
+                if(_hoveredProp != null)
+                {
+                    StopHoverAnimation(_hoveredProp);
+                }
+                return;
+            }
+
+            if (raycast.HitEntity == null)
                 return;
 
-            GTA.UI.Screen.ShowSubtitle($"Hit entity: {raycast.HitEntity}", 100);
+            // Check if entity is interactable
+            if(raycast.HitEntity.Decorator().GetBool(Constants.InteractableEntity) == false)
+                return;
+
+            // Start hovering animation
+            _hoveredProp = raycast.HitEntity;
+            StartHoverAnimation(_hoveredProp);
+
+            // Try to start interaction if left button is pressed
+            if (!Game.IsControlPressed(Control.Attack))
+                return;
+
+            StopHoverAnimation(_hoveredProp);
+            Train.InteractionComponent.StartInteraction(raycast.HitEntity);
+        }
+
+        private void StopHoverAnimation(Entity entity)
+        {
+            entity.ResetOpacity(); 
+            _hoveredProp = null;
+        }
+
+        private void StartHoverAnimation(Entity entity)
+        {
+            entity.Opacity = 200;
         }
 
         /// <summary>
@@ -80,6 +145,8 @@ namespace RogersSierra.Components
             {
                 Train.ActiveTrain = null;
 
+                Game.Player.Character.Task.LeaveVehicle();
+
                 IsPlayerDrivingTrain = false;
                 return;
             }
@@ -87,7 +154,7 @@ namespace RogersSierra.Components
             if (PlayerDistanceToTrain > 3.5 * 3.5)
                 return;
 
-            Game.Player.Character.Task.WarpIntoVehicle(Train.InvisibleModel, VehicleSeat.Driver);
+            Game.Player.Character.Task.EnterVehicle(Train.InvisibleModel, VehicleSeat.Driver);
 
             Train.ActiveTrain = Train;
 

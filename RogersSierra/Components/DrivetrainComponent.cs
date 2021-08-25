@@ -38,6 +38,11 @@ namespace RogersSierra.Components
             _distanceToLever = Vector3.Distance(radiusRodMountPos, combinationLeverPos);
         }
 
+        public override void OnInit()
+        {
+
+        }
+
         public override void OnTick()
         {
             var angle = Train.WheelComponent.DrivingWheelAngle + 90;

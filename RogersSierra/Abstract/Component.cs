@@ -17,6 +17,11 @@
         }
 
         /// <summary>
+        /// Being called after all components initialization.
+        /// </summary>
+        public abstract void OnInit();
+
+        /// <summary>
         /// Being called every frame.
         /// </summary>
         public abstract void OnTick();

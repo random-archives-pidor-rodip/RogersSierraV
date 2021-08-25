@@ -86,6 +86,11 @@ namespace RogersSierra.Components
             }
         }
 
+        public override void OnInit()
+        {
+
+        }
+
         public override void OnTick()
         {
             for (int i = 0; i < _wheels.Count; i++)

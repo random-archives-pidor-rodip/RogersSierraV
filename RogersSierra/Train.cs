@@ -6,7 +6,6 @@ using RogersSierra.Components;
 using RogersSierra.Natives;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace RogersSierra
 {
@@ -60,12 +59,22 @@ namespace RogersSierra
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
+        public CabComponent CabComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public ControlComponent ControlComponent;
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         public DrivetrainComponent DrivetrainComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public InteractionComponent InteractionComponent;
 
         /// <summary>
         /// <inheritdoc/>
@@ -108,6 +117,9 @@ namespace RogersSierra
             RegisterHandlers();
         }
 
+        /// <summary>
+        /// Permanently delete all spawned trains.
+        /// </summary>
         public static void DeleteAllInstances()
         {
             Trains.ForEach(x => x.Dispose(true));
@@ -141,10 +153,11 @@ namespace RogersSierra
         }
 
         /// <summary>
-        /// Adds all train handlers in the list.
+        /// Adds all train components in the list and spawns props.
         /// </summary>
         private void RegisterHandlers()
         {
+            // Initialize all components
             Utils.ProcessAllClassFieldsByType<Component>(this, field =>
             {
                 var type = field.FieldType;
@@ -157,28 +170,14 @@ namespace RogersSierra
 
                 Components.Add(component);
             });
+
+            // Call onInit
+            Utils.ProcessAllValuesFieldsByType<Component>(this, x =>
+            {
+                x.OnInit();
+            });
         }
         
-        /// <summary>
-        /// Gets component of specified type.
-        /// </summary>
-        /// <typeparam name="T">Component type.</typeparam>
-        /// <returns>Component.</returns>
-        public T GetComponent<T>()
-        {
-            for(int i = 0; i < Components.Count; i++)
-            {
-                var component = Components[i];
-
-                if (component.GetType() == typeof(T))
-                {
-                    return (T)(object)component;
-                }
-            }
-
-            throw new ArgumentException($"Component: {typeof(T)} doesn't exist.");
-        }
-
         /// <summary>
         /// Should be called from <see cref="Main"/> OnTick.
         /// </summary>
@@ -193,6 +192,7 @@ namespace RogersSierra
         /// <summary>
         /// Destroys train instance.
         /// </summary>
+        /// <param name="deletePermanent">If train is deleted permanently it won't be possible to respawn it later.</param>
         public void Dispose(bool deletePermanent = false)
         {
             if (this == ActiveTrain)

@@ -1,4 +1,5 @@
-﻿using GTA;
+﻿using FusionLibrary;
+using GTA;
 using GTA.Native;
 using System;
 using System.Windows.Forms;
@@ -27,9 +28,11 @@ namespace RogersSierra
         /// </summary>
         private void OnTick(object sender, EventArgs e)
         {
+            // First frame code
             if (!FirstTick)
             {
                 Models.RequestAll();
+                Constants.RegisterDecorators();
 
                 // Respawn trains from previous session
                 var trains = World.GetAllVehicles(Models.InvisibleSierra);
@@ -37,19 +40,18 @@ namespace RogersSierra
                 {
                     Train.Respawn(trains[i]);  
                 }
-
                 FirstTick = true;
             }
 
+            // Process onTick for all train instances and user gui
             for (int i = 0; i < Train.Trains.Count; i++)
             {
                 Train.Trains[i].OnTick();
             }
-
             UserInterface.OnTick();
 
             // DEBUG ONLY, DELETE LATER!
-            Function.Call(Hash.SET_DISABLE_RANDOM_TRAINS_THIS_FRAME, true);
+            FusionUtils.RandomTrains = false;
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
