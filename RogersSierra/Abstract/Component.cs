@@ -1,7 +1,10 @@
-﻿namespace RogersSierra.Abstract
+﻿using RogersSierra.Sierra;
+
+namespace RogersSierra.Abstract
 {
     /// <summary>
     /// Unity style component system.
+    /// It automatically spawns and disposes all AnimateProp (in list too) pubic fields.
     /// </summary>
     public abstract class Component
     {
@@ -16,7 +19,7 @@
         }
 
         /// <summary>
-        /// Being called after all handlers are registered.
+        /// Being called after all components initialization.
         /// </summary>
         public abstract void OnInit();
 
@@ -24,10 +27,5 @@
         /// Being called every frame.
         /// </summary>
         public abstract void OnTick();
-
-        /// <summary>
-        /// Being called on dispose of train attached to it.
-        /// </summary>
-        public abstract void Dispose();
     }
 }

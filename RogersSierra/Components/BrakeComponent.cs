@@ -1,4 +1,5 @@
 ﻿using RogersSierra.Abstract;
+using RogersSierra.Sierra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace RogersSierra.Components
 {
-    class BrakeComponent : Component
+    public class BrakeComponent : Component
     {
         /// <summary>
         /// How fast train brakes.
         /// </summary>
         public float BrakeMultiplier = 2f;
 
-        public float Force { get; private set; }
+        public float Force { get; set; }
 
         public BrakeComponent(Train train) : base(train)
         {
@@ -27,11 +28,6 @@ namespace RogersSierra.Components
         }
 
         public override void OnTick()
-        {
-
-        }
-
-        public override void Dispose()
         {
 
         }

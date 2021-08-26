@@ -1,9 +1,11 @@
 ﻿using FusionLibrary;
+using FusionLibrary.Extensions;
 using GTA;
 using RogersSierra.Abstract;
+using RogersSierra.Sierra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 
 namespace RogersSierra.Components
 {
@@ -20,17 +22,17 @@ namespace RogersSierra.Components
         /// <summary>
         /// Number of front wheels.
         /// </summary>
-        private int _numberOfFrontWheels = 2;
+        private const int _numberOfFrontWheels = 2;
 
         /// <summary>
         /// Number of driving wheels.
         /// </summary>
-        private int _numberOfMainWheels = 3;
+        private const int _numberOfMainWheels = 3;
 
         /// <summary>
         /// Wheel models
         /// </summary>
-        private readonly List<AnimateProp> _wheels = new List<AnimateProp>();
+        public readonly List<AnimateProp> _wheels = new List<AnimateProp>();
 
         /// <summary>
         /// Reference to driving wheel.
@@ -45,7 +47,7 @@ namespace RogersSierra.Components
         /// <summary>
         /// Total length of every wheel.
         /// </summary>
-        private readonly float[] _wheelLenghts;
+        private readonly float[] _wheelLengths;
 
         public WheelComponent(Train train) : base(train)
         {
@@ -53,7 +55,7 @@ namespace RogersSierra.Components
 
             var totalWheels = _numberOfFrontWheels + _numberOfMainWheels;
 
-            _wheelLenghts = new float[totalWheels];
+            _wheelLengths = new float[totalWheels];
 
             int f = 0, m = 0, d = 0;
             while(totalWheels > 0)
@@ -62,7 +64,7 @@ namespace RogersSierra.Components
                 var isFront = f < _numberOfFrontWheels;
 
                 var model = isFront ? Models.FrontWheel : Models.DrivingWheel;
-                var bone = isFront ? "fwheel_" : "mwheel_";
+                var bone = isFront ? "fwheel_" : "dwheel_";
                 var counter = isFront ? f++ : m++;
 
                 // Because bone numeration starts from 1
@@ -72,11 +74,12 @@ namespace RogersSierra.Components
                 var prop = new AnimateProp(model, train.VisibleModel, bone);
                 prop.SpawnProp();
 
-                if (bone == "mwheel_1")
+                if (bone == "dwheel_1")
                     _drivingWheel = prop;
 
                 // Length of cylinder is diameter * pi
-                _wheelLenghts[d++] = (float) (Utils.GetRadiusOfModel(model.Model) * 2 * Math.PI);
+                var wheelLength = (float)(model.Model.GetSize().height * Math.PI);
+                _wheelLengths[d++] = wheelLength;
 
                 _wheels.Add(prop);
 
@@ -95,22 +98,14 @@ namespace RogersSierra.Components
             {
                 var wheel = _wheels[i];
 
-                var currentAngle = wheel.CurrentRotation.X;
+                // 10m / 4.3m = 2,3~ full wheel turn
+                // 2,3 wheel turn = 2.3 * 360 = 828~ degrees
+                // tick calls 1/fps times per second, so 828 / 60 = 13,8 degrees per tick
 
-                // Calculate wheel ratation per frame
-                var revPerSpeed = WheelSpeed / _wheelLenghts[i];
-                var totalAngle = revPerSpeed * 360;
-                var rotAngle = totalAngle / Game.FPS;
+                // Calculate wheel rotation per frame
+                var newAngle = WheelSpeed.AngularSpeed(_wheelLengths[i], wheel.CurrentRotation.X);
 
-                wheel.setRotation(FusionEnums.Coordinate.X, currentAngle + rotAngle);
-            }
-        }
-
-        public override void Dispose()
-        {
-            for(int i = 0; i < _wheels.Count; i++)
-            {
-                _wheels[i].Dispose();
+                wheel.setRotation(FusionEnums.Coordinate.X, newAngle);
             }
         }
     }
