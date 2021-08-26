@@ -1,6 +1,7 @@
 ﻿using FusionLibrary;
 using GTA;
 using GTA.Native;
+using RogersSierra.Components.InteractionUtils;
 using RogersSierra.Sierra;
 using System;
 using System.Windows.Forms;
@@ -50,6 +51,11 @@ namespace RogersSierra
                 Train.Trains[i].OnTick();
             }
             UserInterface.OnTick();
+
+            for(int i = 0; i < InteractiveRope.Ropes.Count; i++)
+            {
+                InteractiveRope.Ropes[i].OnTick();
+            }
 
             // DEBUG ONLY, DELETE LATER!
             FusionUtils.RandomTrains = false;

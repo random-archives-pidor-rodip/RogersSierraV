@@ -3,6 +3,7 @@ using GTA;
 using GTA.Math;
 using RogersSierra.Abstract;
 using RogersSierra.Components;
+using RogersSierra.Components.InteractionUtils;
 using RogersSierra.Natives;
 using System;
 using System.Collections.Generic;
@@ -212,13 +213,16 @@ namespace RogersSierra.Sierra
             {
                 var component = Components[i];
 
-                // Dispose AnimateProp and List<AnimateProp>
+                // TODO: Make function accept list of object types
+
+                // Dispose AnimateProp, List<AnimateProp and Rope
                 Utils.ProcessAllValuesFieldsByType<AnimateProp>(component, x => x.Dispose());
                 Utils.ProcessAllValuesFieldsByType<List<AnimateProp>>(component, x =>
                 {
                     for (int k = 0; k < x.Count; k++)
                         x[k].Dispose();
                 });
+                Utils.ProcessAllValuesFieldsByType<InteractiveRope>(component, x => x.Dispose());
             }
             Components.Clear();
 

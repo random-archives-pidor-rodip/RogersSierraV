@@ -1,10 +1,8 @@
-﻿using FusionLibrary;
-using FusionLibrary.Extensions;
+﻿using FusionLibrary.Extensions;
 using GTA;
 using GTA.Native;
 using RogersSierra.Abstract;
 using RogersSierra.Sierra;
-using System.Drawing;
 
 namespace RogersSierra.Components
 {
