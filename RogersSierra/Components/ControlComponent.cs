@@ -92,6 +92,13 @@ namespace RogersSierra.Components
                 return;
             }
 
+            // Disable interaction if player have weapon in hands
+            if (Game.Player.Character.Weapons.Current.Model != 0)
+            {
+                StopHoverAnimation(_hoveredProp);
+                return;
+            }
+
             // Disable weapon/attack in cab near interactable items
             if (_isPlayerInCab)
             {
@@ -122,10 +129,7 @@ namespace RogersSierra.Components
 
             if (!raycast.DidHit || raycast.HitEntity == null)
             {
-                if(_hoveredProp != null)
-                {
-                    StopHoverAnimation(_hoveredProp);
-                }
+                StopHoverAnimation(_hoveredProp);
                 return;
             }
 
@@ -147,7 +151,7 @@ namespace RogersSierra.Components
 
         private void StopHoverAnimation(Entity entity)
         {
-            entity.ResetOpacity(); 
+            entity?.ResetOpacity();
             _hoveredProp = null;
         }
 
