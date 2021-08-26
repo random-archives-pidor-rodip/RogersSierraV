@@ -15,7 +15,7 @@ namespace RogersSierra.Components
         /// </summary>
         public float BrakeMultiplier = 2f;
 
-        public float Force { get; private set; }
+        public float Force { get; set; }
 
         public BrakeComponent(Train train) : base(train)
         {

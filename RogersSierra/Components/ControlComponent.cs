@@ -79,6 +79,7 @@ namespace RogersSierra.Components
 
             Train.SpeedComponent.Throttle = Train.CabComponent.ThrottleLeverState;
             Train.SpeedComponent.Gear = Train.CabComponent.GearLeverState;
+            Train.BrakeComponent.Force = Train.CabComponent.BrakeLeverState;
         }
         
         /// <summary>

@@ -2,10 +2,7 @@
 using FusionLibrary.Extensions;
 using GTA;
 using GTA.Math;
-using RogersSierra.Abstract;
-using RogersSierra.Components.InteractionUtils;
 using RogersSierra.Sierra;
-using System.Collections.Generic;
 
 namespace RogersSierra.Components.InteractionUtils
 {
@@ -49,9 +46,17 @@ namespace RogersSierra.Components.InteractionUtils
         private float _angleTo;
         private float _currentAngle;
 
-        private const float _sensetivity = 14;
+        private float _sensetivity = 14;
 
-        public InteractableProp(AnimateProp prop, Vector3 axis, Control control, bool invert, int minAngle, int maxAngle, float defaultAngle)
+        public InteractableProp(
+            AnimateProp prop,
+            Vector3 axis, 
+            Control control,
+            bool invert,
+            int minAngle, 
+            int maxAngle, 
+            float defaultAngle,
+            float sensetivityMultiplier)
         {
             Prop = prop;
 
@@ -61,6 +66,8 @@ namespace RogersSierra.Components.InteractionUtils
             _minAngle = minAngle;
             _maxAngle = maxAngle;
             _angleTo = defaultAngle;
+
+            _sensetivity *= sensetivityMultiplier;
         }
 
         public void OnTick()
@@ -76,7 +83,7 @@ namespace RogersSierra.Components.InteractionUtils
                 _angleTo += controlInput * _sensetivity;
                 _angleTo = _angleTo.Clamp(_minAngle, _maxAngle);
             }
-            _currentAngle = FusionUtils.Lerp(_currentAngle, _angleTo, 0.1f);
+            _currentAngle = FusionUtils.Lerp(_currentAngle, (int) _angleTo, 0.1f);
 
             // Convert angle to usable range
             var convertedAngle = _currentAngle.Remap(_minAngle, _maxAngle, 0, 1);

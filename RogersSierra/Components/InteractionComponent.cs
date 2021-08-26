@@ -42,9 +42,18 @@ namespace RogersSierra.Components
         /// <summary>
         /// Adds prop into list of interactable prop.
         /// </summary>
-        public void AddProp(AnimateProp prop, Vector3 axis, Control control, bool invert, int minAngle, int maxAngle, float defaultAngle)
+        public void AddProp(
+            AnimateProp prop, 
+            Vector3 axis, 
+            Control control,
+            bool invert, 
+            int minAngle,
+            int maxAngle,
+            float defaultAngle, 
+            float sensetivityMultiplier = 1f)
         {
-            var interactableProp = new InteractableProp(prop, axis, control, invert, minAngle, maxAngle, defaultAngle);
+            var interactableProp = new InteractableProp(
+                prop, axis, control, invert, minAngle, maxAngle, defaultAngle, sensetivityMultiplier);
 
             Props.Add(interactableProp);
 
