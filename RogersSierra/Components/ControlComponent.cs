@@ -32,6 +32,11 @@ namespace RogersSierra.Components
         public Camera CabCamera;
 
         /// <summary>
+        /// Current Y angle of <see cref="CabCamera"/>.
+        /// </summary>
+        private float CabCameraYAxis;
+
+        /// <summary>
         /// Potentially interactable entity. 
         /// </summary>
         private Entity _hoveredProp;
@@ -48,13 +53,17 @@ namespace RogersSierra.Components
         public ControlComponent(Train train) : base(train)
         {
             // Create cab camera
+            //CabCamera = new Camera(Train.InvisibleModel, , Vector3.Zero, 65);
+           // CabCamera.s
             CabCamera = World.CreateCamera(Vector3.Zero, Vector3.Zero, 65);
             CabCamera.AttachTo(Train.InvisibleModel, new Vector3(1.1835f, -5.022f, 3.2955f));
 
             Train.OnDispose += () =>
             {
+                if (World.RenderingCamera == CabCamera)
+                    World.RenderingCamera = null;
                 CabCamera.Delete();
-                World.RenderingCamera = null;
+
                 Game.Player.Character.IsVisible = true;
             };
 
@@ -109,16 +118,34 @@ namespace RogersSierra.Components
         /// </summary>
         private void ProcessCabCamera()
         {
-            if (!IsPlayerDrivingTrain)
-                return;
+            if(FusionUtils.IsCameraInFirstPerson() && IsPlayerDrivingTrain)
+            {
+                Game.Player.Character.IsVisible = false;
 
-            // Get input from controller and rotate camera
+                World.RenderingCamera = CabCamera;
 
-            var inputX = Game.GetControlValueNormalized(Control.LookLeft) * 5;
-            var inputY = Game.GetControlValueNormalized(Control.LookUp) * 5;
-            var inputVector = Vector3.WorldDown * inputX + Vector3.RelativeLeft * inputY;
+                // Get input from controller and rotate camera
 
-            CabCamera.Rotation += inputVector;
+                var inputX = Game.GetControlValueNormalized(Control.LookLeft) * 5;
+                var inputY = Game.GetControlValueNormalized(Control.LookUp) * 5;
+
+                // Limit vertical axis
+                CabCameraYAxis -= inputY;
+                CabCameraYAxis = CabCameraYAxis.Clamp(-80, 80);
+
+                var newRotation = CabCamera.Rotation;
+                newRotation.Z -= inputX;
+                newRotation.X = CabCameraYAxis;
+
+                CabCamera.Rotation = newRotation;
+            }
+            else
+            {
+                Game.Player.Character.IsVisible = true;
+
+                if (World.RenderingCamera == CabCamera)
+                    World.RenderingCamera = null;
+            }
         }
 
         /// <summary>
@@ -230,10 +257,6 @@ namespace RogersSierra.Components
         /// </summary>
         public void Leave()
         {
-            // Switch camera to normal and show player
-            World.RenderingCamera = null;
-
-            Game.Player.Character.IsVisible = true;
             Game.Player.Character.Task.LeaveVehicle();
 
             IsPlayerDrivingTrain = false;
@@ -245,13 +268,9 @@ namespace RogersSierra.Components
         /// </summary>
         public void Enter()
         {
-            // Teleport player in train
             Game.Player.Character.Task.WarpIntoVehicle(Train.InvisibleModel, VehicleSeat.Driver);
 
-            // Set game camera to cab one and hide player
-            World.RenderingCamera = CabCamera;
-
-            Game.Player.Character.IsVisible = false;
+            CabCamera.Direction = Train.InvisibleModel.ForwardVector;
 
             IsPlayerDrivingTrain = true;
         }
