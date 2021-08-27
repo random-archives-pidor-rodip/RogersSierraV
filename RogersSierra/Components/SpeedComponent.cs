@@ -3,6 +3,7 @@ using GTA;
 using RogersSierra.Abstract;
 using RogersSierra.Natives;
 using RogersSierra.Sierra;
+using System;
 
 namespace RogersSierra.Components
 {
@@ -102,7 +103,7 @@ namespace RogersSierra.Components
 
             NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
 
-            //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Traction: {Traction}");
+            //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Accel: {speedAcceleration} Traction: {Traction}");
         }
     }
 }

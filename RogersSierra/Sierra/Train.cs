@@ -88,6 +88,11 @@ namespace RogersSierra.Sierra
         public WheelComponent WheelComponent;
 
         /// <summary>
+        /// Invokes on Dispose.
+        /// </summary>
+        public Action OnDispose { get; set; }
+
+        /// <summary>
         /// Base constructor of <see cref="Train"/>.
         /// </summary>
         /// <param name="invisibleModel">Invisible vehicle of train.</param>
@@ -208,8 +213,10 @@ namespace RogersSierra.Sierra
             }
 
             VisibleModel.Delete();
-            
-            for(int i = 0; i < Components.Count; i++)
+
+            OnDispose?.Invoke();
+
+            for (int i = 0; i < Components.Count; i++)
             {
                 var component = Components[i];
 

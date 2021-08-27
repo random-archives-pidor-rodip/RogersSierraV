@@ -66,6 +66,21 @@ namespace RogersSierra.Components
         }
 
         /// <summary>
+        /// Artificially sets value of interaction prop.
+        /// </summary>
+        /// <param name="prop">Prop to set value of</param>
+        /// <param name="value">Value in range of 0.0 - 1.0</param>
+        public void SetValue(AnimateProp prop, float value)
+        {
+            var decorator = prop.Prop.Decorator();
+            var id = decorator.GetInt(Constants.InteractableId);
+
+            var interactiveProp = Props[id];
+
+            interactiveProp.SetValue(value);
+        }
+
+        /// <summary>
         /// Starts interaction with prop.
         /// </summary>
         public void StartInteraction(Entity propEntity)

@@ -81,8 +81,8 @@ namespace RogersSierra.Components.InteractionUtils
                     controlInput *= -1;
 
                 _angleTo += controlInput * _sensetivity;
-                _angleTo = _angleTo.Clamp(_minAngle, _maxAngle);
             }
+            _angleTo = _angleTo.Clamp(_minAngle, _maxAngle);
             _currentAngle = FusionUtils.Lerp(_currentAngle, (int) _angleTo, 0.1f);
 
             // Convert angle to usable range
@@ -92,6 +92,16 @@ namespace RogersSierra.Components.InteractionUtils
             //GTA.UI.Screen.ShowSubtitle($"MouseInput: {controlInput} AngleTo :{_angleTo} CurrentAngle: {_currentAngle}");
 
             Prop.SecondRotation = _axis * _currentAngle;
+        }
+
+        /// <summary>
+        /// Artificially sets value of interaction prop.
+        /// </summary>
+        /// <param name="value">Value in range of 0.0 - 1.0</param>
+        public void SetValue(float value)
+        {
+            value = value.Clamp(0, 1).Remap(0, 1, _minAngle, _maxAngle);
+            _angleTo = value;
         }
 
         public void StartInteraction()
