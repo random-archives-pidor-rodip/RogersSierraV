@@ -9,6 +9,9 @@ using System;
 
 namespace RogersSierra.Components
 {
+    /// <summary>
+    /// Handles all control input from player.
+    /// </summary>
     public class ControlComponent : Component
     {
         /// <summary>
@@ -53,8 +56,6 @@ namespace RogersSierra.Components
         public ControlComponent(Train train) : base(train)
         {
             // Create cab camera
-            //CabCamera = new Camera(Train.InvisibleModel, , Vector3.Zero, 65);
-           // CabCamera.s
             CabCamera = World.CreateCamera(Vector3.Zero, Vector3.Zero, 65);
             CabCamera.AttachTo(Train.InvisibleModel, new Vector3(1.1835f, -5.022f, 3.2955f));
 
@@ -298,13 +299,15 @@ namespace RogersSierra.Components
             if (!IsPlayerDrivingTrain)
                 return;
 
+            var spacebarInput = Game.GetControlValueNormalized(Control.Jump);
             var accelerateInput = -Game.GetControlValueNormalized(Control.VehicleAccelerate);
             var brakeInput = Game.GetControlValueNormalized(Control.VehicleBrake);
             var combineInput = Math.Abs(accelerateInput + brakeInput);
+            var shiftInput = Game.GetControlValueNormalized(Control.Sprint);
 
             var gear = accelerateInput + brakeInput;
             var trainSpeed = (int)Train.SpeedComponent.Speed;
-            float brakeLeverInput = 1;
+            float brakeLeverInput = 0;
 
             if (trainSpeed > 0)
             {
@@ -321,6 +324,18 @@ namespace RogersSierra.Components
             {
                 brakeLeverInput = 0;
             }
+
+            if (trainSpeed > 0)
+                combineInput -= brakeInput;
+
+            // Emergency brake on spacebar
+            if (spacebarInput != 1)
+                brakeLeverInput /= 2;
+            else
+                brakeLeverInput = 1;
+
+            if (shiftInput == 1)
+                combineInput /= 2;
 
             Train.InteractionComponent.SetValue(Train.CabComponent.BrakeLever, brakeLeverInput);
 

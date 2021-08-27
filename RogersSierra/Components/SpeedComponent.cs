@@ -4,6 +4,7 @@ using RogersSierra.Abstract;
 using RogersSierra.Natives;
 using RogersSierra.Sierra;
 using System;
+using System.IO;
 
 namespace RogersSierra.Components
 {
@@ -58,10 +59,11 @@ namespace RogersSierra.Components
         /// </summary>
         public float AccelerationMultiplier = 0.2f;
 
+        public float Power = 3;
+
         public SpeedComponent(Train train) : base(train)
         {
-            //Throttle = 1;
-            //Gear = 1;
+
         }
 
         public override void OnInit()
@@ -83,27 +85,51 @@ namespace RogersSierra.Components
 
             // Calculate per-frame acceleration
 
-            var brakeForce = Train.BrakeComponent.Force.Remap(0, 1, 1, 0.01f);
-            var speedAcceleration = Throttle * Gear * brakeForce;
-            var drag = Speed / 40 / brakeForce;
+            var velocty = Train.InvisibleModel.Velocity.Length();
+
+            // Takes more energy to accelerate but less to hold same speed
+            var energy = Math.Abs(Speed).Remap(2, 0, 0, 40).Remap(0, 40, 0, 18);
+            energy *= ((float)Math.Pow(Throttle, 10)).Remap(0, 1, 0, 2);
+            if (Speed > 10 || energy < 1)
+                energy = 1;
+
+            var brakeForce = Train.BrakeComponent.Force.Remap(0, 1, 1, 5);
+            var speedAcceleration = Throttle * Gear * Power / brakeForce;
+            var drag = 0.05f * (float) Math.Pow(velocty, 2);
             var inertia = acceleration / 5;
 
-            speedAcceleration -= drag - inertia / Traction;
+
+            speedAcceleration -= drag / 2 + inertia;
             speedAcceleration *= AccelerationMultiplier * Game.LastFrameTime;
 
             var pressure = Train.BoilerComponent.Pressure / 10;
 
             Speed += speedAcceleration * pressure;
 
+            var speed2 = Speed.Remap(0, 40, 5, 1);
+            var brake = Speed * brakeForce.Remap(1,5, 0, 1) / 280 * speed2;
+
+            if (Speed < 0)
+                brake *= -1;
+
+            Speed -= brake;
+
+            //GTA.UI.Screen.ShowSubtitle(brake.ToString());
+
             // DEBUG
             //Speed = 1;
 
-            // Set train / wheel speed
-            Train.WheelComponent.WheelSpeed = Speed / Traction;
+            // Wheel speed increases when theres bad traction and slightly decreases when breaking
+            // in case of emergency brake all wheel stops
+
+            // Lmao super code ik i need to find better way to stop wheels on full brake
+            var wheelBrakeForce = (float) (Math.Pow(brakeForce.Remap(1, 5, 1, 1.001f), 9000) - 12).Clamp(1, 1000);
+
+            Train.WheelComponent.WheelSpeed = Speed / Traction / wheelBrakeForce * energy;
 
             NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
 
-            //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Accel: {speedAcceleration} Traction: {Traction}");
+           // GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Accel: {speedAcceleration} Traction: {Traction}");
         }
     }
 }
