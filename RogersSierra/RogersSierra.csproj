@@ -76,8 +76,6 @@
     <Compile Include="Components\CabComponent.cs" />
     <Compile Include="Components\ControlComponent.cs" />
     <Compile Include="Components\DrivetrainComponent.cs" />
-    <Compile Include="Components\InteractionComponent.cs" />
-    <Compile Include="Components\InteractionUtils\InteractableProp.cs" />
     <Compile Include="Components\InteractionUtils\InteractiveRope.cs" />
     <Compile Include="Components\SpeedComponent.cs" />
     <Compile Include="Components\WheelComponent.cs" />

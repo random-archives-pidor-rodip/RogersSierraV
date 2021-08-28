@@ -28,10 +28,9 @@ namespace RogersSierra.Sierra
         public static void RequestAll()
         {
             var allModels = GetAllModels(typeof(Models));
+
             for (int i = 0; i < allModels.Count; i++)
-            {
-                PreloadModel(allModels[i]);
-            }
+                allModels[i].Request();
         }
     }
 }
