@@ -86,14 +86,14 @@ namespace RogersSierra.Components
             // Surface resistance force - wet surface increases resistance
             float surfaceResistance = 1;
 
-            // Friction force = 0.6 * speed
-            float frictionForce = 0.6f * Speed;
+            // Friction force = 0.2 * speed
+            float frictionForce = 0.2f * Speed / 2;
 
             // Brake force
             float brakeForce = Speed * brakeInput * 2;
 
-            // Air resistance force = 0.05 * velocty^2
-            float dragForce = (float) (0.05f * Math.Pow(velocty, 2)) / 2;
+            // Air resistance force = 0.02 * velocty^2
+            float dragForce = (float) (0.02f * Math.Pow(velocty, 2)) / 8;
 
             // Inercia force = acceleration * mass
             float inerciaForce = acceleration * 5;
@@ -112,13 +112,13 @@ namespace RogersSierra.Components
             float totalForce = (steamForce * surfaceResistance * brakeMultiplier) - dragForce + inerciaForce - frictionForce - brakeForce;
             totalForce *= AccelerationMultiplier * Game.LastFrameTime;
 
-            //GTA.UI.Screen.ShowSubtitle(
-            //    $"F: {frictionForce.ToString("0.00")} " +
-            //    $"D:{dragForce.ToString("0.00")} " +
-            //    $"I: {inerciaForce.ToString("0.00")} " +
-            //    $"S: {steamForce.ToString("0.00")} " +
-            //    $"T: {totalForce.ToString("0.00")} " +
-            //    $"FD: {forceDirection}");
+            GTA.UI.Screen.ShowSubtitle(
+                $"F: {frictionForce.ToString("0.00")} " +
+                $"D:{dragForce.ToString("0.00")} " +
+                $"I: {inerciaForce.ToString("0.00")} " +
+                $"S: {steamForce.ToString("0.00")} " +
+                $"T: {totalForce.ToString("0.00")} " +
+                $"FD: {forceDirection}");
 
             Speed += totalForce;
 
@@ -126,7 +126,7 @@ namespace RogersSierra.Components
             float wheelBrakeForce = (float) Math.Pow(brakeInput, 10);
             wheelBrakeForce = wheelBrakeForce.Remap(0, 1, 1, 0);
 
-            GTA.UI.Screen.ShowSubtitle(brakeInput.ToString("0.0"));
+            //GTA.UI.Screen.ShowSubtitle(brakeInput.ToString("0.0"));
 
             Train.WheelComponent.WheelSpeed = Math.Abs(Speed * wheelTraction * wheelBrakeForce) * forceDirection;// / wheelBrakeForce * energy;
 

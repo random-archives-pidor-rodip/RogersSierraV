@@ -221,6 +221,11 @@ namespace RogersSierra.Components
             Enter();
         }
 
+        private float _prevSpacebarInput;
+        private float _prevAccelInput;
+        private float _prevBrakeInput;
+        private float _prevShiftInput;
+
         /// <summary>
         /// WASD train control.
         /// </summary>
@@ -232,8 +237,21 @@ namespace RogersSierra.Components
             var spacebarInput = Game.GetControlValueNormalized(Control.Jump);
             var accelerateInput = -Game.GetControlValueNormalized(Control.VehicleAccelerate);
             var brakeInput = Game.GetControlValueNormalized(Control.VehicleBrake);
-            var combineInput = Math.Abs(accelerateInput + brakeInput);
             var shiftInput = Game.GetControlValueNormalized(Control.Sprint);
+
+            // Check if player pressed / released any buttons
+            if (spacebarInput == _prevSpacebarInput &&
+                accelerateInput == _prevAccelInput &&
+                brakeInput == _prevBrakeInput &&
+                shiftInput == _prevShiftInput)
+                return;
+
+            _prevSpacebarInput = spacebarInput;
+            _prevAccelInput = accelerateInput;
+            _prevBrakeInput = brakeInput;
+            _prevShiftInput = shiftInput;
+
+            var combineInput = Math.Abs(accelerateInput + brakeInput);
 
             var gear = accelerateInput + brakeInput;
             var trainSpeed = (int)Train.SpeedComponent.Speed;
@@ -265,11 +283,6 @@ namespace RogersSierra.Components
 
             if (shiftInput == 1)
                 combineInput /= 2;
-            
-            _arcadeControls = brakeLeverInput != 0 | combineInput != 0 | gear != 0;
-
-            if (!_arcadeControls)
-                return;
 
             //GTA.UI.Screen.ShowSubtitle($"{_arcadeControls} A: {accelerateInput} B: {brakeInput} C: {combineInput} G: {gear} Bl: {brakeLeverInput} S :{trainSpeed}");
 
