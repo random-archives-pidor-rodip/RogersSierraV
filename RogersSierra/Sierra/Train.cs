@@ -88,6 +88,11 @@ namespace RogersSierra.Sierra
         public Action OnDispose { get; set; }
 
         /// <summary>
+        /// Blip of the train.
+        /// </summary>
+        public Blip Blip { get; private set; }
+
+        /// <summary>
         /// Base constructor of <see cref="Train"/>.
         /// </summary>
         /// <param name="invisibleModel">Invisible vehicle of train.</param>
@@ -112,6 +117,10 @@ namespace RogersSierra.Sierra
             // Hide invisible model, we can't use setVisibility because 
             // visible model will be affected too
             InvisibleModel.Opacity = 0;
+
+            Blip = InvisibleModel.AddBlip();
+            Blip.Sprite = (BlipSprite)795;
+            Blip.Color = (BlipColor)70;
 
             Trains.Add(this);
 
@@ -206,6 +215,8 @@ namespace RogersSierra.Sierra
                 // Mark sierra as non-script one
                 Decorator.SetBool(Constants.TrainDecorator, false);
             }
+
+            Blip.Delete();
 
             VisibleModel.Delete();
 

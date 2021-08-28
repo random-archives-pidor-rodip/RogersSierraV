@@ -112,13 +112,13 @@ namespace RogersSierra.Components
             float totalForce = (steamForce * surfaceResistance * brakeMultiplier) - dragForce + inerciaForce - frictionForce - brakeForce;
             totalForce *= AccelerationMultiplier * Game.LastFrameTime;
 
-            GTA.UI.Screen.ShowSubtitle(
-                $"F: {frictionForce.ToString("0.00")} " +
-                $"D:{dragForce.ToString("0.00")} " +
-                $"I: {inerciaForce.ToString("0.00")} " +
-                $"S: {steamForce.ToString("0.00")} " +
-                $"T: {totalForce.ToString("0.00")} " +
-                $"FD: {forceDirection}");
+            //GTA.UI.Screen.ShowSubtitle(
+            //    $"F: {frictionForce.ToString("0.00")} " +
+            //    $"D:{dragForce.ToString("0.00")} " +
+            //    $"I: {inerciaForce.ToString("0.00")} " +
+            //    $"S: {steamForce.ToString("0.00")} " +
+            //    $"T: {totalForce.ToString("0.00")} " +
+            //    $"FD: {forceDirection}");
 
             Speed += totalForce;
 
