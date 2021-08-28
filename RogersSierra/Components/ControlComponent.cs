@@ -177,7 +177,8 @@ namespace RogersSierra.Components
 
                 if (!Train.CabComponent.InteractableProps.IsPlaying)
                     Train.CabComponent.InteractableProps.Play();
-            }
+            } else if (Train.CabComponent.InteractableProps.IsPlaying)
+                Train.CabComponent.InteractableProps.Stop();
         }
 
         /// <summary>
