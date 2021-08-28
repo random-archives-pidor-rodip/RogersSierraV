@@ -99,6 +99,8 @@ namespace RogersSierra.Components
                 Train.ActiveTrain = null;
             }
 
+            Train.CabComponent.InteractableProps.UseAltControl = IsPlayerInsideCab && IsPlayerDrivingTrain;
+
             ProcessCabCamera();            
             ProcessArcadeControls();
             ProcessInteraction(false);
@@ -240,7 +242,6 @@ namespace RogersSierra.Components
             if (trainSpeed > 0)
             {
                 brakeLeverInput = brakeInput;
-                Train.CabComponent.BrakeLever.SetValue(brakeInput);
                 gear -= brakeInput;
             }
             else if (trainSpeed < 0)
@@ -264,13 +265,15 @@ namespace RogersSierra.Components
 
             if (shiftInput == 1)
                 combineInput /= 2;
-
-            Train.CabComponent.BrakeLever.SetValue(brakeLeverInput);            
-
+            
             _arcadeControls = brakeLeverInput != 0 | combineInput != 0 | gear != 0;
+
+            if (!_arcadeControls)
+                return;
 
             //GTA.UI.Screen.ShowSubtitle($"{_arcadeControls} A: {accelerateInput} B: {brakeInput} C: {combineInput} G: {gear} Bl: {brakeLeverInput} S :{trainSpeed}");
 
+            Train.CabComponent.BrakeLever.SetValue(brakeLeverInput);
             Train.CabComponent.ThrottleLever.SetValue(combineInput.Remap(0, 1, 1, 0));
             Train.CabComponent.GearLever.SetValue(gear.Remap(-1, 1, 0, 1));
         }

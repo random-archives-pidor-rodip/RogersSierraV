@@ -26,12 +26,17 @@ namespace RogersSierra.Components
 
         public CabComponent(Train train) : base(train)
         {
-            InteractableProps.LockCamera = true;
+            InteractableProps.LockCamera = false;
             InteractableProps.SmoothRelease = true;
 
             ThrottleLever = InteractableProps.Add(Models.ThrottleLever, Train.VisibleModel, "throttle_lever", InteractionType.Lever, AnimationType.Rotation, Coordinate.Z, Control.LookLeft, true, -13, 0);
-            GearLever = InteractableProps.Add(Models.GearLever, Train.VisibleModel, "gear_lever", InteractionType.Lever, AnimationType.Rotation, Coordinate.X, Control.LookLeft, true, -23, 0, -23 / 2);
-            BrakeLever = InteractableProps.Add(Models.BrakeLever, Train.VisibleModel, "brake_lever", InteractionType.Lever, AnimationType.Rotation, Coordinate.X, Control.LookLeft, true, 0, 35, 35, 10);
+            ThrottleLever.SetupAltControl(Control.LookLeft, false);
+
+            GearLever = InteractableProps.Add(Models.GearLever, Train.VisibleModel, "gear_lever", InteractionType.Lever, AnimationType.Rotation, Coordinate.X, Control.LookLeft, false, -23, 0, -23 / 2);
+            GearLever.SetupAltControl(Control.LookUp, false);
+
+            BrakeLever = InteractableProps.Add(Models.BrakeLever, Train.VisibleModel, "brake_lever", InteractionType.Lever, AnimationType.Rotation, Coordinate.X, Control.LookLeft, false, 0, 35, 35, 10);
+            BrakeLever.SetupAltControl(Control.LookUp, false);
 
             WhistleRope = new InteractiveRope(Train.VisibleModel, "whistle_rope_pull_start", "whistle_rope_pull_end", true, true);
         }
