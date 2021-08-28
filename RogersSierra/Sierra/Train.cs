@@ -75,11 +75,6 @@ namespace RogersSierra.Sierra
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public InteractionComponent InteractionComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public SpeedComponent SpeedComponent;
 
         /// <summary>
@@ -223,6 +218,7 @@ namespace RogersSierra.Sierra
                 // TODO: Make function accept list of object types
 
                 // Dispose AnimateProp, List<AnimateProp and Rope
+                Utils.ProcessAllValuesFieldsByType<InteractiveController>(component, x => x.Dispose());
                 Utils.ProcessAllValuesFieldsByType<AnimateProp>(component, x => x.Dispose());
                 Utils.ProcessAllValuesFieldsByType<List<AnimateProp>>(component, x =>
                 {
