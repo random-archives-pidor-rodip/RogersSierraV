@@ -39,10 +39,8 @@ namespace RogersSierra.Components
         /// </summary>
         private float CabCameraYAxis;
 
-        /// <summary>
-        /// Potentially interactable entity. 
-        /// </summary>
-        private Entity _hoveredProp;
+
+        private bool _arcadeControls;
 
         /// <summary>
         /// Train enter input.
@@ -101,12 +99,12 @@ namespace RogersSierra.Components
                 Train.ActiveTrain = null;
             }
 
-            ProcessCabCamera();
-            ProcessInteraction(false);
+            ProcessCabCamera();            
             ProcessArcadeControls();
+            ProcessInteraction(false);
 
             // Stop interaction after left button was released
-            if (Game.IsControlJustReleased(Control.Attack))
+            if (Game.IsControlJustReleased(Control.Attack) || _arcadeControls)
                 ProcessInteraction(true);
 
             Train.SpeedComponent.Throttle = Train.CabComponent.ThrottleLeverState;
@@ -157,14 +155,9 @@ namespace RogersSierra.Components
         {
             if(stop)
             {
-                Train.InteractionComponent.StopInteraction();
-                return;
-            }
+                if (Train.CabComponent.InteractableProps.IsPlaying)
+                    Train.CabComponent.InteractableProps.Stop();
 
-            // Disable interaction if player have weapon in hands
-            if (Game.Player.Character.Weapons.Current.Model != 0)
-            {
-                StopHoverAnimation(_hoveredProp);
                 return;
             }
 
@@ -181,76 +174,10 @@ namespace RogersSierra.Components
 
                 // Enable crosshair
                 Function.Call(Hash.DISPLAY_SNIPER_SCOPE_THIS_FRAME);
+
+                if (!Train.CabComponent.InteractableProps.IsPlaying)
+                    Train.CabComponent.InteractableProps.Play();
             }
-
-            // Don't continue if player is already interacting
-            if (Train.InteractionComponent.LastInteractableProp != null)
-            {
-                if (Train.InteractionComponent.LastInteractableProp.IsInteracting)
-                    return;
-            }
-
-            // Raycast arguments
-            Vector3 raycastSource;
-            Vector3 raycastDirection;
-            var raycastFlags = IntersectFlags.Everything;
-            var raycastIgnore = Game.Player.Character;
-
-            // Use gameplay camera if player is inside cab but not driving, otherwise use cab camera
-            if (!IsPlayerDrivingTrain)
-            {
-                raycastSource = GameplayCamera.Position;
-                raycastDirection = GameplayCamera.Direction;
-            } 
-            else
-            {
-                raycastSource = CabCamera.Position;
-                raycastDirection = CabCamera.Direction;
-            }
-
-            // Raycast and try to find interactable entity
-            var raycast = World.Raycast(raycastSource, raycastDirection, 10, raycastFlags, raycastIgnore);
-
-            if (!raycast.DidHit || raycast.HitEntity == null)
-            {
-                StopHoverAnimation(_hoveredProp);
-                return;
-            }
-
-            // Check if entity is interactable
-            if(raycast.HitEntity.Decorator().GetBool(Constants.InteractableEntity) == false)
-                return;
-
-            // Start hovering animation
-            _hoveredProp = raycast.HitEntity;
-            StartHoverAnimation(_hoveredProp);
-
-            // Try to start interaction if left button is pressed
-            if (!Game.IsControlPressed(Control.Attack))
-                return;
-
-            StopHoverAnimation(_hoveredProp);
-            Train.InteractionComponent.StartInteraction(raycast.HitEntity);
-        }
-
-        /// <summary>
-        /// Stop hover animation.
-        /// </summary>
-        /// <param name="entity">Entity to process.</param>
-        private void StopHoverAnimation(Entity entity)
-        {
-            entity?.ResetOpacity();
-            _hoveredProp = null;
-        }
-
-        /// <summary>
-        /// Start hover animation. 
-        /// This animation indicates that script is ready to start interaction with object.
-        /// </summary>
-        /// <param name="entity">Entity to process.</param>
-        private void StartHoverAnimation(Entity entity)
-        {
-            entity.Opacity = 200;
         }
 
         /// <summary>
@@ -312,7 +239,7 @@ namespace RogersSierra.Components
             if (trainSpeed > 0)
             {
                 brakeLeverInput = brakeInput;
-                Train.InteractionComponent.SetValue(Train.CabComponent.BrakeLever, brakeInput);
+                Train.CabComponent.BrakeLever.SetValue(brakeInput);
                 gear -= brakeInput;
             }
             else if (trainSpeed < 0)
@@ -337,12 +264,14 @@ namespace RogersSierra.Components
             if (shiftInput == 1)
                 combineInput /= 2;
 
-            Train.InteractionComponent.SetValue(Train.CabComponent.BrakeLever, brakeLeverInput);
+            Train.CabComponent.BrakeLever.SetValue(brakeLeverInput);            
 
-            //GTA.UI.Screen.ShowSubtitle($"A: {accelerateInput} B: {brakeInput} C: {combineInput} G: {gear} Bl: {brakeLeverInput} S :{trainSpeed}");
+            _arcadeControls = brakeLeverInput != 0 | combineInput != 0 | gear != 0;
 
-            Train.InteractionComponent.SetValue(Train.CabComponent.ThrottleLever, combineInput.Remap(0, 1, 1, 0));
-            Train.InteractionComponent.SetValue(Train.CabComponent.GearLever, gear.Remap(-1, 1, 0, 1));
+            //GTA.UI.Screen.ShowSubtitle($"{_arcadeControls} A: {accelerateInput} B: {brakeInput} C: {combineInput} G: {gear} Bl: {brakeLeverInput} S :{trainSpeed}");
+
+            Train.CabComponent.ThrottleLever.SetValue(combineInput.Remap(0, 1, 1, 0));
+            Train.CabComponent.GearLever.SetValue(gear.Remap(-1, 1, 0, 1));
         }
     }
 }
