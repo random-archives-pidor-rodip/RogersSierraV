@@ -109,9 +109,6 @@ namespace RogersSierra.Components
             var speed2 = Speed.Remap(0, 40, 5, 1);
             var brake = Speed * brakeForce.Remap(1,5, 0, 1) / 280 * speed2;
 
-            if (Speed < 0)
-                brake *= -1;
-
             Speed -= brake;
 
             //GTA.UI.Screen.ShowSubtitle(brake.ToString());
@@ -129,7 +126,7 @@ namespace RogersSierra.Components
 
             NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
 
-           // GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Accel: {speedAcceleration} Traction: {Traction}");
+            //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Accel: {speedAcceleration} Traction: {Traction}");
         }
     }
 }
