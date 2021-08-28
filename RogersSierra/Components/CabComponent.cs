@@ -15,6 +15,8 @@ namespace RogersSierra.Components
         public AnimateProp GearLever;
         public AnimateProp BrakeLever;
 
+        public InteractiveRope WhistleRope;
+
         public List<AnimateProp> InteractableProps= new List<AnimateProp>();
 
         public float ThrottleLeverState => ThrottleLever.Prop.Decorator().GetFloat(Constants.InteractableCurrentAngle).Remap(0, 1, 1, 0);
@@ -26,6 +28,8 @@ namespace RogersSierra.Components
             ThrottleLever = new AnimateProp(Models.ThrottleLever, Train.VisibleModel, "throttle_lever", false);
             GearLever = new AnimateProp(Models.GearLever, Train.VisibleModel, "gear_lever", false);
             BrakeLever = new AnimateProp(Models.BrakeLever, Train.VisibleModel, "brake_lever", false);
+
+            WhistleRope = new InteractiveRope(Train.VisibleModel, "whistle_rope_pull_start", "whistle_rope_pull_end", true, true);
         }
 
         public override void OnInit()
@@ -37,7 +41,7 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
-            //GTA.UI.Screen.ShowSubtitle($"Throttle: {ThrottleLeverState} Gear: {GearLeverState}");
+           
         }
     }
 }

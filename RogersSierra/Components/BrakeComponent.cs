@@ -13,9 +13,17 @@ namespace RogersSierra.Components
         /// <summary>
         /// How fast train brakes.
         /// </summary>
-        public float BrakeMultiplier = 2f;
+        public float BrakeMultiplier = 0.6f;
 
-        public float Force { get; set; }
+        private float _force;
+        public float Force
+        {
+            get => _force * BrakeMultiplier;
+            set
+            {
+                _force = value;
+            }
+        }
 
         public BrakeComponent(Train train) : base(train)
         {
