@@ -1,7 +1,13 @@
-﻿using FusionLibrary.Extensions;
+﻿using FusionLibrary;
+using FusionLibrary.Extensions;
 using GTA;
 using GTA.Math;
+using GTA.Native;
+using RogersSierra.Physics;
+using RogersSierra.Sierra;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RogersSierra.Components.InteractionUtils
 {
@@ -75,6 +81,8 @@ namespace RogersSierra.Components.InteractionUtils
         /// </summary>
         private Vector3 _vertexOrigPos;
 
+        //private CustomRope _customRope;
+
         /// <summary>
         /// Constructs a new <see cref="InteractiveRope"/> instance.
         /// </summary>
@@ -95,24 +103,41 @@ namespace RogersSierra.Components.InteractionUtils
             RopeLength = _ropeStartPos.DistanceTo(_ropeEndPos);
 
             // Create and attach rope to start position
-            Rope = World.AddRope(RopeType.ThickRope, _ropeStartPos, Vector3.Zero, RopeLength, RopeLength, breakable);
-            Rope.Attach(Entity, _ropeStartPos);
+            //Rope = World.AddRope(RopeType.ThickRope, _ropeStartPos, Vector3.Zero, RopeLength, RopeLength, breakable);
+            //Rope.Attach(Entity, _ropeStartPos);
+
+            //var pos1 = Entity.Bones[boneStart].Position;
+            //var pos2 = Entity.Bones[boneEnd].Position;
+
+            var distance = _ropeStartPos.DistanceTo(_ropeEndPos);
+
+            Rope = World.AddRope((RopeType) 1, _ropeStartPos, Vector3.Zero, distance + 1.1f, 0.25f, breakable);
+            //Function.Call(Hash.ROPE_FORCE_LENGTH, Rope.Handle, 0.1f);
+
+            Rope.Connect(attachTo, _ropeStartPos, attachTo, _ropeEndPos, distance);
+            Rope.ActivatePhysics();
+
+            //_customRope = new CustomRope(_ropeStartPos);
 
             Ropes.Add(this);
-        }
+            Rope.Delete();
 
+            //offset = Entity.GetPositionOffset(_ropeStartPos);
+
+        }
+        //private Vector3 offset;
         /// <summary>
         /// Call it every frame.
         /// </summary>
         public void OnTick()
         {
             UpdateRopePositions();
+            // Function.Call(Hash.START_ROPE_WINDING, Rope.Handle);
+            //Function.Call(Hash.FREEZE_​ENTITY_​POSITION, Entity, true);
 
-            // Update rope end position
-            Rope.PinVertex(Rope.VertexCount - 1, _ropeEndPos);
-
+            //Function.Call(Hash., Rope.Handle);
             // Unpin vertex
-            if(Game.IsControlJustReleased(DragControl))
+            if (Game.IsControlJustReleased(DragControl))
             {
                 Rope.UnpinVertex(_dragVertexId);
                 _dragVertexId = -1;
@@ -128,13 +153,15 @@ namespace RogersSierra.Components.InteractionUtils
             // Process dragging
             if (_dragVertexId != -1)
             {
+                var originalPos = Entity.GetOffsetPosition(_vertexOrigPos);
+
                 // Limit maximum drag distance
-                var destination = camPoint - _vertexOrigPos;
+                var destination = camPoint - originalPos;
                 var length = destination.Length();
                 destination.Normalize();
                 destination *= length.Clamp(0, MaxDraggableDistance);
 
-                var dragPos = _vertexOrigPos + destination;
+                var dragPos = originalPos + destination;
 
                 // Drag closest point
                 Rope.PinVertex(_dragVertexId, dragPos);
@@ -160,11 +187,11 @@ namespace RogersSierra.Components.InteractionUtils
             }
 
             // Check if we close enough to rope
-            if (closestVertexDistance > 1.5 * 1.5)
+            if (closestVertexDistance > 0.16f * 0.16f)
                 return;
 
             _dragVertexId = closestVertexId;
-            _vertexOrigPos = Rope.GetVertexCoord(_dragVertexId);
+            _vertexOrigPos = Entity.GetPositionOffset(Rope.GetVertexCoord(_dragVertexId));
         }
 
         /// <summary>

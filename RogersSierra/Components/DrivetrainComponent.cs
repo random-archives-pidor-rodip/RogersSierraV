@@ -1,9 +1,12 @@
 ﻿using FusionLibrary;
 using FusionLibrary.Extensions;
+using GTA;
 using GTA.Math;
 using RogersSierra.Abstract;
 using RogersSierra.Sierra;
 using System;
+using System.Drawing;
+using System.Threading;
 
 namespace RogersSierra.Components
 {
@@ -14,21 +17,23 @@ namespace RogersSierra.Components
         public readonly AnimateProp Piston;
 
         public readonly AnimateProp CombinationLever;
-        public readonly AnimateProp RadiusRod;
+        public AnimateProp RadiusRod;
+        public readonly AnimateProp ValveRod;
 
         private float _distanceToRod;
         private float _distanceToLever;
 
         public DrivetrainComponent(Train train) : base(train)
         {
-            CouplingRod = new AnimateProp(Models.CouplingRod, Train.VisibleModel, "rod");
-            ConnectingRod = new AnimateProp(Models.ConnectingRod, Train.VisibleModel, "rod");
+            CouplingRod = new AnimateProp(Models.CouplingRod, Train.VisibleModel, "chassis");
+            ConnectingRod = new AnimateProp(Models.ConnectingRod, Train.VisibleModel, "chassis");
             Piston = new AnimateProp(Models.Piston, Train.VisibleModel, "piston");
 
             CombinationLever = new AnimateProp(Models.CombinationLever, Train.VisibleModel, "combination_lever");
-            RadiusRod = new AnimateProp(Models.RadiusRod, Train.VisibleModel, "radius_rod_mount");
+            ValveRod = new AnimateProp(Models.ValveRod, Train.VisibleModel, "chassis");
+            RadiusRod = new AnimateProp(Models.RadiusRod, Train.VisibleModel, "chassis");
 
-            // Calculate distance from mounting point of coupling rod to center of wheel
+            //// Calculate distance from mounting point of coupling rod to center of wheel
             var rodPos = Train.VisibleModel.GetOffsetPosition(Train.VisibleModel.Bones["rod"].Position);
             var wheelpos = Train.VisibleModel.GetOffsetPosition(Train.VisibleModel.Bones["dwheel_1"].Position);
             _distanceToRod = Vector3.Distance(rodPos, wheelpos);
@@ -41,7 +46,7 @@ namespace RogersSierra.Components
 
         public override void OnInit()
         {
-
+            
         }
 
         public override void OnTick()
@@ -56,21 +61,23 @@ namespace RogersSierra.Components
             var angleCos = Math.Cos(angleRad);
             var angleSin = Math.Sin(angleRad);
 
-            var mainRodPosY = Vector3.WorldUp * (float) (_distanceToRod * angleCos);
+           // var mainRodPosY = Vector3.WorldUp * (float) (_distanceToRod * angleCos);
             var mainRodPosX = Vector3.RelativeFront * (float)(_distanceToRod * -angleSin + _distanceToRod);
-            var mainRodPos = mainRodPosX + mainRodPosY;
+            //var mainRodPos = mainRodPosX + mainRodPosY;
 
-            CouplingRod.setOffset(mainRodPos);
-            ConnectingRod.setOffset(mainRodPos);
+            var rodOffset = Train.VisibleModel.GetPositionOffset(Train.WheelComponent._wheels[2].Prop.Bones["rod_mounting"].Position);
+            CouplingRod.setOffset(rodOffset);
+            ConnectingRod.setOffset(rodOffset);
 
             // Main Piston
 
+            //var pistonOffset = new Vector3(0, -rodOffset.Z, 0);
             Piston.setOffset(mainRodPosX);
 
             // Connecting Rod rotation
 
-            var direction = Piston.RelativePosition - ConnectingRod.RelativePosition;
-            var rodRotation = Vector3.Angle(direction, Vector3.RelativeBottom);
+            var connectiongRodDirection = Piston.RelativePosition - ConnectingRod.RelativePosition;
+            var rodRotation = Vector3.Angle(connectiongRodDirection, Vector3.RelativeBottom);
             ConnectingRod.setRotation(FusionEnums.Coordinate.X, rodRotation - 3.7f - 90);
 
             // Combination Lever
@@ -81,21 +88,26 @@ namespace RogersSierra.Components
             CombinationLever.setRotation(FusionEnums.Coordinate.X, pistonLevelRotation);
 
             // Radius Rod
+            
+            var radiusRodPos = Train.VisibleModel.GetPositionOffset(CombinationLever.Prop.Bones["radius_rod_mounting"].Position);
 
-            //var leverAngleRad = pistonLevelRotation.ToRad();
-            //var leverAngleCos = (float) Math.Cos(90 + leverAngleRad);
+            RadiusRod.setOffset(radiusRodPos);
 
-            //RadiusRod.setOffset(FusionEnums.Coordinate.Y, leverAngleCos);
+            // Radius Rod rotation
 
-            //GTA.UI.Screen.ShowSubtitle((leverAngleCos * _distanceToLever).ToString());
-            //var radiusRodOffset = CombinationLever.Prop.Bones["raft2"];
-            //GTA.UI.Screen.ShowSubtitle(radiusRodOffset.ToString());
-            //RadiusRod.setOffset(FusionEnums.Coordinate.Z, radiusRodOffset.Z);
+            var PistonRodLookAt = ValveRod.Prop.Bones["radius_rod_destination"].Position;
+            var directionTo = PistonRodLookAt - RadiusRod.WorldPosition;
+            var directionFrom = RadiusRod.Prop.UpVector;
 
-            //direction = PistonRodLookAt.position - PistonRod.position;
-            //var valveAngle = 90 - Vector3.Angle(direction, Vector3.down);
+            var valveAngle = 90 - Vector3.Angle(directionFrom, directionTo);
 
-            //PistonRod.SetRotation(Vector3.right, valveAngle, -90);
+            var currentRotation = RadiusRod.CurrentRotation.X;
+            RadiusRod.setRotation(FusionEnums.Coordinate.X, currentRotation + valveAngle);
+
+            // Valve Rod
+
+            var valveRodPos = new Vector3(0, radiusRodPos.Y, 1.32f);
+            ValveRod.setOffset(valveRodPos);
         }
     }
 }
