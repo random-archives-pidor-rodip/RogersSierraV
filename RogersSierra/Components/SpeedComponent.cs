@@ -50,16 +50,9 @@ namespace RogersSierra.Components
         }
 
         /// <summary>
-        /// Wheel traction with surface.
-        /// </summary>    
-        public float Traction;
-
-        /// <summary>
         /// How fast train accelerates.
         /// </summary>
         public float AccelerationMultiplier = 0.2f;
-
-        public float Power = 3;
 
         public SpeedComponent(Train train) : base(train)
         {
@@ -73,60 +66,73 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
-            //GTA.UI.Screen.ShowSubtitle($"Throttle: {_throttle} Gear: {_gear}");
-
-            // Calculate train acceleration (v1 - v2) / t
+            // Acceleration = (v1 - v2) / t
             var acceleration = (Speed - _prevSpeed) * Game.LastFrameTime;
-
-            // Calculate wheel traction
-            Traction = Speed > 0 ? 1 - acceleration / Speed * 10 : 1f;
 
             _prevSpeed = Speed;
 
-            // Calculate per-frame acceleration
-
             var velocty = Train.InvisibleModel.Velocity.Length();
+            var brakeInput = Train.BrakeComponent.Force;
+            float boilerPressure = Train.BoilerComponent.Pressure.Remap(0, 300, 0, 1);
 
-            // Takes more energy to accelerate but less to hold same speed
-            var energy = Math.Abs(Speed).Remap(2, 0, 0, 40).Remap(0, 40, 0, 18);
-            energy *= ((float)Math.Pow(Throttle, 10)).Remap(0, 1, 0, 2);
-            if (Speed > 10 || energy < 1)
-                energy = 1;
+            // Calculate forces
 
-            var brakeForce = Train.BrakeComponent.Force.Remap(0, 1, 1, 5);
-            var speedAcceleration = Throttle * Gear * Power / brakeForce;
-            var drag = 0.05f * (float) Math.Pow(velocty, 2);
-            var inertia = acceleration / 5;
+            // Wheel traction - too fast acceleration will cause bad traction
+            var wheelTraction = Math.Abs(Speed).Remap(2, 0, 0, 40).Remap(0, 40, 0, 18);
+            wheelTraction *= ((float)Math.Pow(Throttle, 10)).Remap(0, 1, 0, 2);
+            if (Speed > 10 || wheelTraction < 1)
+                wheelTraction = 1;
 
+            // Surface resistance force - wet surface increases resistance
+            float surfaceResistance = 1;
 
-            speedAcceleration -= drag / 2 + inertia;
-            speedAcceleration *= AccelerationMultiplier * Game.LastFrameTime;
+            // Friction force = 0.6 * speed
+            float frictionForce = 0.6f * Speed;
 
-            var pressure = Train.BoilerComponent.Pressure / 10;
+            // Brake force
+            float brakeForce = Speed * brakeInput * 2;
 
-            Speed += speedAcceleration * pressure;
+            // Air resistance force = 0.05 * velocty^2
+            float dragForce = (float) (0.05f * Math.Pow(velocty, 2)) / 2;
 
-            var speed2 = Speed.Remap(0, 40, 5, 1);
-            var brake = Speed * brakeForce.Remap(1,5, 0, 1) / 280 * speed2;
+            // Inercia force = acceleration * mass
+            float inerciaForce = acceleration * 5;
 
-            Speed -= brake;
+            // How much steam going into cylinder
+            float steamForce = Throttle.Remap(0, 1, 0, 4) * Gear * boilerPressure;
 
-            //GTA.UI.Screen.ShowSubtitle(brake.ToString());
+            // Direction of force
+            float forceFactor =  Throttle <= 0.1f || Math.Abs(Gear) <= 0.1f ? Speed : Gear;
+            int forceDirection = forceFactor >= 0 ? 1 : -1;
 
-            // DEBUG
-            //Speed = 1;
+            // Brake multiplier
+            float brakeMultiplier = brakeInput.Remap(0, 1, 1, 0);
 
-            // Wheel speed increases when theres bad traction and slightly decreases when breaking
-            // in case of emergency brake all wheel stops
+            // Combine all forces
+            float totalForce = (steamForce * surfaceResistance * brakeMultiplier) - dragForce + inerciaForce - frictionForce - brakeForce;
+            totalForce *= AccelerationMultiplier * Game.LastFrameTime;
 
-            // Lmao super code ik i need to find better way to stop wheels on full brake
-            var wheelBrakeForce = (float) (Math.Pow(brakeForce.Remap(1, 5, 1, 1.001f), 9000) - 12).Clamp(1, 1000);
+            //GTA.UI.Screen.ShowSubtitle(
+            //    $"F: {frictionForce.ToString("0.00")} " +
+            //    $"D:{dragForce.ToString("0.00")} " +
+            //    $"I: {inerciaForce.ToString("0.00")} " +
+            //    $"S: {steamForce.ToString("0.00")} " +
+            //    $"T: {totalForce.ToString("0.00")} " +
+            //    $"FD: {forceDirection}");
 
-            Train.WheelComponent.WheelSpeed = Speed / Traction / wheelBrakeForce * energy;
+            Speed += totalForce;
+
+            // Brake will slowly block rotation of wheel
+            float wheelBrakeForce = (float) Math.Pow(brakeInput, 10);
+            wheelBrakeForce = wheelBrakeForce.Remap(0, 1, 1, 0);
+
+            GTA.UI.Screen.ShowSubtitle(brakeInput.ToString("0.0"));
+
+            Train.WheelComponent.WheelSpeed = Math.Abs(Speed * wheelTraction * wheelBrakeForce) * forceDirection;// / wheelBrakeForce * energy;
 
             NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
 
-            //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Accel: {speedAcceleration} Traction: {Traction}");
+            //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Accel: {totalForce} Energy: {energy}");
         }
     }
 }
