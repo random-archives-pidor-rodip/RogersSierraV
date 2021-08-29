@@ -39,12 +39,13 @@ namespace RogersSierra.Components
         /// </summary>
         private float CabCameraYAxis;
 
-        private float _prevSpacebarInput;
-        private float _prevAccelInput;
-        private float _prevBrakeInput;
-        private float _prevShiftInput;
-
         private bool _arcadeControls;
+
+        private bool _preArcadeControls;
+
+        private float _prevBrakeLeverInput;
+        private float _prevCombineInput;
+        private float _prevGearInput;
 
         private float _prevTrainAngle;
 
@@ -58,16 +59,13 @@ namespace RogersSierra.Components
         /// </summary>
         /// <param name="train"></param>
         public ControlComponent(Train train) : base(train)
-        {
-            // Create cab camera
-            CabCamera = World.CreateCamera(Vector3.Zero, Vector3.Zero, 65);
-            CabCamera.AttachTo(Train.InvisibleModel, new Vector3(1.1835f, -5.022f, 3.2955f));
-
+        {            
             Train.OnDispose += () =>
             {
                 if (World.RenderingCamera == CabCamera)
                     World.RenderingCamera = null;
-                CabCamera.Delete();
+
+                CabCamera?.Delete();
 
                 Game.Player.Character.IsVisible = true;
             };
@@ -109,11 +107,7 @@ namespace RogersSierra.Components
 
             ProcessCabCamera();            
             ProcessArcadeControls();
-            ProcessInteraction(false);
-
-            // Stop interaction after left button was released
-            if (Game.IsControlJustReleased(Control.Attack) || !_arcadeControls)
-                ProcessInteraction(true);
+            ProcessInteraction();
 
             Train.SpeedComponent.Throttle = Train.CabComponent.ThrottleLeverState;
             Train.SpeedComponent.Gear = Train.CabComponent.GearLeverState;
@@ -171,16 +165,8 @@ namespace RogersSierra.Components
         /// Handles finding and starting interaction with prop.
         /// </summary>
         /// <param name="stop">If True, interaction will be stopped.</param>
-        private void ProcessInteraction(bool stop)
+        private void ProcessInteraction()
         {
-            if(stop)
-            {
-                if (Train.CabComponent.InteractableProps.IsPlaying)
-                    Train.CabComponent.InteractableProps.Stop();
-
-                return;
-            }
-
             // Disable weapon/attack in cab near interactable items
             if (IsPlayerInsideCab)
             {
@@ -197,7 +183,8 @@ namespace RogersSierra.Components
 
                 if (!Train.CabComponent.InteractableProps.IsPlaying)
                     Train.CabComponent.InteractableProps.Play();
-            } else if (Train.CabComponent.InteractableProps.IsPlaying)
+            } 
+            else if (Train.CabComponent.InteractableProps.IsPlaying)
                 Train.CabComponent.InteractableProps.Stop();
         }
 
@@ -208,8 +195,11 @@ namespace RogersSierra.Components
         {
             Game.Player.Character.Task.LeaveVehicle();
 
+            CabCamera?.Delete();
+
+            World.RenderingCamera = null;
+
             IsPlayerDrivingTrain = false;
-            return;
         }
 
         /// <summary>
@@ -218,6 +208,10 @@ namespace RogersSierra.Components
         public void Enter()
         {
             Game.Player.Character.Task.WarpIntoVehicle(Train.InvisibleModel, VehicleSeat.Driver);
+
+            // Create cab camera
+            CabCamera = World.CreateCamera(Train.InvisibleModel.Position, Train.InvisibleModel.Rotation, 65);
+            CabCamera.AttachTo(Train.InvisibleModel, new Vector3(1.1835f, -5.022f, 3.2955f));
 
             CabCamera.Direction = Train.InvisibleModel.Quaternion * Vector3.RelativeFront;
 
@@ -230,8 +224,12 @@ namespace RogersSierra.Components
         private void EnterControl()
         {
             if (IsPlayerDrivingTrain)
+            {
                 Leave();
 
+                return;
+            }
+            
             // Player not close enough to enter
             if (PlayerDistanceToTrain > 3.5 * 3.5)
                 return;
@@ -247,23 +245,20 @@ namespace RogersSierra.Components
             if (!IsPlayerDrivingTrain)
                 return;
 
-            var spacebarInput = Game.GetControlValueNormalized(Control.Jump);
+            //var spacebarInput = Game.GetControlValueNormalized(Control.Jump);
             var accelerateInput = -Game.GetControlValueNormalized(Control.VehicleAccelerate);
             var brakeInput = Game.GetControlValueNormalized(Control.VehicleBrake);
             var shiftInput = Game.GetControlValueNormalized(Control.Sprint);
 
             // Check if player pressed / released any buttons
-            _arcadeControls = spacebarInput == _prevSpacebarInput &&
-                accelerateInput == _prevAccelInput &&
-                brakeInput == _prevBrakeInput &&
-                shiftInput == _prevShiftInput;
-            if (_arcadeControls)
+            _arcadeControls = accelerateInput < 0 | brakeInput > 0 | shiftInput > 0;
+
+            Train.CabComponent.InteractableProps.IgnoreGamepadInput = _arcadeControls;
+
+            if (!_arcadeControls && !_preArcadeControls)
                 return;
 
-            _prevSpacebarInput = spacebarInput;
-            _prevAccelInput = accelerateInput;
-            _prevBrakeInput = brakeInput;
-            _prevShiftInput = shiftInput;
+            _preArcadeControls = _arcadeControls;
 
             var combineInput = Math.Abs(accelerateInput + brakeInput);
 
@@ -298,11 +293,16 @@ namespace RogersSierra.Components
             if (shiftInput == 1)
                 combineInput /= 2;
 
-            //GTA.UI.Screen.ShowSubtitle($"{_arcadeControls} A: {accelerateInput} B: {brakeInput} C: {combineInput} G: {gear} Bl: {brakeLeverInput} S :{trainSpeed}");
+            if (brakeLeverInput == _prevBrakeLeverInput && combineInput == _prevCombineInput && gear == _prevGearInput)
+                return;
 
             Train.CabComponent.BrakeLever.SetValue(brakeLeverInput);
             Train.CabComponent.ThrottleLever.SetValue(combineInput.Remap(0, 1, 1, 0));
             Train.CabComponent.GearLever.SetValue(gear.Remap(-1, 1, 0, 1));
+
+            _prevBrakeLeverInput = brakeLeverInput;
+            _prevCombineInput = combineInput;            
+            _prevGearInput = gear;
         }
     }
 }
