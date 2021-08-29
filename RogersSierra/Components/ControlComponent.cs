@@ -201,7 +201,7 @@ namespace RogersSierra.Components
         {
             Game.Player.Character.Task.WarpIntoVehicle(Train.InvisibleModel, VehicleSeat.Driver);
 
-            CabCamera.Direction = Train.InvisibleModel.ForwardVector;
+            CabCamera.Direction = Train.InvisibleModel.Quaternion * Vector3.RelativeFront;
 
             IsPlayerDrivingTrain = true;
         }
