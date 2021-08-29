@@ -2,6 +2,7 @@
 using FusionLibrary.Extensions;
 using GTA;
 using GTA.Math;
+using GTA.Native;
 using RogersSierra.Abstract;
 using RogersSierra.Sierra;
 using System;
@@ -24,8 +25,12 @@ namespace RogersSierra.Components
         private float _distanceToRod;
 
         private float _connectingRodLength;
+        private float _radiusRodLength;
+
         private float _pistonRelativePosY;
         private float _pistonRelativePosZ;
+
+        private float _valveRelativePosZ;
 
         //new Vector3(0, -0.022f, 0.01f)
 
@@ -42,7 +47,7 @@ namespace RogersSierra.Components
             RadiusRod.UseFixedRot = false;
             RadiusRod.SpawnProp();
 
-            ValveRod = new AnimateProp(Models.ValveRod, RadiusRod);
+            ValveRod = new AnimateProp(Models.ValveRod, RadiusRod, "radius_rod_end");
             ValveRod.UseFixedRot = false;
 
             // Calculate distance from mounting point of coupling rod to center of wheel
@@ -50,9 +55,15 @@ namespace RogersSierra.Components
             var wheelpos = Train.VisibleModel.GetOffsetPosition(Train.VisibleModel.Bones["dwheel_1"].Position);
             _distanceToRod = Vector3.Distance(rodPos, wheelpos) - 0.045f;
 
+            rodPos = Train.VisibleModel.GetOffsetPosition(RadiusRod.Prop.Position);
+            wheelpos = Train.VisibleModel.GetOffsetPosition(Train.VisibleModel.Bones["valve_rod"].Position);
+            _radiusRodLength = Vector3.Distance(rodPos, wheelpos);
+
             _connectingRodLength = Models.ConnectingRod.Model.GetSize().width - 0.375f;
             _pistonRelativePosY = Train.VisibleModel.Bones["piston"].RelativePosition.Y;
             _pistonRelativePosZ = Train.VisibleModel.Bones["piston"].RelativePosition.Z;
+
+            _valveRelativePosZ = Train.VisibleModel.Bones["valve_rod"].RelativePosition.Z;
         }
 
         public override void OnInit()
@@ -81,13 +92,18 @@ namespace RogersSierra.Components
 
             Piston.setOffset(Coordinate.Y, _connectingRodLength * (float)Math.Cos(MathExtensions.ToRad(dAngle)) - (_pistonRelativePosY - ConnectingRod.RelativePosition.Y), true);
 
-            float pistonLeverAngleCos = (float)Math.Cos(angleRad * 2);
-            float pistonLeverRotMax = -14;
-            float pistonLevelRotation = pistonLeverRotMax * -pistonLeverAngleCos + pistonLeverRotMax;
+            dAngle = Train.WheelComponent.DrivingWheelAngle;
 
-            CombinationLever.setRotation(Coordinate.X, pistonLevelRotation);
+            if (dAngle < 180)
+                dAngle = dAngle.Remap(0, 180, 0, -27);
+            else
+                dAngle = dAngle.Remap(180, 360, -27, 0);
 
-            RadiusRod.setRotation(Train.VisibleModel.Rotation);
+            CombinationLever.setRotation(Coordinate.X, dAngle);
+
+            dAngle = 90 - MathExtensions.ToDeg((float)MathExtensions.ArcCos((_valveRelativePosZ - Math.Abs(Train.VisibleModel.GetPositionOffset(RadiusRod.Position).Z)) / _radiusRodLength));
+
+            RadiusRod.setRotation(Train.VisibleModel.Rotation.GetSingleOffset(Coordinate.X, dAngle));
 
             ValveRod.setRotation(Train.VisibleModel.Rotation);
         }

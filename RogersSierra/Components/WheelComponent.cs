@@ -114,7 +114,10 @@ namespace RogersSierra.Components
             _driveWheels.setRotation(FusionEnums.Coordinate.X, newAngle);
 
             // Calculate wheel rotation per frame
-            newAngle = Train.InvisibleModel.Speed.AngularSpeed(_frontLength, _frontWheels[0].SecondRotation.X);
+
+            newAngle = Train.InvisibleModel.Speed * (Train.InvisibleModel.IsGoingForward() ? 1 : -1);
+
+            newAngle = newAngle.AngularSpeed(_frontLength, _frontWheels[0].SecondRotation.X);
 
             _frontWheels.setRotation(FusionEnums.Coordinate.X, newAngle);
         }
