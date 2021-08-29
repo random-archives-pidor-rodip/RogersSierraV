@@ -60,7 +60,7 @@ namespace RogersSierra.Sierra
             }
             _barCollection.Visible = true;
 
-            _brakeBar.Progress = Train.ActiveTrain.BrakeComponent.Force.Remap(0, 1, 0, 100);
+            _brakeBar.Progress = Train.ActiveTrain.BrakeComponent.AirbrakeForce.Remap(0, 1, 0, 100);
             _pressureBar.Progress = Train.ActiveTrain.BoilerComponent.Pressure.Remap(0, 300, 0, 100);
             _throttleBar.Progress = Train.ActiveTrain.SpeedComponent.Throttle.Remap(0, 1, 0, 100);
             _gearBar.Progress = Train.ActiveTrain.SpeedComponent.Gear.Remap(-1, 1, 0, 100);

@@ -66,13 +66,16 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
+            // TODO: Take uphill/downhill into account
+            // TODO: Add surface resistance
+
             // Acceleration = (v1 - v2) / t
             var acceleration = (Speed - _prevSpeed) * Game.LastFrameTime;
 
             _prevSpeed = Speed;
 
             var velocty = Train.InvisibleModel.Velocity.Length();
-            var brakeInput = Train.BrakeComponent.Force;
+            var brakeInput = Train.BrakeComponent.AirbrakeForce;
             float boilerPressure = Train.BoilerComponent.Pressure.Remap(0, 300, 0, 1);
 
             // Calculate forces
@@ -122,13 +125,17 @@ namespace RogersSierra.Components
 
             Speed += totalForce;
 
-            // Brake will slowly block rotation of wheel
-            float wheelBrakeForce = (float) Math.Pow(brakeInput, 10);
-            wheelBrakeForce = wheelBrakeForce.Remap(0, 1, 1, 0);
+            //// Brake will slowly block rotation of wheel
+            //float wheelBrakeForce = (float) Math.Pow(brakeInput, 10);
+            //wheelBrakeForce = wheelBrakeForce.Remap(0, 1, 1, 0);
 
             //GTA.UI.Screen.ShowSubtitle(brakeInput.ToString("0.0"));
 
-            Train.WheelComponent.WheelSpeed = Math.Abs(Speed * wheelTraction * wheelBrakeForce) * forceDirection;// / wheelBrakeForce * energy;
+            // We making it non directional because wheel and speed direction doesn't always match
+            float baseWheelSpeed = Math.Abs(Speed);
+
+            Train.WheelComponent.FrontWheelSpeed = baseWheelSpeed;
+            Train.WheelComponent.DriveWheelSpeed = baseWheelSpeed * wheelTraction * forceDirection;
 
             NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
 

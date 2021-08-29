@@ -29,7 +29,13 @@ namespace RogersSierra.Sierra
         public static CustomModel AirbrakeMain = new CustomModel("sierra_airbrake_main");
         public static CustomModel AirbrakeRod = new CustomModel("sierra_airbrake_rod");
         public static CustomModel AirbrakeLever = new CustomModel("sierra_airbrake_lever");
+        public static CustomModel Brake1 = new CustomModel("sierra_brake_1");
+        public static CustomModel Brake2 = new CustomModel("sierra_brake_2");
+        public static CustomModel Brake3 = new CustomModel("sierra_brake_3");
 
+        /// <summary>
+        /// Requests all models.
+        /// </summary>
         public static void RequestAll()
         {
             var allModels = GetAllModels(typeof(Models));
