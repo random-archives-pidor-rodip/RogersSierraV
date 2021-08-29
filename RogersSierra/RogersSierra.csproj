@@ -81,6 +81,7 @@
     <Compile Include="Components\ControlComponent.cs" />
     <Compile Include="Components\DrivetrainComponent.cs" />
     <Compile Include="Components\InteractionUtils\InteractiveRope.cs" />
+    <Compile Include="Components\ParticleComponent.cs" />
     <Compile Include="Components\SpeedComponent.cs" />
     <Compile Include="Components\WheelComponent.cs" />
     <Compile Include="Physics\CustomRope.cs" />
