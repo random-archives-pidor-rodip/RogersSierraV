@@ -231,6 +231,7 @@ namespace RogersSierra.Sierra
                 // Dispose AnimateProp, List<AnimateProp and Rope
                 Utils.ProcessAllValuesFieldsByType<InteractiveController>(component, x => x.Dispose());
                 Utils.ProcessAllValuesFieldsByType<AnimateProp>(component, x => x.Dispose());
+                Utils.ProcessAllValuesFieldsByType<AnimatePropsHandler>(component, x => x.Dispose());
                 Utils.ProcessAllValuesFieldsByType<List<AnimateProp>>(component, x =>
                 {
                     for (int k = 0; k < x.Count; k++)

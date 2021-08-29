@@ -31,58 +31,67 @@ namespace RogersSierra.Components
         private const int _numberOfMainWheels = 3;
 
         /// <summary>
-        /// Wheel models
+        /// Drive wheel props.
         /// </summary>
-        public readonly List<AnimateProp> _wheels = new List<AnimateProp>();
+        public readonly AnimatePropsHandler _driveWheels = new AnimatePropsHandler();
 
         /// <summary>
-        /// Reference to driving wheel.
+        /// Front wheels props.
         /// </summary>
-        private readonly AnimateProp _drivingWheel;
+        public readonly AnimatePropsHandler _frontWheels = new AnimatePropsHandler();
+
+        /// <summary>
+        /// Drive wheel length.
+        /// </summary>
+        private float _driveLength;
+
+        /// <summary>
+        /// Front wheel length.
+        /// </summary>
+        private float _frontLength;
 
         /// <summary>
         /// Returns angle of driving wheel.
         /// </summary>
-        public float DrivingWheelAngle => _drivingWheel.SecondRotation.X;
-
-        /// <summary>
-        /// Total length of every wheel.
-        /// </summary>
-        private readonly float[] _wheelLengths;
+        public float DrivingWheelAngle => _driveWheels[0].SecondRotation.X;
 
         public WheelComponent(Train train) : base(train)
         {
             // TODO: Move bones to debug model
 
-            var totalWheels = _numberOfFrontWheels + _numberOfMainWheels;
-
-            _wheelLengths = new float[totalWheels];
+            int totalWheels = _numberOfFrontWheels + _numberOfMainWheels;
 
             int f = 0, m = 0, d = 0;
+
             while(totalWheels > 0)
             {
                 // Select which model to spawn - front or main
-                var isFront = f < _numberOfFrontWheels;
+                bool isFront = f < _numberOfFrontWheels;
 
-                var model = isFront ? Models.FrontWheel : Models.DrivingWheel;
-                var bone = isFront ? "fwheel_" : "dwheel_";
-                var counter = isFront ? f++ : m++;
+                CustomModel model = isFront ? Models.FrontWheel : Models.DrivingWheel;
+                string bone = isFront ? "fwheel_" : "dwheel_";
+                int counter = isFront ? f++ : m++;
 
                 // Because bone numeration starts from 1
                 counter++;
                 bone += counter;
 
-                var prop = new AnimateProp(model, train.VisibleModel, bone, Vector3.Zero, new Vector3(85, 0, 0));
+                AnimateProp prop = new AnimateProp(model, train.VisibleModel, bone, Vector3.Zero, new Vector3(isFront ? 0 : 85, 0, 0));
                 prop.SpawnProp();
 
-                if (bone == "dwheel_1")
-                    _drivingWheel = prop;
-
                 // Length of cylinder is diameter * pi
-                var wheelLength = (float)(model.Model.GetSize().height * Math.PI);
-                _wheelLengths[d++] = wheelLength;
-
-                _wheels.Add(prop);
+                float wheelLength = (float)(model.Model.GetSize().height * Math.PI);
+                
+                if (isFront)
+                {
+                    _frontLength = wheelLength;
+                    _frontWheels.Add(prop);
+                }                    
+                else
+                {
+                    _driveLength = wheelLength;
+                    _driveWheels.Add(prop);
+                }
 
                 totalWheels--;
             }
@@ -95,19 +104,19 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
-            for (int i = 0; i < _wheels.Count; i++)
-            {
-                var wheel = _wheels[i];
+            // 10m / 4.3m = 2,3~ full wheel turn
+            // 2,3 wheel turn = 2.3 * 360 = 828~ degrees
+            // tick calls 1/fps times per second, so 828 / 60 = 13,8 degrees per tick
 
-                // 10m / 4.3m = 2,3~ full wheel turn
-                // 2,3 wheel turn = 2.3 * 360 = 828~ degrees
-                // tick calls 1/fps times per second, so 828 / 60 = 13,8 degrees per tick
+            // Calculate wheel rotation per frame
+            float newAngle = WheelSpeed.AngularSpeed(_driveLength, _driveWheels[0].SecondRotation.X);
 
-                // Calculate wheel rotation per frame
-                var newAngle = WheelSpeed.AngularSpeed(_wheelLengths[i], wheel.SecondRotation.X);
+            _driveWheels.setRotation(FusionEnums.Coordinate.X, newAngle);
 
-                wheel.setRotation(FusionEnums.Coordinate.X, newAngle);
-            }
+            // Calculate wheel rotation per frame
+            newAngle = Train.InvisibleModel.Speed.AngularSpeed(_frontLength, _frontWheels[0].SecondRotation.X);
+
+            _frontWheels.setRotation(FusionEnums.Coordinate.X, newAngle);
         }
     }
 }
