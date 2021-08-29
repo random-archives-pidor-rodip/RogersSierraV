@@ -46,6 +46,7 @@ namespace RogersSierra.Components
         private float _prevBrakeLeverInput;
         private float _prevCombineInput;
         private float _prevGearInput;
+        private float _prevSpacebarInput;
 
         private float _prevTrainAngle;
 
@@ -241,7 +242,7 @@ namespace RogersSierra.Components
             if (!IsPlayerDrivingTrain)
                 return;
 
-            //var spacebarInput = Game.GetControlValueNormalized(Control.Jump);
+            var spacebarInput = Game.GetControlValueNormalized(Control.Jump);
             var accelerateInput = -Game.GetControlValueNormalized(Control.VehicleAccelerate);
             var brakeInput = Game.GetControlValueNormalized(Control.VehicleBrake);
             var shiftInput = Game.GetControlValueNormalized(Control.VehicleHandbrake);
@@ -289,17 +290,18 @@ namespace RogersSierra.Components
             if (shiftInput == 1)
                 combineInput /= 2;
 
-            if (brakeLeverInput == _prevBrakeLeverInput && combineInput == _prevCombineInput && gear == _prevGearInput)
+            if (brakeLeverInput == _prevBrakeLeverInput && combineInput == _prevCombineInput && gear == _prevGearInput && spacebarInput == _prevSpacebarInput)
                 return;
 
             Train.CabComponent.AirBrakeLever.SetValue(brakeLeverInput);
-            Train.CabComponent.SteamBrakeLever.SetValue(shiftInput);
+            Train.CabComponent.SteamBrakeLever.SetValue(spacebarInput);
             Train.CabComponent.ThrottleLever.SetValue(combineInput.Remap(0, 1, 1, 0));
             Train.CabComponent.GearLever.SetValue(gear.Remap(-1, 1, 0, 1));
 
             _prevBrakeLeverInput = brakeLeverInput;
             _prevCombineInput = combineInput;            
             _prevGearInput = gear;
+            _prevSpacebarInput = spacebarInput;
         }
     }
 }

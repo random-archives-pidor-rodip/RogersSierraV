@@ -22,7 +22,9 @@ namespace RogersSierra.Sierra
 
         // Interior
         public static CustomModel CabThrottleLever = new CustomModel("sierra_throttle_lever");
+        public static CustomModel CabThrottleHandle = new CustomModel("sierra_throttle_lever_handle");
         public static CustomModel CabGearLever = new CustomModel("sierra_gear_lever");
+        public static CustomModel CabGearHandle = new CustomModel("sierra_gear_lever_handle");
         public static CustomModel CabAirBrakeLever = new CustomModel("sierra_cab_airbrake_lever");
         public static CustomModel CabSteamBrakeLever = new CustomModel("sierra_cab_brake_lever");
 
