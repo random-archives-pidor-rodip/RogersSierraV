@@ -108,10 +108,6 @@ namespace RogersSierra.Components
             ProcessCabCamera();            
             ProcessArcadeControls();
             ProcessInteraction();
-
-            Train.SpeedComponent.Throttle = Train.CabComponent.ThrottleLeverState;
-            Train.SpeedComponent.Gear = Train.CabComponent.GearLeverState;
-            Train.BrakeComponent.AirbrakeForce = Train.CabComponent.BrakeLeverState;
         }
 
         /// <summary>
@@ -248,7 +244,7 @@ namespace RogersSierra.Components
             //var spacebarInput = Game.GetControlValueNormalized(Control.Jump);
             var accelerateInput = -Game.GetControlValueNormalized(Control.VehicleAccelerate);
             var brakeInput = Game.GetControlValueNormalized(Control.VehicleBrake);
-            var shiftInput = Game.GetControlValueNormalized(Control.Sprint);
+            var shiftInput = Game.GetControlValueNormalized(Control.VehicleHandbrake);
 
             // Check if player pressed / released any buttons
             _arcadeControls = accelerateInput < 0 | brakeInput > 0 | shiftInput > 0;
@@ -296,7 +292,8 @@ namespace RogersSierra.Components
             if (brakeLeverInput == _prevBrakeLeverInput && combineInput == _prevCombineInput && gear == _prevGearInput)
                 return;
 
-            Train.CabComponent.BrakeLever.SetValue(brakeLeverInput);
+            Train.CabComponent.AirBrakeLever.SetValue(brakeLeverInput);
+            Train.CabComponent.SteamBrakeLever.SetValue(shiftInput);
             Train.CabComponent.ThrottleLever.SetValue(combineInput.Remap(0, 1, 1, 0));
             Train.CabComponent.GearLever.SetValue(gear.Remap(-1, 1, 0, 1));
 

@@ -1,11 +1,6 @@
 ﻿using FusionLibrary;
 using RogersSierra.Abstract;
 using RogersSierra.Sierra;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RogersSierra.Components
 {
@@ -19,7 +14,7 @@ namespace RogersSierra.Components
         /// <summary>
         /// Steam brake blocks any wheel movement.
         /// </summary>
-        public bool SteamBrake { get; set; }
+        public int SteamBrake { get; set; }
 
         public AnimateProp AirbrakeMain;
         public AnimateProp AirbrakeRod;
@@ -50,8 +45,6 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
-            // TODO: Make actual steam brake
-
             var mainOffset = _airbrakeMainOffset * AirbrakeForce;
             var rodOffset = Train.VisibleModel.GetPositionOffset(
                 AirbrakeLever.Prop.Bones["airbrake_rod_mount"].Position);

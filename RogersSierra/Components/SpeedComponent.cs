@@ -1,4 +1,5 @@
-﻿using FusionLibrary.Extensions;
+﻿using FusionLibrary;
+using FusionLibrary.Extensions;
 using GTA;
 using RogersSierra.Abstract;
 using RogersSierra.Natives;
@@ -67,33 +68,39 @@ namespace RogersSierra.Components
         public override void OnTick()
         {
             // TODO: Take uphill/downhill into account
-            // TODO: Add surface resistance
 
             // Acceleration = (v1 - v2) / t
-            var acceleration = (Speed - _prevSpeed) * Game.LastFrameTime;
+            float acceleration = (Speed - _prevSpeed) * Game.LastFrameTime;
 
             _prevSpeed = Speed;
 
-            var velocty = Train.InvisibleModel.Velocity.Length();
-            var brakeInput = Train.BrakeComponent.AirbrakeForce;
+            float velocty = Train.InvisibleModel.Velocity.Length();
+            float airBrakeInput = Train.BrakeComponent.AirbrakeForce;
+            float steamBrakeInput = 1 - Train.BrakeComponent.SteamBrake;
             float boilerPressure = Train.BoilerComponent.Pressure.Remap(0, 300, 0, 1);
+            float driveWheelSpeed = Train.WheelComponent.DriveWheelSpeed;
 
             // Calculate forces
 
             // Wheel traction - too fast acceleration will cause bad traction
-            var wheelTraction = Math.Abs(Speed).Remap(2, 0, 0, 40).Remap(0, 40, 0, 18);
+            float wheelTraction = Math.Abs(Speed).Remap(2, 0, 0, 40).Remap(0, 40, 0, 18);
             wheelTraction *= ((float)Math.Pow(Throttle, 10)).Remap(0, 1, 0, 2);
             if (Speed > 10 || wheelTraction < 1)
                 wheelTraction = 1;
 
             // Surface resistance force - wet surface increases resistance
-            float surfaceResistance = 1;
+            float surfaceResistance = RainPuddleEditor.Level + 1;
 
-            // Friction force = 0.2 * speed
-            float frictionForce = 0.2f * Speed / 2;
+            float wheelRatio = (Speed.Remap(0, 40, 40, 0) + 0.01f) / (driveWheelSpeed + 0.01f);
+            wheelRatio = wheelRatio / (150 * surfaceResistance.Remap(1, 2, 1, 1.3f)) + 1;
+
+            // Friction force = 0.2 * speed * difference between wheel and train speed
+            float frictionForce = 0.2f * Speed / 2 * wheelRatio;
+
+            GTA.UI.Screen.ShowSubtitle($"WR: {wheelRatio} FR: {frictionForce}");
 
             // Brake force
-            float brakeForce = Speed * brakeInput * 2;
+            float brakeForce = Speed * airBrakeInput * 2;
 
             // Air resistance force = 0.02 * velocty^2
             float dragForce = (float) (0.02f * Math.Pow(velocty, 2)) / 8;
@@ -109,10 +116,10 @@ namespace RogersSierra.Components
             int forceDirection = forceFactor >= 0 ? 1 : -1;
 
             // Brake multiplier
-            float brakeMultiplier = brakeInput.Remap(0, 1, 1, 0);
+            float brakeMultiplier = airBrakeInput.Remap(0, 1, 1, 0);
 
             // Combine all forces
-            float totalForce = (steamForce * surfaceResistance * brakeMultiplier) - dragForce + inerciaForce - frictionForce - brakeForce;
+            float totalForce = (steamForce * brakeMultiplier * steamBrakeInput) - dragForce + inerciaForce - frictionForce - brakeForce;
             totalForce *= AccelerationMultiplier * Game.LastFrameTime;
 
             //GTA.UI.Screen.ShowSubtitle(
@@ -125,17 +132,13 @@ namespace RogersSierra.Components
 
             Speed += totalForce;
 
-            //// Brake will slowly block rotation of wheel
-            //float wheelBrakeForce = (float) Math.Pow(brakeInput, 10);
-            //wheelBrakeForce = wheelBrakeForce.Remap(0, 1, 1, 0);
-
-            //GTA.UI.Screen.ShowSubtitle(brakeInput.ToString("0.0"));
-
             // We making it non directional because wheel and speed direction doesn't always match
             float baseWheelSpeed = Math.Abs(Speed);
 
+            //GTA.UI.Screen.ShowSubtitle(steamBrakeInput.ToString());
+
             Train.WheelComponent.FrontWheelSpeed = baseWheelSpeed * forceDirection;
-            Train.WheelComponent.DriveWheelSpeed = baseWheelSpeed * wheelTraction * forceDirection;
+            Train.WheelComponent.DriveWheelSpeed = baseWheelSpeed * wheelTraction * steamBrakeInput * forceDirection;
 
             NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
 
