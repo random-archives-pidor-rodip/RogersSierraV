@@ -97,7 +97,7 @@ namespace RogersSierra.Components
             // Friction force = 0.2 * speed * difference between wheel and train speed
             float frictionForce = 0.2f * Speed / 2 * wheelRatio;
 
-            GTA.UI.Screen.ShowSubtitle($"WR: {wheelRatio} FR: {frictionForce}");
+            //GTA.UI.Screen.ShowSubtitle($"WR: {wheelRatio} FR: {frictionForce}");
 
             // Brake force
             float brakeForce = Speed * airBrakeInput * 2;
