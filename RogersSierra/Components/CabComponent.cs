@@ -52,8 +52,7 @@ namespace RogersSierra.Components
                 "lever_handle",
                 AnimationType.Rotation,
                 Coordinate.Z,
-                -5, 0, 0, 40, 1, false, false);
-            ThrottleHandle.OnInteractionEnded += ThrottleHandle_OnInteractionEnded;
+                -5, 0, 0, 6.6f, 1, false, false, true);
             
             GearLever = InteractableProps.Add(
                 Models.CabGearLever,
@@ -75,8 +74,7 @@ namespace RogersSierra.Components
                 "lever_handle",
                 AnimationType.Rotation,
                 Coordinate.X,
-                -19, 0, 0, 60, 1, false, false);
-            GearHandle.OnInteractionEnded += GearHandle_OnInteractionEnded;
+                -19, 0, 0, 10, 1, false, false, true);
 
             SteamBrakeLever = InteractableProps.Add(
                 Models.CabSteamBrakeLever,
@@ -101,11 +99,6 @@ namespace RogersSierra.Components
             WhistleRope = new InteractiveRope(Train.VisibleModel, "whistle_rope_pull_start", "whistle_rope_pull_end", true, true);
         }
 
-        private void ThrottleHandle_OnInteractionEnded(object sender, InteractiveProp e)
-        {
-            ThrottleLever.Blocked = false;
-        }
-
         private void ThrottleLever_OnHoverEnded(object sender, InteractiveProp e)
         {
             ThrottleHandle.AnimateProp.Prop.SetAlpha(AlphaLevel.L5);
@@ -113,18 +106,12 @@ namespace RogersSierra.Components
 
         private void ThrottleLever_OnInteractionStarted(object sender, InteractiveProp e)
         {
-            ThrottleLever.Blocked = true;
             ThrottleHandle.Play();
         }
 
         private void ThrottleLever_OnHoverStarted(object sender, InteractiveProp e)
         {
             ThrottleHandle.AnimateProp.Prop.SetAlpha(AlphaLevel.L4);
-        }
-
-        private void GearHandle_OnInteractionEnded(object sender, InteractiveProp e)
-        {
-            GearLever.Blocked = false;
         }
 
         private void GearLever_OnHoverEnded(object sender, InteractiveProp e)
@@ -139,7 +126,6 @@ namespace RogersSierra.Components
 
         private void GearLever_OnInteractionStarted(object sender, InteractiveProp e)
         {
-            GearLever.Blocked = true;
             GearHandle.Play();
         }
 
