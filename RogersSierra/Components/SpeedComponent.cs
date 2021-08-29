@@ -134,7 +134,7 @@ namespace RogersSierra.Components
             // We making it non directional because wheel and speed direction doesn't always match
             float baseWheelSpeed = Math.Abs(Speed);
 
-            Train.WheelComponent.FrontWheelSpeed = baseWheelSpeed;
+            Train.WheelComponent.FrontWheelSpeed = baseWheelSpeed * forceDirection;
             Train.WheelComponent.DriveWheelSpeed = baseWheelSpeed * wheelTraction * forceDirection;
 
             NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
