@@ -114,10 +114,6 @@ namespace RogersSierra.Components
             // Stop interaction after left button was released
             if (Game.IsControlJustReleased(Control.Attack) || !_arcadeControls)
                 ProcessInteraction(true);
-
-            Train.SpeedComponent.Throttle = Train.CabComponent.ThrottleLeverState;
-            Train.SpeedComponent.Gear = Train.CabComponent.GearLeverState;
-            Train.BrakeComponent.AirbrakeForce = Train.CabComponent.BrakeLeverState;
         }
 
         /// <summary>
@@ -250,7 +246,7 @@ namespace RogersSierra.Components
             var spacebarInput = Game.GetControlValueNormalized(Control.Jump);
             var accelerateInput = -Game.GetControlValueNormalized(Control.VehicleAccelerate);
             var brakeInput = Game.GetControlValueNormalized(Control.VehicleBrake);
-            var shiftInput = Game.GetControlValueNormalized(Control.Sprint);
+            var shiftInput = Game.GetControlValueNormalized(Control.VehicleHandbrake);
 
             // Check if player pressed / released any buttons
             _arcadeControls = spacebarInput == _prevSpacebarInput &&
@@ -300,7 +296,8 @@ namespace RogersSierra.Components
 
             //GTA.UI.Screen.ShowSubtitle($"{_arcadeControls} A: {accelerateInput} B: {brakeInput} C: {combineInput} G: {gear} Bl: {brakeLeverInput} S :{trainSpeed}");
 
-            Train.CabComponent.BrakeLever.SetValue(brakeLeverInput);
+            Train.CabComponent.AirBrakeLever.SetValue(brakeLeverInput);
+            Train.CabComponent.SteamBrakeLever.SetValue(shiftInput);
             Train.CabComponent.ThrottleLever.SetValue(combineInput.Remap(0, 1, 1, 0));
             Train.CabComponent.GearLever.SetValue(gear.Remap(-1, 1, 0, 1));
         }

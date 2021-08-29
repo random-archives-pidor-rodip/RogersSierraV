@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\Component.cs" />
+    <Compile Include="Components\BindComponent.cs" />
     <Compile Include="Components\BoilerComponent.cs" />
     <Compile Include="Components\BrakeComponent.cs" />
     <Compile Include="Components\CabComponent.cs" />

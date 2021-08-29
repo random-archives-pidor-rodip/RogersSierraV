@@ -50,6 +50,11 @@ namespace RogersSierra.Sierra
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
+        public BindComponent BindComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public BoilerComponent BoilerComponent;
 
         /// <summary>
