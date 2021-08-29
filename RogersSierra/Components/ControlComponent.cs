@@ -39,8 +39,14 @@ namespace RogersSierra.Components
         /// </summary>
         private float CabCameraYAxis;
 
+        private float _prevSpacebarInput;
+        private float _prevAccelInput;
+        private float _prevBrakeInput;
+        private float _prevShiftInput;
 
         private bool _arcadeControls;
+
+        private float _prevTrainAngle;
 
         /// <summary>
         /// Train enter input.
@@ -77,7 +83,7 @@ namespace RogersSierra.Components
 
         public override void OnInit()
         {
-
+            _prevTrainAngle = Train.InvisibleModel.Rotation.Z;
         }
 
         public override void OnTick()
@@ -106,12 +112,12 @@ namespace RogersSierra.Components
             ProcessInteraction(false);
 
             // Stop interaction after left button was released
-            if (Game.IsControlJustReleased(Control.Attack) || _arcadeControls)
+            if (Game.IsControlJustReleased(Control.Attack) || !_arcadeControls)
                 ProcessInteraction(true);
 
             Train.SpeedComponent.Throttle = Train.CabComponent.ThrottleLeverState;
             Train.SpeedComponent.Gear = Train.CabComponent.GearLeverState;
-            Train.BrakeComponent.Force = Train.CabComponent.BrakeLeverState;
+            Train.BrakeComponent.AirbrakeForce = Train.CabComponent.BrakeLeverState;
         }
 
         /// <summary>
@@ -119,11 +125,23 @@ namespace RogersSierra.Components
         /// </summary>
         private void ProcessCabCamera()
         {
+            // TODO: Fix camera not rotating with train
+
             if(FusionUtils.IsCameraInFirstPerson() && IsPlayerDrivingTrain)
             {
                 Game.Player.Character.IsVisible = false;
 
                 World.RenderingCamera = CabCamera;
+
+                // Rotate camera with train
+
+                var trainAngle = Train.InvisibleModel.Rotation.Z;
+                var prevAngle = _prevTrainAngle;
+                _prevTrainAngle = trainAngle;
+
+                trainAngle -= prevAngle;
+
+                //GTA.UI.Screen.ShowSubtitle(trainAngle.ToString("0.000"));
 
                 // Get input from controller and rotate camera
 
@@ -135,7 +153,7 @@ namespace RogersSierra.Components
                 CabCameraYAxis = CabCameraYAxis.Clamp(-80, 80);
 
                 var newRotation = CabCamera.Rotation;
-                newRotation.Z -= inputX;
+                newRotation.Z -= inputX - trainAngle;
                 newRotation.X = CabCameraYAxis;
 
                 CabCamera.Rotation = newRotation;
@@ -221,11 +239,6 @@ namespace RogersSierra.Components
             Enter();
         }
 
-        private float _prevSpacebarInput;
-        private float _prevAccelInput;
-        private float _prevBrakeInput;
-        private float _prevShiftInput;
-
         /// <summary>
         /// WASD train control.
         /// </summary>
@@ -240,10 +253,11 @@ namespace RogersSierra.Components
             var shiftInput = Game.GetControlValueNormalized(Control.Sprint);
 
             // Check if player pressed / released any buttons
-            if (spacebarInput == _prevSpacebarInput &&
+            _arcadeControls = spacebarInput == _prevSpacebarInput &&
                 accelerateInput == _prevAccelInput &&
                 brakeInput == _prevBrakeInput &&
-                shiftInput == _prevShiftInput)
+                shiftInput == _prevShiftInput;
+            if (_arcadeControls)
                 return;
 
             _prevSpacebarInput = spacebarInput;
@@ -275,11 +289,11 @@ namespace RogersSierra.Components
             if (trainSpeed > 0)
                 combineInput -= brakeInput;
 
-            // Emergency brake on spacebar
-            if (spacebarInput != 1)
-                brakeLeverInput /= 2;
-            else
-                brakeLeverInput = 1;
+            //// Emergency brake on spacebar
+            //if (spacebarInput != 1)
+            //    brakeLeverInput /= 2;
+            //else
+            //    brakeLeverInput = 1;
 
             if (shiftInput == 1)
                 combineInput /= 2;
