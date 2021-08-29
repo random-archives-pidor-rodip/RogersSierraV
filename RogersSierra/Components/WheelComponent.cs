@@ -1,6 +1,7 @@
 ﻿using FusionLibrary;
 using FusionLibrary.Extensions;
 using GTA;
+using GTA.Math;
 using RogersSierra.Abstract;
 using RogersSierra.Sierra;
 using System;
@@ -42,7 +43,7 @@ namespace RogersSierra.Components
         /// <summary>
         /// Returns angle of driving wheel.
         /// </summary>
-        public float DrivingWheelAngle => _drivingWheel.CurrentRotation.X;
+        public float DrivingWheelAngle => _drivingWheel.SecondRotation.X;
 
         /// <summary>
         /// Total length of every wheel.
@@ -71,7 +72,7 @@ namespace RogersSierra.Components
                 counter++;
                 bone += counter;
 
-                var prop = new AnimateProp(model, train.VisibleModel, bone);
+                var prop = new AnimateProp(model, train.VisibleModel, bone, Vector3.Zero, new Vector3(85, 0, 0));
                 prop.SpawnProp();
 
                 if (bone == "dwheel_1")
@@ -103,7 +104,7 @@ namespace RogersSierra.Components
                 // tick calls 1/fps times per second, so 828 / 60 = 13,8 degrees per tick
 
                 // Calculate wheel rotation per frame
-                var newAngle = WheelSpeed.AngularSpeed(_wheelLengths[i], wheel.CurrentRotation.X);
+                var newAngle = WheelSpeed.AngularSpeed(_wheelLengths[i], wheel.SecondRotation.X);
 
                 wheel.setRotation(FusionEnums.Coordinate.X, newAngle);
             }

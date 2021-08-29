@@ -70,17 +70,17 @@ namespace RogersSierra.Sierra
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public DrivetrainComponent DrivetrainComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public SpeedComponent SpeedComponent;
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         public WheelComponent WheelComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public DrivetrainComponent DrivetrainComponent;
 
         /// <summary>
         /// Invokes on Dispose.
