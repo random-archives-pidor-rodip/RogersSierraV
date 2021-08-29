@@ -1,12 +1,9 @@
 ﻿using FusionLibrary;
 using FusionLibrary.Extensions;
-using GTA;
 using GTA.Math;
 using RogersSierra.Abstract;
 using RogersSierra.Sierra;
 using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace RogersSierra.Components
 {
@@ -16,9 +13,14 @@ namespace RogersSierra.Components
     public class WheelComponent : Component
     {
         /// <summary>
-        /// Wheel speed in m/s
+        /// Drive wheel speed in m/s
         /// </summary>
-        public float WheelSpeed { get; set; }
+        public float DriveWheelSpeed { get; set; }
+
+        /// <summary>
+        /// Front wheel speed in m/s
+        /// </summary>
+        public float FrontWheelSpeed { get; set; }
 
         /// <summary>
         /// Number of front wheels.
@@ -33,35 +35,39 @@ namespace RogersSierra.Components
         /// <summary>
         /// Drive wheel props.
         /// </summary>
-        public readonly AnimatePropsHandler _driveWheels = new AnimatePropsHandler();
+        public readonly AnimatePropsHandler DriveWheels = new AnimatePropsHandler();
 
         /// <summary>
         /// Front wheels props.
         /// </summary>
-        public readonly AnimatePropsHandler _frontWheels = new AnimatePropsHandler();
+        public readonly AnimatePropsHandler FrontWheels = new AnimatePropsHandler();
 
         /// <summary>
         /// Drive wheel length.
         /// </summary>
-        private float _driveLength;
+        private readonly float _driveLength;
 
         /// <summary>
         /// Front wheel length.
         /// </summary>
-        private float _frontLength;
+        private readonly float _frontLength;
 
         /// <summary>
         /// Returns angle of driving wheel.
         /// </summary>
-        public float DrivingWheelAngle => _driveWheels[0].SecondRotation.X;
+        public float DrivingWheelAngle => DriveWheels[0].SecondRotation.X;
 
+        /// <summary>
+        /// Constructs new instance of <see cref="WheelComponent"/>.
+        /// </summary>
+        /// <param name="train"><see cref="Train"/> instance.</param>
         public WheelComponent(Train train) : base(train)
         {
             // TODO: Move bones to debug model
 
             int totalWheels = _numberOfFrontWheels + _numberOfMainWheels;
 
-            int f = 0, m = 0, d = 0;
+            int f = 0, d = 0;
 
             while(totalWheels > 0)
             {
@@ -70,7 +76,7 @@ namespace RogersSierra.Components
 
                 CustomModel model = isFront ? Models.FrontWheel : Models.DrivingWheel;
                 string bone = isFront ? "fwheel_" : "dwheel_";
-                int counter = isFront ? f++ : m++;
+                int counter = isFront ? f++ : d++;
 
                 // Because bone numeration starts from 1
                 counter++;
@@ -85,12 +91,12 @@ namespace RogersSierra.Components
                 if (isFront)
                 {
                     _frontLength = wheelLength;
-                    _frontWheels.Add(prop);
+                    FrontWheels.Add(prop);
                 }                    
                 else
                 {
                     _driveLength = wheelLength;
-                    _driveWheels.Add(prop);
+                    DriveWheels.Add(prop);
                 }
 
                 totalWheels--;
@@ -108,18 +114,15 @@ namespace RogersSierra.Components
             // 2,3 wheel turn = 2.3 * 360 = 828~ degrees
             // tick calls 1/fps times per second, so 828 / 60 = 13,8 degrees per tick
 
-            // Calculate wheel rotation per frame
-            float newAngle = WheelSpeed.AngularSpeed(_driveLength, _driveWheels[0].SecondRotation.X);
+            // Calculate drive wheel rotation per frame
+            float newAngle = DriveWheelSpeed.AngularSpeed(_driveLength, DriveWheels[0].SecondRotation.X);
 
-            _driveWheels.setRotation(FusionEnums.Coordinate.X, newAngle);
+            DriveWheels.setRotation(FusionEnums.Coordinate.X, newAngle);
 
-            // Calculate wheel rotation per frame
+            // Calculate front wheel rotation per frame
+            newAngle = FrontWheelSpeed.AngularSpeed(_frontLength, FrontWheels[0].SecondRotation.X);
 
-            newAngle = Train.InvisibleModel.Speed * (Train.InvisibleModel.IsGoingForward() ? 1 : -1);
-
-            newAngle = newAngle.AngularSpeed(_frontLength, _frontWheels[0].SecondRotation.X);
-
-            _frontWheels.setRotation(FusionEnums.Coordinate.X, newAngle);
+            FrontWheels.setRotation(FusionEnums.Coordinate.X, newAngle);
         }
     }
 }
