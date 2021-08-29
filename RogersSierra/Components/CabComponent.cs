@@ -9,24 +9,75 @@ using static FusionLibrary.FusionEnums;
 
 namespace RogersSierra.Components
 {
+    /// <summary>
+    /// Handles components inside cab, such as throttle and brake levers.
+    /// </summary>
     public class CabComponent : Component
     {
+        /// <summary>
+        /// Throttle lever prop.
+        /// </summary>
         public InteractiveProp ThrottleLever;
+
+        /// <summary>
+        /// Handle of <see cref="ThrottleLever"/>.
+        /// </summary>
         public InteractiveProp ThrottleHandle;
+
+        /// <summary>
+        /// Gear lever prop.
+        /// </summary>
         public InteractiveProp GearLever;
+
+        /// <summary>
+        /// Handle of <see cref="GearLever"/>/
+        /// </summary>
         public InteractiveProp GearHandle;
+
+        /// <summary>
+        /// Steam brake lever prop.
+        /// </summary>
         public InteractiveProp SteamBrakeLever;
+
+        /// <summary>
+        /// Air brake lever prop.
+        /// </summary>
         public InteractiveProp AirBrakeLever;
 
+        /// <summary>
+        /// Pull rope for whistle.
+        /// </summary>
         public InteractiveRope WhistleRope;
 
+        /// <summary>
+        /// Controller for cab props.
+        /// </summary>
         public InteractiveController InteractableProps = new InteractiveController();
 
+        /// <summary>
+        /// Current position of <see cref="ThrottleLever"/>. 0 - throttle closed. 1 - fully opened.
+        /// </summary>
         public float ThrottleLeverState => ThrottleLever.CurrentValue.Remap(0, 1, 1, 0);
+
+        /// <summary>
+        /// Current position of <see cref="GearLever"/>. 1 - Forward. 0 - Neutral. -1 - Reverse.
+        /// </summary>
         public float GearLeverState => GearLever.CurrentValue.Remap(0, 1, 1, -1);
-        public int SteamBrakeLeverState => (int) Math.Round(SteamBrakeLever.CurrentValue);
+
+        /// <summary>
+        /// Current position of <see cref="SteamBrakeLever"/>. 0 - Wheels moving. 1 - Wheels blocked.
+        /// </summary>
+        public int SteamBrakeLeverState => (int)Math.Round(SteamBrakeLever.CurrentValue);
+
+        /// <summary>
+        /// Current position of <see cref="AirBrakeLever"/>. 0 - no brake. 1 - full brake.
+        /// </summary>
         public float AirBrakeLeverState => AirBrakeLever.CurrentValue;
 
+        /// <summary>
+        /// Constructs new instance of <see cref="CabComponent"/>.
+        /// </summary>
+        /// <param name="train"></param>
         public CabComponent(Train train) : base(train)
         {
             InteractableProps.LockCamera = false;
@@ -76,17 +127,17 @@ namespace RogersSierra.Components
                 Coordinate.X,
                 -19, 0, 0, 10, 1, false, false, true);
 
-            SteamBrakeLever = InteractableProps.Add(
+            AirBrakeLever = InteractableProps.Add(
                 Models.CabSteamBrakeLever,
                 Train.VisibleModel,
                 "cab_steambrake_lever",
                 AnimationType.Rotation,
                 Coordinate.X, 
                 Control.LookLeft,
-                false, 0, 35, 35, 12);
-            SteamBrakeLever.SetupAltControl(Control.LookUp, false);
+                false, 40, 0, 0, 12);
+            AirBrakeLever.SetupAltControl(Control.LookUp, false);
 
-            AirBrakeLever = InteractableProps.Add(
+            SteamBrakeLever = InteractableProps.Add(
                 Models.CabAirBrakeLever,
                 Train.VisibleModel,
                 "cab_airbrake_lever",
@@ -94,7 +145,7 @@ namespace RogersSierra.Components
                 Coordinate.Z,
                 Control.LookLeft,
                 false, -30, 0, 0, 10);
-            AirBrakeLever.SetupAltControl(Control.LookLeft, false);
+            SteamBrakeLever.SetupAltControl(Control.LookLeft, false);
 
             WhistleRope = new InteractiveRope(Train.VisibleModel, "whistle_rope_pull_start", "whistle_rope_pull_end", true, true);
         }
