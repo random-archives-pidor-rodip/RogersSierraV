@@ -95,9 +95,9 @@ namespace RogersSierra.Components
             dAngle = Train.WheelComponent.DrivingWheelAngle;
 
             if (dAngle < 180)
-                dAngle = dAngle.Remap(0, 180, 0, -27);
+                dAngle = dAngle.Remap(0, 180, 0, -12);
             else
-                dAngle = dAngle.Remap(180, 360, -27, 0);
+                dAngle = dAngle.Remap(180, 360, -12, 0);
 
             CombinationLever.setRotation(Coordinate.X, dAngle);
 
