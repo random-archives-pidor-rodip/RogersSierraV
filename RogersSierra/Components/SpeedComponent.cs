@@ -142,6 +142,8 @@ namespace RogersSierra.Components
 
             NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
 
+            Train.ParticleComponent.AreWheelSparksShown = wheelTraction > 5 || (steamBrakeInput == 0 && baseWheelSpeed > 1.5f);
+
             //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Accel: {totalForce} Energy: {energy}");
         }
     }

@@ -75,6 +75,16 @@ namespace RogersSierra.Sierra
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
+        public DynamoComponent DynamoComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public ParticleComponent ParticleComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public SpeedComponent SpeedComponent;
 
         /// <summary>

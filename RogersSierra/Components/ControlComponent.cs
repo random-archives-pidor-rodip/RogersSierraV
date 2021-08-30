@@ -17,7 +17,8 @@ namespace RogersSierra.Components
         /// <summary>
         /// Returns True if player is in train, otherwise False.
         /// </summary>
-        public bool IsPlayerDrivingTrain { get; private set; }
+        public bool IsPlayerDrivingTrain =>
+            Game.Player.Character.CurrentVehicle == Train.InvisibleModel;
 
         /// <summary>
         /// Whether player is inside cab or not.
@@ -75,7 +76,6 @@ namespace RogersSierra.Components
             _trainEnterInput.OnControlJustPressed = EnterControl;
 
             // For keeping cab camera after reload
-            IsPlayerDrivingTrain = Train.InvisibleModel.Driver == Game.Player.Character;
             if (IsPlayerDrivingTrain)
                 Enter();
         }
@@ -109,6 +109,11 @@ namespace RogersSierra.Components
             ProcessCabCamera();            
             ProcessArcadeControls();
             ProcessInteraction();
+
+            if (Game.IsControlJustPressed(Control.VehicleHeadlight) && IsPlayerDrivingTrain)
+            {
+                Train.DynamoComponent.SwitchHeadlight();
+            }
         }
 
         /// <summary>
@@ -195,8 +200,6 @@ namespace RogersSierra.Components
             CabCamera?.Delete();
 
             World.RenderingCamera = null;
-
-            IsPlayerDrivingTrain = false;
         }
 
         /// <summary>
@@ -211,8 +214,6 @@ namespace RogersSierra.Components
             CabCamera.AttachTo(Train.InvisibleModel, new Vector3(1.1835f, -5.022f, 3.2955f));
 
             CabCamera.Direction = Train.InvisibleModel.Quaternion * Vector3.RelativeFront;
-
-            IsPlayerDrivingTrain = true;
         }
 
         /// <summary>
