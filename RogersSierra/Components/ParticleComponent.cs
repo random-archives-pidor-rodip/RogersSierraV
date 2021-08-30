@@ -36,8 +36,6 @@ namespace RogersSierra.Components
                     bone += $"left_{l++ + 1}";
                 else
                     bone += $"right_{r++ + 1}";
-
-                File.AppendAllText("logd.txt", "\n" + bone);
                 
                 // Create and configure particle
                 var ptfx = new ParticlePlayer(
