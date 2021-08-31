@@ -80,9 +80,6 @@ namespace RogersSierra.Components
         /// <param name="train"></param>
         public CabComponent(Train train) : base(train)
         {
-            InteractableProps.LockCamera = false;
-            InteractableProps.SmoothRelease = true;
-
             ThrottleLever = InteractableProps.Add(
                 Models.CabThrottleLever, 
                 Train.VisibleModel,
@@ -103,7 +100,7 @@ namespace RogersSierra.Components
                 "lever_handle",
                 AnimationType.Rotation,
                 Coordinate.Z,
-                -5, 0, 0, 6.6f, 1, false, false, true);
+                false, -5, 0, 0, 6.6f, 1, false, true);
             
             GearLever = InteractableProps.Add(
                 Models.CabGearLever,
@@ -125,7 +122,7 @@ namespace RogersSierra.Components
                 "lever_handle",
                 AnimationType.Rotation,
                 Coordinate.X,
-                -19, 0, 0, 10, 1, false, false, true);
+                false, -19, 0, 0, 10, 1, false, true);
 
             AirBrakeLever = InteractableProps.Add(
                 Models.CabSteamBrakeLever,
