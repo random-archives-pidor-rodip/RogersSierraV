@@ -14,6 +14,11 @@ namespace RogersSierra.Components
         /// </summary>
         public float Pressure { get; private set; }
 
+        /// <summary>
+        /// Is there steam coming cylinder.
+        /// </summary>
+        public bool CylindersSteam => Pressure > 160;
+
         public BoilerComponent(Train train) : base(train)
         {
             Pressure = 0;

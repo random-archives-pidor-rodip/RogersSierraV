@@ -90,6 +90,7 @@
     <Compile Include="Components\SpeedComponent.cs" />
     <Compile Include="Components\WheelComponent.cs" />
     <Compile Include="Extensions\EnumExtentions.cs" />
+    <Compile Include="Extensions\OtherExtensions.cs" />
     <Compile Include="Physics\CustomRope.cs" />
     <Compile Include="Physics\RopeSegment.cs" />
     <Compile Include="Sierra\Constants.cs" />

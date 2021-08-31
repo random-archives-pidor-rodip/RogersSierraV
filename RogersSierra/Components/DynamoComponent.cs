@@ -18,44 +18,15 @@ namespace RogersSierra.Components
     /// </summary>
     public class DynamoComponent : Component
     {
-        private LightState _boilerLightState;
         /// <summary>
         /// Current state of boiler light.
         /// </summary>
-        public LightState BoilerLightState
-        {
-            get => _boilerLightState;
-            private set
-            {
-                bool lightState = false;
-                bool highBeamState = false;
-                switch (value)
-                {
-                    case LightState.Disabled:
-                        {
-                            lightState = false;
-                            highBeamState = false;
-                            break;
-                        }
-                    case LightState.LowBeam:
-                        {
-                            lightState = true;
-                            highBeamState = false;
-                            break;
-                        }
-                    case LightState.HighBeam:
-                        {
-                            lightState = true;
-                            highBeamState = true; 
-                            break;
-                        }
-                }
-                Train.VisibleModel.AreLightsOn = lightState;
-                Train.VisibleModel.AreHighBeamsOn = highBeamState;
+        public LightState BoilerLightState { get; set; }
 
-                _boilerLightState = value;
-            }
-        } 
+        /// <summary>
+        /// Whether dynamo generator is currently on or not.
+        /// </summary>
+        public bool IsDynamoWorking => Train.BoilerComponent.Pressure > 160;
 
         /// <summary>
         /// Constructs new instance of <see cref="DynamoComponent"/>.
@@ -64,6 +35,7 @@ namespace RogersSierra.Components
         public DynamoComponent(Train train) : base(train)
         {
             train.VisibleModel.IsEngineRunning = true;
+            Function.Call(Hash._FORCE_VEHICLE_ENGINE_AUDIO, Train.VisibleModel, "freight");
             //.Call(Hash._​SET_​VEHICLE_​LIGHTS_​MODE, Train.VisibleModel, 1);
             //Function.Call(Hash.SET_VEHICLE_ENGINE_ON, Train.VisibleModel, true, true, false);
             //Function.Call(Hash.SET_​VEHICLE_​LIGHTS, Train.VisibleModel, 3);
@@ -85,7 +57,41 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
+            ProcessBoilerLight();
+        }
 
+        private void ProcessBoilerLight()
+        {
+            bool lightState = false;
+            bool highBeamState = false;
+
+            if (IsDynamoWorking)
+            {
+                switch (BoilerLightState)
+                {
+                    case LightState.Disabled:
+                        {
+                            lightState = false;
+                            highBeamState = false;
+                            break;
+                        }
+                    case LightState.LowBeam:
+                        {
+                            lightState = true;
+                            highBeamState = false;
+                            break;
+                        }
+                    case LightState.HighBeam:
+                        {
+                            lightState = true;
+                            highBeamState = true;
+                            break;
+                        }
+                }
+            }
+
+            Train.VisibleModel.AreLightsOn = lightState;
+            Train.VisibleModel.AreHighBeamsOn = highBeamState;
         }
     }
 }

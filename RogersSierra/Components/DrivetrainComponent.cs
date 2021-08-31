@@ -32,7 +32,12 @@ namespace RogersSierra.Components
 
         private float _valveRelativePosZ;
 
-        //new Vector3(0, -0.022f, 0.01f)
+        /// <summary>
+        /// Invokes on every cycle of piston movement.
+        /// </summary>
+        public Action OnPiston { get; set; }
+
+        private bool _onPistonCalled = false;
 
         public DrivetrainComponent(Train train) : base(train)
         {
@@ -98,6 +103,21 @@ namespace RogersSierra.Components
                 dAngle = dAngle.Remap(0, 180, 0, -12);
             else
                 dAngle = dAngle.Remap(180, 360, -12, 0);
+
+            // Detect when piston reaches corner
+            var dAngleRound = (int)dAngle;
+            if (dAngleRound == -11 || dAngleRound == 0)
+            {
+                if (!_onPistonCalled)
+                {
+                    OnPiston?.Invoke();
+                    _onPistonCalled = true;
+                }
+            }
+            else
+            {
+                _onPistonCalled = false;
+            }
 
             CombinationLever.setRotation(Coordinate.X, dAngle);
 

@@ -55,6 +55,11 @@ namespace RogersSierra.Components
         /// </summary>
         public float AccelerationMultiplier = 0.2f;
 
+        /// <summary>
+        /// Returns True if drive wheel are sparking, otherwise False.
+        /// </summary>
+        public bool AreWheelSpark { get; private set; }
+
         public SpeedComponent(Train train) : base(train)
         {
 
@@ -142,7 +147,7 @@ namespace RogersSierra.Components
 
             NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
 
-            Train.ParticleComponent.AreWheelSparksShown = wheelTraction > 5 || (steamBrakeInput == 0 && baseWheelSpeed > 1.5f);
+            AreWheelSpark = wheelTraction > 5 || (steamBrakeInput == 0 && baseWheelSpeed > 1.5f);
 
             //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Accel: {totalForce} Energy: {energy}");
         }

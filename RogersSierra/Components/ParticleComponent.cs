@@ -1,14 +1,15 @@
 ﻿using FusionLibrary;
 using GTA.Math;
 using RogersSierra.Abstract;
+using RogersSierra.Extensions;
 using RogersSierra.Sierra;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using static FusionLibrary.FusionEnums;
 
 namespace RogersSierra.Components
 {
+    /// <summary>
+    /// Controls various particles of the train.
+    /// </summary>
     public class ParticleComponent : Component
     {
         /// <summary>
@@ -17,9 +18,29 @@ namespace RogersSierra.Components
         public bool AreWheelSparksShown { get; set; }
 
         /// <summary>
+        /// Are steam from dynamo generator shown or not.
+        /// </summary>
+        public bool AreDynamoSteamShown { get; set; }
+
+        /// <summary>
+        /// Is steam from cylinder shown or now.
+        /// </summary>
+        public bool IsCylinderSteamShown { get; set; }
+
+        /// <summary>
         /// Wheel spark particles.
         /// </summary>
-        private ParticlePlayerHandler _wheelSparks = new ParticlePlayerHandler();
+        private readonly ParticlePlayerHandler _wheelSparks = new ParticlePlayerHandler();
+
+        /// <summary>
+        /// Smoke and drips coming from piston cylinders.
+        /// </summary>
+        private readonly ParticlePlayerHandler _cylinderSteam = new ParticlePlayerHandler();
+
+        /// <summary>
+        /// Steam from dynamo generator.
+        /// </summary>
+        private readonly ParticlePlayer _dynamoSteam;
 
         /// <summary>
         /// Constructs new instance of <see cref="ParticleComponent"/>.
@@ -28,26 +49,41 @@ namespace RogersSierra.Components
         public ParticleComponent(Train train) : base(train)
         {
             // Spark particles
-            for (int l = 0, r = 0; l + r < 6;)
+            Utils.ProcessSideBones("dhweel_spark_", 6, bone =>
             {
-                // Generate bone name
-                var bone = "dhweel_spark_";
-
-                if (l < 3)
-                    bone += $"left_{l++ + 1}";
-                else
-                    bone += $"right_{r++ + 1}";
-                
-                // Create and configure particle                
-                _wheelSparks.Add("core", "veh_train_sparks", ParticleType.Looped, Train.VisibleModel, bone, Vector3.Zero, Vector3.Zero);
-            }
-
+                _wheelSparks.Add
+                    ("core", "veh_train_sparks", ParticleType.Looped, Train.VisibleModel, bone, Vector3.Zero, Vector3.Zero);
+            });
             _wheelSparks.SetEvolutionParam("LOD", 1);
             _wheelSparks.SetEvolutionParam("squeal", 1);
+
+            // Cylinder smoke and drips
+            Utils.ProcessSideBones("boiler_steam_", 4, bone =>
+            {
+                // Smoke
+                _cylinderSteam.Add
+                     ("cut_pacific_fin", "cs_pac_fin_skid_smoke", 
+                     ParticleType.Looped, 
+                     Train.VisibleModel, 
+                     bone, new Vector3(0, 0, 0.4f), new Vector3(-90, 0, 0));
+
+                // Drips
+                _cylinderSteam.Add
+                    ("scr_apartment_mp", "scr_apa_jacuzzi_drips",
+                    ParticleType.Looped,
+                    train.VisibleModel,
+                    bone, Vector3.Zero, Vector3.Zero, 3);
+            });
+
+            // Dynamo
+            _dynamoSteam = new ParticlePlayer(
+                "scr_gr_bunk", "scr_gr_bunk_drill_smoke", ParticleType.Looped, Train.VisibleModel, "dynamo_steam", Vector3.Zero, Vector3.Zero);
 
             Train.OnDispose += () =>
             {
                 _wheelSparks.Dispose();
+                _dynamoSteam.Dispose();
+                _cylinderSteam.Dispose();
             };
         }
 
@@ -58,13 +94,9 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
-            if (AreWheelSparksShown)
-            {
-                if (!_wheelSparks.IsPlaying)
-                    _wheelSparks.Play();
-            }
-            else
-                _wheelSparks.Stop();
+            _wheelSparks.SetState(AreWheelSparksShown);
+            _dynamoSteam.SetState(AreDynamoSteamShown);
+            _cylinderSteam.SetState(IsCylinderSteamShown);
         }
     }
 }
