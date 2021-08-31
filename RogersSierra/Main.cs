@@ -1,6 +1,5 @@
 ﻿using FusionLibrary;
 using GTA;
-using GTA.Native;
 using RogersSierra.Components.InteractionUtils;
 using RogersSierra.Sierra;
 using System;
@@ -61,18 +60,22 @@ namespace RogersSierra
             FusionUtils.RandomTrains = false;
         }
 
+        /// <summary>
+        /// Debug hotkeys.
+        /// </summary>
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if(e.KeyCode == Keys.L)
-            {
-                var train = Train.Spawn(Game.Player.Character.Position, true);
-            }
+                Train.Spawn(Game.Player.Character.Position, true);
+
+
             if (e.KeyCode == Keys.K)
-            {
                 Train.DeleteAllInstances();
-            }
         }
 
+        /// <summary>
+        /// Invokes train dispose.
+        /// </summary>
         private void OnAbort(object sender, EventArgs e)
         {
             Train.OnAbort();

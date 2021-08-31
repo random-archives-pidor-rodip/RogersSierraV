@@ -243,10 +243,10 @@ namespace RogersSierra.Components
             if (!IsPlayerDrivingTrain)
                 return;
 
-            var spacebarInput = Game.GetControlValueNormalized(Control.Jump);
+            var spacebarInput = Game.GetControlValueNormalized(Control.VehicleHandbrake);
             var accelerateInput = -Game.GetControlValueNormalized(Control.VehicleAccelerate);
             var brakeInput = Game.GetControlValueNormalized(Control.VehicleBrake);
-            var shiftInput = Game.GetControlValueNormalized(Control.VehicleHandbrake);
+            var shiftInput = Game.GetControlValueNormalized(Control.Sprint);
 
             // Check if player pressed / released any buttons
             _arcadeControls = accelerateInput < 0 | brakeInput > 0 | shiftInput > 0;

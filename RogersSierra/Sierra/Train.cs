@@ -85,6 +85,11 @@ namespace RogersSierra.Sierra
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
+        public SoundsComponent SoundsComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public SpeedComponent SpeedComponent;
 
         /// <summary>

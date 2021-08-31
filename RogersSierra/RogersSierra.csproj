@@ -49,6 +49,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="KlangRageAudioLibrary">
+      <HintPath>$(GTAPath)\scripts\KlangRageAudioLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="FusionLibrary">
       <HintPath>$(GTAPath)\scripts\FusionLibrary.dll</HintPath>
       <Private>False</Private>
@@ -84,6 +87,7 @@
     <Compile Include="Components\DynamoComponent.cs" />
     <Compile Include="Components\InteractionUtils\InteractiveRope.cs" />
     <Compile Include="Components\ParticleComponent.cs" />
+    <Compile Include="Components\SoundsComponent.cs" />
     <Compile Include="Components\SpeedComponent.cs" />
     <Compile Include="Components\WheelComponent.cs" />
     <Compile Include="Extensions\EnumExtentions.cs" />
@@ -91,6 +95,7 @@
     <Compile Include="Physics\RopeSegment.cs" />
     <Compile Include="Sierra\Constants.cs" />
     <Compile Include="Extensions\MathExtentions.cs" />
+    <Compile Include="Sierra\Files.cs" />
     <Compile Include="Sierra\Models.cs" />
     <Compile Include="Natives\NVehicle.cs" />
     <Compile Include="Sierra\Train.cs" />
@@ -101,6 +106,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
