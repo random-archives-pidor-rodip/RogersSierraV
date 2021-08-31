@@ -1,11 +1,6 @@
 ﻿using KlangRageAudioLibrary;
 using RogersSierra.Abstract;
 using RogersSierra.Sierra;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RogersSierra.Components
 {
@@ -42,16 +37,10 @@ namespace RogersSierra.Components
                 DefaultSourceEntity = Train.VisibleModel
             };
 
-            SteamBrakeStart = _audioEngine.Create(Files.SteamBrakeStart, Presets.ExteriorLoud);
-            SteamBrakeEnd = _audioEngine.Create(Files.SteamBrakeEnd, Presets.ExteriorLoud);
-            SteamBrakeLoop = _audioEngine.Create(Files.SteamBrakeLoop, Presets.ExteriorLoudLoop);
-
-            //train.ParticleComponent.OnWheelSparksTrue += () => SteamBrakeStart.Play();
-            //train.ParticleComponent.OnWheelSparksFalse += () =>
-            //{
-            //    if(SteamBrakeLoop.IsAnyInstancePlaying)
-            //        SteamBrakeEnd.Play();
-            //};
+            SteamBrakeStart = _audioEngine.Create(Files.SteamBrakeStart, Presets.Exterior);
+            SteamBrakeEnd = _audioEngine.Create(Files.SteamBrakeEnd, Presets.Exterior);
+            SteamBrakeLoop = _audioEngine.Create(Files.SteamBrakeLoop, Presets.ExteriorLoop);
+            SteamBrakeLoop.FadeOutMultiplier = 1.3f;
 
             Train.OnDispose += () =>
             {
@@ -68,48 +57,90 @@ namespace RogersSierra.Components
         {
             if(Train.SpeedComponent.Speed > 0)
             {
-                // Player started braking
-                if (Train.BrakeComponent.SteamBrake == 1 && !SteamBrakeStart.IsAnyInstancePlaying && SteamBrakeLoop.IsAnyInstancePlaying)
+                if(TrainStartedBraking())
                 {
                     SteamBrakeStart.Play();
                     _steamBrakeEndPlayed = false;
                     _steamBrakeStartPlayed = true;
                 }
 
-                // Train stopped after braking
-                if (Train.SpeedComponent.Speed < 2 && !SteamBrakeEnd.IsAnyInstancePlaying && SteamBrakeLoop.IsAnyInstancePlaying)
+                if(TrainStoppedAfterBraking())
                 {
-                    if(!_steamBrakeEndPlayed)
-                    {
-                        SteamBrakeLoop.Stop();
-                        SteamBrakeEnd.Play();
-                        _steamBrakeEndPlayed = true;
-                        _steamBrakeStartPlayed = false;
-                    }
+                    SteamBrakeEnd.Play();
+                    _steamBrakeEndPlayed = true;
+                    _steamBrakeStartPlayed = false;
                 }
 
-                // Player currently braking
-                if (Train.BrakeComponent.SteamBrake == 1 && !SteamBrakeLoop.IsAnyInstancePlaying)
+                if (TrainIsCurrentlyBraking())
                 {
-                    if (!_steamBrakeStartPlayed)
+                    if (!SteamBrakeLoop.IsAnyInstancePlaying)
                     {
                         SteamBrakeLoop.Play();
-                        _steamBrakeStartPlayed = true;
                     }
                 }
                 else
+                {
+                    SteamBrakeLoop.Stop();
                     _steamBrakeStartPlayed = false;
+                }
 
-                GTA.UI.Screen.ShowSubtitle(
-                    $"Start: {SteamBrakeStart.IsAnyInstancePlaying} " +
-                    $"Stop: {SteamBrakeEnd.IsAnyInstancePlaying} " +
-                    $"Loop {SteamBrakeLoop.IsAnyInstancePlaying} ");
+                //GTA.UI.Screen.ShowSubtitle(
+                //    $"Start: {SteamBrakeStart.IsAnyInstancePlaying} " +
+                //    $"Stop: {SteamBrakeEnd.IsAnyInstancePlaying} " +
+                //    $"Loop {SteamBrakeLoop.IsAnyInstancePlaying} ");
             }
+        }
 
-            //if (Train.ParticleComponent.AreWheelSparksShown && !SteamBrakeLoop.IsAnyInstancePlaying)
-            //    SteamBrakeLoop.Play();
-            //else
-            //    SteamBrakeLoop.Stop();
+        /// <summary>
+        /// Checks if train is currently braking.
+        /// </summary>
+        /// <returns>True if player is currently braking, otherwise False.</returns>
+        private bool TrainIsCurrentlyBraking()
+        {
+            if (Train.BrakeComponent.SteamBrake == 1 &&
+                Train.SpeedComponent.Speed > 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if train started braking.
+        /// </summary>
+        /// <returns>True if train started braking, otherwise False.</returns>
+        private bool TrainStartedBraking()
+        {
+            if (Train.BrakeComponent.SteamBrake == 1 &&
+                Train.SpeedComponent.Speed > 2 &&
+                !SteamBrakeStart.IsAnyInstancePlaying &&
+                !SteamBrakeLoop.IsAnyInstancePlaying &&
+                !SteamBrakeEnd.IsAnyInstancePlaying)
+            {
+                if (!_steamBrakeStartPlayed)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if train stopped after braking
+        /// </summary>
+        /// <returns>True if train stopped after braking, otherwise Fale.</returns>
+        private bool TrainStoppedAfterBraking()
+        {
+            if (Train.SpeedComponent.Speed < 1 &&
+                !SteamBrakeEnd.IsAnyInstancePlaying &&
+                SteamBrakeLoop.IsAnyInstancePlaying)
+            {
+                if (!_steamBrakeEndPlayed)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
