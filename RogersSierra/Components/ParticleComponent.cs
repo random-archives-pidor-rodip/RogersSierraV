@@ -19,7 +19,7 @@ namespace RogersSierra.Components
         /// <summary>
         /// Wheel spark particles.
         /// </summary>
-        private readonly List<ParticlePlayer> _wheelSparks = new List<ParticlePlayer>();
+        private ParticlePlayerHandler _wheelSparks = new ParticlePlayerHandler();
 
         /// <summary>
         /// Constructs new instance of <see cref="ParticleComponent"/>.
@@ -32,23 +32,23 @@ namespace RogersSierra.Components
             {
                 // Generate bone name
                 var bone = "dhweel_spark_";
+
                 if (l < 3)
                     bone += $"left_{l++ + 1}";
                 else
                     bone += $"right_{r++ + 1}";
                 
-                // Create and configure particle
-                var ptfx = new ParticlePlayer(
-                    "core", "veh_train_sparks", ParticleType.Looped, Train.VisibleModel, bone, Vector3.Zero, Vector3.Zero, 1);
-                ptfx.SetEvolutionParam("LOD", 1);
-                ptfx.SetEvolutionParam("squeal", 1);
-                Train.OnDispose += () =>
-                {
-                    ptfx.Dispose();
-                };
-
-                _wheelSparks.Add(ptfx);
+                // Create and configure particle                
+                _wheelSparks.Add("core", "veh_train_sparks", ParticleType.Looped, Train.VisibleModel, bone, Vector3.Zero, Vector3.Zero);
             }
+
+            _wheelSparks.SetEvolutionParam("LOD", 1);
+            _wheelSparks.SetEvolutionParam("squeal", 1);
+
+            Train.OnDispose += () =>
+            {
+                _wheelSparks.Dispose();
+            };
         }
 
         public override void OnInit()
@@ -60,11 +60,11 @@ namespace RogersSierra.Components
         {
             if (AreWheelSparksShown)
             {
-                if (!_wheelSparks.Any(x => x.IsPlaying))
-                    _wheelSparks.ForEach(x => x.Play());
+                if (!_wheelSparks.IsPlaying)
+                    _wheelSparks.Play();
             }
             else
-                _wheelSparks.ForEach(x => x.Stop(false));
+                _wheelSparks.Stop();
         }
     }
 }
