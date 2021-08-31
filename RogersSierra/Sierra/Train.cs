@@ -141,6 +141,7 @@ namespace RogersSierra.Sierra
             Blip = InvisibleModel.AddBlip();
             Blip.Sprite = (BlipSprite)795;
             Blip.Color = (BlipColor)70;
+            Blip.Name = "Rogers Sierra No.3";
 
             Trains.Add(this);
 
