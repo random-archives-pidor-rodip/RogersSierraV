@@ -60,6 +60,17 @@ namespace RogersSierra.Components
         /// </summary>
         public bool AreWheelSpark { get; private set; }
 
+        private bool _onTrainStartInvoked = false;
+        /// <summary>
+        /// Invokes when train started moving.
+        /// </summary>
+        public Action OnTrainStart { get; set; }
+
+        /// <summary>
+        /// Whether train is accelerating or not.
+        /// </summary>
+        public bool IsTrainAccelerating { get; private set; }
+
         public SpeedComponent(Train train) : base(train)
         {
 
@@ -147,7 +158,26 @@ namespace RogersSierra.Components
 
             NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
 
+            // Check if train is accelerating
+            IsTrainAccelerating = Math.Abs(steamForce) > 0;
+
+            // Check if wheel are sparking
             AreWheelSpark = wheelTraction > 5 || (steamBrakeInput == 0 && baseWheelSpeed > 1.5f);
+
+            // Invoke OnTrainStart
+            var absSpeed = Math.Abs(Speed);
+            if (absSpeed > 0.3f && absSpeed < 4f && IsTrainAccelerating)
+            {
+                if (!_onTrainStartInvoked)
+                {
+                    OnTrainStart?.Invoke();
+                    _onTrainStartInvoked = true;
+                }
+            }
+            else
+            {
+                _onTrainStartInvoked = false;
+            }
 
             //GTA.UI.Screen.ShowSubtitle($"Speed: {Speed} Accel: {totalForce} Energy: {energy}");
         }

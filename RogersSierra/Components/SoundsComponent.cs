@@ -21,6 +21,7 @@ namespace RogersSierra.Components
         public readonly List<AudioPlayer> AmbientMove = new List<AudioPlayer>();
         public readonly List<AudioPlayer> PistonMove = new List<AudioPlayer>();
         public readonly AudioPlayer WheelSlip;
+        public readonly AudioPlayer Start;
 
         public readonly AudioPlayer SteamIdle;
 
@@ -100,6 +101,14 @@ namespace RogersSierra.Components
             // Wheel slip
             WheelSlip = _audioEngine.Create(Files.WheelSlip, Presets.ExteriorLoud);
             WheelSlip.Volume = 0.7f;
+            WheelSlip.FadeOutMultiplier = 2f;
+            WheelSlip.StopFadeOut = true;
+
+            // Start
+            Start = _audioEngine.Create(Files.OnTrainStart, Presets.ExteriorLoud);
+            Start.Volume = 0.7f;
+            Start.FadeOutMultiplier = 2f;
+            Start.StopFadeOut = true;
 
             // Idle
             SteamIdle = _audioEngine.Create(Files.SteamIdle, Presets.ExteriorLoudLoop);
@@ -127,6 +136,12 @@ namespace RogersSierra.Components
                     _currentPistonId = 0;
 
                 //GTA.UI.Screen.ShowSubtitle(_currentPistonId.ToString());
+            };
+
+            Train.SpeedComponent.OnTrainStart += () =>
+            {
+                if(!IsWheelSlipping())
+                    Start.Play();
             };
         }
 
@@ -165,9 +180,15 @@ namespace RogersSierra.Components
             // Slip
             if (IsWheelSlipping())
             {
-                if(!WheelSlip.IsAnyInstancePlaying)
+                if (!WheelSlip.IsAnyInstancePlaying)
                     WheelSlip.Play();
             }
+            else
+                WheelSlip.Stop();
+
+            // Start
+            if (!Train.SpeedComponent.IsTrainAccelerating)
+                Start.Stop();
 
             // Steam brakes
             if(Train.SpeedComponent.Speed > 0)
