@@ -105,13 +105,14 @@ namespace RogersSierra.Components
 
         public override void OnInit()
         {
-
+            Train.OnDerail += () =>
+            {
+                Utils.ProcessAllValuesFieldsByType<AnimatePropsHandler>(this, x => x.Detach());
+            };
         }
 
         public override void OnTick()
-        {
-            // 10m / 4.3m = 2,3~ full wheel turn
-            // 2,3 wheel turn = 2.3 * 360 = 828~ degrees
+        {   // 2,3 wheel turn = 2.3 * 360 = 828~ degrees
             // tick calls 1/fps times per second, so 828 / 60 = 13,8 degrees per tick
 
             // Calculate drive wheel rotation per frame

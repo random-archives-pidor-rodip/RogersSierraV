@@ -134,6 +134,12 @@ namespace RogersSierra.Components
             // Brake multiplier
             float brakeMultiplier = airBrakeInput.Remap(0, 1, 1, 0);
 
+            if(Train.IsDerailed)
+            {
+                steamForce = 0;
+                acceleration = 0;
+            }
+
             // Combine all forces
             float totalForce = (steamForce * brakeMultiplier * steamBrakeInput) - dragForce + inerciaForce - frictionForce - brakeForce;
             totalForce *= AccelerationMultiplier * Game.LastFrameTime;
