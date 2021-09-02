@@ -68,6 +68,8 @@ namespace RogersSierra
             if(e.KeyCode == Keys.L)
                 Train.Spawn(Game.Player.Character.Position, true);
 
+            if (e.KeyCode == Keys.O)
+                Train.ActiveTrain.Derail();
 
             if (e.KeyCode == Keys.K)
                 Train.DeleteAllInstances();

@@ -82,6 +82,7 @@
     <Compile Include="Components\CabComponent.cs" />
     <Compile Include="Components\ComponentEnums\LightState.cs" />
     <Compile Include="Components\ControlComponent.cs" />
+    <Compile Include="Components\DerailComponent.cs" />
     <Compile Include="Components\DrivetrainComponent.cs" />
     <Compile Include="Components\DynamoComponent.cs" />
     <Compile Include="Components\InteractionUtils\InteractiveRope.cs" />

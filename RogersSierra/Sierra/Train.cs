@@ -4,6 +4,7 @@ using GTA.Math;
 using RogersSierra.Abstract;
 using RogersSierra.Components;
 using RogersSierra.Components.InteractionUtils;
+using RogersSierra.Extensions;
 using RogersSierra.Natives;
 using System;
 using System.Collections.Generic;
@@ -75,6 +76,11 @@ namespace RogersSierra.Sierra
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
+        public DerailComponent DerailComponent;
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public DynamoComponent DynamoComponent;
 
         /// <summary>
@@ -108,6 +114,16 @@ namespace RogersSierra.Sierra
         public Action OnDispose { get; set; }
 
         /// <summary>
+        /// Invokes on derail.
+        /// </summary>
+        public Action OnDerail { get; set; }
+
+        /// <summary>
+        /// Is train derailed or not.
+        /// </summary>
+        public bool IsDerailed { get; private set; }
+
+        /// <summary>
         /// Blip of the train.
         /// </summary>
         public Blip Blip { get; private set; }
@@ -132,11 +148,12 @@ namespace RogersSierra.Sierra
                 Decorator.SetBool(Constants.TrainDirection, (bool) direction);
 
             // TODO: Remove offset
-            visibleModel.AttachTo(InvisibleModel, new Vector3(0, -4.3f, 0));
+            visibleModel.AttachToWithCollision(InvisibleModel, new Vector3(0, -4.3f, 0));
 
             // Hide invisible model, we can't use setVisibility because 
             // visible model will be affected too
             InvisibleModel.Opacity = 0;
+            InvisibleModel.IsCollisionEnabled = false;
 
             Blip = InvisibleModel.AddBlip();
             Blip.Sprite = (BlipSprite)795;
@@ -197,7 +214,10 @@ namespace RogersSierra.Sierra
                 field.SetValue(this, component);
 
                 // Spawn all props
-                Utils.ProcessAllValuesFieldsByType<AnimateProp>(component, x => x.SpawnProp());
+                Utils.ProcessAllValuesFieldsByType<AnimateProp>(component, x =>
+                {
+                    x.SpawnProp();
+                });
 
                 Components.Add(component);
             });
@@ -263,6 +283,17 @@ namespace RogersSierra.Sierra
             Components.Clear();
 
             Disposed = true;
+        }
+
+        /// <summary>
+        /// Derails train.
+        /// </summary>
+        public void Derail()
+        {
+            VisibleModel.Detach();
+            IsDerailed = true;
+
+            OnDerail?.Invoke();
         }
 
         /// <summary>

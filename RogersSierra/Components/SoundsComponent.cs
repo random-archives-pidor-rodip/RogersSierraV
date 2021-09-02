@@ -73,9 +73,9 @@ namespace RogersSierra.Components
             };
 
             // Brake sounds
-            SteamBrakeStart = _audioEngine.Create(Files.SteamBrakeStart, Presets.Exterior);
-            SteamBrakeEnd = _audioEngine.Create(Files.SteamBrakeEnd, Presets.Exterior);
-            SteamBrakeLoop = _audioEngine.Create(Files.SteamBrakeLoop, Presets.ExteriorLoop);
+            SteamBrakeStart = _audioEngine.Create(Files.SteamBrakeStart, Presets.ExteriorLoud);
+            SteamBrakeEnd = _audioEngine.Create(Files.SteamBrakeEnd, Presets.ExteriorLoud);
+            SteamBrakeLoop = _audioEngine.Create(Files.SteamBrakeLoop, Presets.ExteriorLoudLoop);
             SteamBrakeLoop.FadeOutMultiplier = 1.3f;
 
             // Ambient sounds
@@ -140,7 +140,7 @@ namespace RogersSierra.Components
 
             Train.SpeedComponent.OnTrainStart += () =>
             {
-                if(!IsWheelSlipping())
+                if(!IsWheelSlipping() && !Train.IsDerailed)
                     Start.Play();
             };
         }

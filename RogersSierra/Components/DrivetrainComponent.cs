@@ -73,11 +73,17 @@ namespace RogersSierra.Components
 
         public override void OnInit()
         {
-            
+            Train.OnDerail += () => 
+            {
+                Utils.ProcessAllValuesFieldsByType<AnimateProp>(this, x => x.Detach());
+            };
         }
 
         public override void OnTick()
         {
+            if (Train.IsDerailed)
+                return;
+
             float angleRad = Train.WheelComponent.DrivingWheelAngle.ToRad();
             float angleCos = (float)Math.Cos(angleRad);
             float angleSin = (float)Math.Sin(angleRad);

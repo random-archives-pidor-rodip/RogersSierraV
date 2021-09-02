@@ -18,7 +18,7 @@ namespace RogersSierra.Components
         /// Returns True if player is in train, otherwise False.
         /// </summary>
         public bool IsPlayerDrivingTrain =>
-            Game.Player.Character.CurrentVehicle == Train.InvisibleModel;
+            Game.Player.Character.CurrentVehicle == Train.VisibleModel;
 
         /// <summary>
         /// Whether player is inside cab or not.
@@ -82,7 +82,7 @@ namespace RogersSierra.Components
 
         public override void OnInit()
         {
-            _prevTrainAngle = Train.InvisibleModel.Rotation.Z;
+            _prevTrainAngle = Train.VisibleModel.Rotation.Z;
         }
 
         public override void OnTick()
@@ -121,6 +121,9 @@ namespace RogersSierra.Components
         /// </summary>
         private void ProcessCabCamera()
         {
+            if (CabCamera == null)
+                return;
+
             // TODO: Fix camera not rotating with train
 
             if(FusionUtils.IsCameraInFirstPerson() && IsPlayerDrivingTrain)
@@ -131,7 +134,7 @@ namespace RogersSierra.Components
 
                 // Rotate camera with train
 
-                var trainAngle = Train.InvisibleModel.Rotation.Z;
+                var trainAngle = Train.VisibleModel.Rotation.Z;
                 var prevAngle = _prevTrainAngle;
                 _prevTrainAngle = trainAngle;
 
@@ -207,13 +210,13 @@ namespace RogersSierra.Components
         /// </summary>
         public void Enter()
         {
-            Game.Player.Character.Task.WarpIntoVehicle(Train.InvisibleModel, VehicleSeat.Driver);
+            Game.Player.Character.Task.WarpIntoVehicle(Train.VisibleModel, VehicleSeat.Passenger);
 
             // Create cab camera
-            CabCamera = World.CreateCamera(Train.InvisibleModel.Position, Train.InvisibleModel.Rotation, 65);
-            CabCamera.AttachTo(Train.InvisibleModel, new Vector3(1.1835f, -5.022f, 3.2955f));
+            CabCamera = World.CreateCamera(Train.VisibleModel.Position, Train.VisibleModel.Rotation, 65);
+            CabCamera.AttachTo(Train.VisibleModel, new Vector3(1.17f, -0.69f, 3.21f));
 
-            CabCamera.Direction = Train.InvisibleModel.Quaternion * Vector3.RelativeFront;
+            CabCamera.Direction = Train.VisibleModel.Quaternion * Vector3.RelativeFront;
         }
 
         /// <summary>
