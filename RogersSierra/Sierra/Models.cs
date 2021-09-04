@@ -27,6 +27,7 @@ namespace RogersSierra.Sierra
         public static CustomModel CabGearHandle = new CustomModel("sierra_gear_lever_handle");
         public static CustomModel CabAirBrakeLever = new CustomModel("sierra_cab_airbrake_lever");
         public static CustomModel CabSteamBrakeLever = new CustomModel("sierra_cab_brake_lever");
+        public static CustomModel CabWindowRight = new CustomModel("sierra_cab_window_right");
 
         // Brakes
         public static CustomModel AirbrakeMain = new CustomModel("sierra_airbrake_main");
