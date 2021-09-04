@@ -49,6 +49,9 @@ namespace RogersSierra.Components
         /// </summary>
         public InteractiveRope WhistleRope;
 
+
+        public InteractiveProp RightWindow;
+
         /// <summary>
         /// Controller for cab props.
         /// </summary>
@@ -100,7 +103,7 @@ namespace RogersSierra.Components
                 "lever_handle",
                 AnimationType.Rotation,
                 Coordinate.Z,
-                false, -5, 0, 0, 6.6f, 1, false, true);
+                false, -5, 0, 0, 20, 1, false, true);
             
             GearLever = InteractableProps.Add(
                 Models.CabGearLever,
@@ -122,7 +125,7 @@ namespace RogersSierra.Components
                 "lever_handle",
                 AnimationType.Rotation,
                 Coordinate.X,
-                false, -19, 0, 0, 10, 1, false, true);
+                false, -20, 0, 0, 50, 1, false, true);
 
             AirBrakeLever = InteractableProps.Add(
                 Models.CabSteamBrakeLever,
@@ -143,6 +146,11 @@ namespace RogersSierra.Components
                 Control.LookLeft,
                 false, -30, 0, 0, 10);
             SteamBrakeLever.SetupAltControl(Control.LookLeft, false);
+
+            RightWindow = InteractableProps.Add(Models.CabWindowRight, Train.VisibleModel, "cab_window_right", AnimationType.Offset, Coordinate.X, true, -0.03f, 0, 0, 0.03f, 1, false, false);
+            RightWindow.AnimateProp.PlayNextSteps = true;
+            RightWindow.AnimateProp.PlayReverse = true;
+            RightWindow.AnimateProp[AnimationType.Offset][AnimationStep.Second][Coordinate.Y].Setup(true, true, 0, Models.CabWindowRight.Model.GetSize().width + 0.04f, 1, 0.5f, 1, true);
 
             WhistleRope = new InteractiveRope(Train.VisibleModel, "whistle_rope_pull_start", "whistle_rope_pull_end", true, true);
         }
