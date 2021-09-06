@@ -11,6 +11,7 @@ namespace RogersSierra.Sierra
         // Wheels
         public static CustomModel FrontWheel = new CustomModel("sierra_fwheel");
         public static CustomModel DrivingWheel = new CustomModel("sierra_dwheel");
+        public static CustomModel TenderWheel = new CustomModel("sierra_twheel");
 
         // Drivetrain
         public static CustomModel CouplingRod = new CustomModel("sierra_coupling_rod");
