@@ -3,6 +3,7 @@ using GTA.Math;
 using RogersSierra.Abstract;
 using RogersSierra.Extensions;
 using RogersSierra.Sierra;
+using System;
 using static FusionLibrary.FusionEnums;
 
 namespace RogersSierra.Components
@@ -97,6 +98,12 @@ namespace RogersSierra.Components
             _wheelSparks.SetState(AreWheelSparksShown);
             _dynamoSteam.SetState(AreDynamoSteamShown);
             _cylinderSteam.SetState(IsCylinderSteamShown);
+
+            _dynamoSteam.Rotation = Math.Abs(Train.SpeedComponent.Speed) < 3 ? Vector3.Zero : new Vector3(90, 0, 0);
+            for(int i = 0; i < _wheelSparks.ParticlePlayers.Count; i++)
+            {
+                _wheelSparks[i].Rotation = Train.WheelComponent.DriveWheelSpeed >= 0 ? Vector3.Zero : new Vector3(190, 0, 0);
+            }
         }
     }
 }
