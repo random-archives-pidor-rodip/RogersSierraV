@@ -30,7 +30,6 @@ namespace RogersSierra.Natives
         /// <param name="speed">Speed to change.</param>
         public static void SetTrainSpeed(Vehicle train, float speed)
         {
-            Function.Call(Hash.SET_TRAIN_CRUISE_SPEED, train, speed);
             Function.Call(Hash.SET_TRAIN_SPEED, train, speed);
         }
     }

@@ -88,7 +88,6 @@ namespace RogersSierra.Components
                     rotOffset.X = 85;
 
                 var wheelProp = new AnimateProp(wheelModel, Train.VisibleModel, bone, Vector3.Zero, rotOffset);
-                wheelProp.SpawnProp();
 
                 wheelHandler.Add(wheelProp);
             }

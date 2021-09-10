@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace RogersSierra.Components
 {
+    /// <summary>
+    /// Handles train derailnment.
+    /// </summary>
     public class DerailComponent : Component
     {
         /// <summary>
@@ -37,8 +40,11 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
-            var forwardVector = Train.InvisibleModel.ForwardVector;
+            // Derail if train going is too fast on sharp corner
 
+            // We're basically comparing forward vector of previous frame and current frame
+            // and if difference is too high and speed is higher than derailing minumum then train derails.
+            var forwardVector = Train.InvisibleModel.ForwardVector;
             if (Math.Abs(Train.SpeedComponent.Speed) >= DerailMinSpeed)
             {
                 float angle = Vector3.Angle(forwardVector, _previousForwardAngle);
@@ -52,6 +58,22 @@ namespace RogersSierra.Components
                 }
             }
             _previousForwardAngle = forwardVector;
+
+            //// Derail if train crashed with something heavy
+            //if(Train.VisibleModel.HasCollided)
+            //{
+            //    var counter = 0;
+            //    var closestEntities = World.GetNearbyEntities(Train.VisibleModel.Position, 20);
+            //    for (int i = 0; i < closestEntities.Count(); i++)
+            //    {
+            //        if(closestEntities[i].HasCollided)
+            //        {
+            //            counter++;
+            //        }
+            //    }
+
+            //    GTA.UI.Screen.ShowSubtitle($"Collided entities: {counter}");
+            //}
         }
 
         /// <summary>

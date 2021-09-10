@@ -1,6 +1,7 @@
 ﻿using FusionLibrary;
 using FusionLibrary.Extensions;
 using GTA;
+using GTA.Native;
 using RogersSierra.Abstract;
 using RogersSierra.Natives;
 using RogersSierra.Sierra;
@@ -78,7 +79,7 @@ namespace RogersSierra.Components
 
         public override void OnInit()
         {
-
+            Function.Call(Hash.SET_TRAIN_CRUISE_SPEED, Train.InvisibleModel, 0);
         }
 
         public override void OnTick()

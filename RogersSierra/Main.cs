@@ -1,6 +1,9 @@
 ﻿using FusionLibrary;
 using GTA;
+using GTA.Math;
+using GTA.Native;
 using RogersSierra.Components.InteractionUtils;
+using RogersSierra.Natives;
 using RogersSierra.Sierra;
 using System;
 using System.Windows.Forms;
@@ -37,9 +40,9 @@ namespace RogersSierra
 
                 // Respawn trains from previous session
                 var trains = World.GetAllVehicles(Models.InvisibleSierra);
-                for(int i = 0; i < trains.Length; i++)
+                for (int i = 0; i < trains.Length; i++)
                 {
-                    Train.Respawn(trains[i]);  
+                    Train.Respawn(trains[i]);
                 }
                 FirstTick = true;
             }
@@ -51,7 +54,7 @@ namespace RogersSierra
             }
             UserInterface.OnTick();
 
-            for(int i = 0; i < InteractiveRope.Ropes.Count; i++)
+            for (int i = 0; i < InteractiveRope.Ropes.Count; i++)
             {
                 InteractiveRope.Ropes[i].OnTick();
             }
@@ -69,7 +72,10 @@ namespace RogersSierra
                 Train.Spawn(Game.Player.Character.Position, true);
 
             if (e.KeyCode == Keys.O)
-                Train.ActiveTrain.Derail();
+            {
+                var prop = new AnimateProp(Models.DrivingWheel, Game.Player.Character.CurrentVehicle, "combination_lever");
+                prop.SpawnProp();
+            }
 
             if (e.KeyCode == Keys.K)
                 Train.DeleteAllInstances();

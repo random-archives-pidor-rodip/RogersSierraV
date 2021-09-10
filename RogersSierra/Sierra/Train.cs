@@ -1,16 +1,19 @@
 ﻿using FusionLibrary;
+using FusionLibrary.Extensions;
 using GTA;
 using GTA.Math;
 using RogersSierra.Abstract;
 using RogersSierra.Components;
 using RogersSierra.Components.InteractionUtils;
-using RogersSierra.Extensions;
 using RogersSierra.Natives;
 using System;
 using System.Collections.Generic;
 
 namespace RogersSierra.Sierra
 {
+    /// <summary>
+    /// Handles all stuff related to train.
+    /// </summary>
     public class Train
     {
         /// <summary>
@@ -48,64 +51,20 @@ namespace RogersSierra.Sierra
         /// </summary>
         public static Train ActiveTrain { get; set; }
 
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
+        // Train components
+
+        public PropComponent PropComponent;
         public BindComponent BindComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public BoilerComponent BoilerComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public BrakeComponent BrakeComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public CabComponent CabComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public ControlComponent ControlComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public DerailComponent DerailComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public DynamoComponent DynamoComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public ParticleComponent ParticleComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public SoundsComponent SoundsComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public SpeedComponent SpeedComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public WheelComponent WheelComponent;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public DrivetrainComponent DrivetrainComponent;
 
         /// <summary>
@@ -129,6 +88,11 @@ namespace RogersSierra.Sierra
         public Blip Blip { get; private set; }
 
         /// <summary>
+        /// Returns True if all components are initialized, otherwise False.
+        /// </summary>
+        public bool AreComponentsInitialized { get; private set; }
+
+        /// <summary>
         /// Base constructor of <see cref="Train"/>.
         /// </summary>
         /// <param name="invisibleModel">Invisible vehicle of train.</param>
@@ -147,30 +111,25 @@ namespace RogersSierra.Sierra
             if(direction != null)
                 Decorator.SetBool(Constants.TrainDirection, (bool) direction);
 
-            // TODO: Remove offset
-            visibleModel.AttachToWithCollision(InvisibleModel, new Vector3(0, -4.3f, 0));
+            // Make invisible model... invisible
+            invisibleModel.IsVisible = false;
+            invisibleModel.IsCollisionEnabled = false;
 
-            // Hide invisible model, we can't use setVisibility because 
-            // visible model will be affected too
-            InvisibleModel.Opacity = 0;
-            InvisibleModel.IsCollisionEnabled = false;
+            // TODO: Remove offset, is there any point though?
 
+            visibleModel.AttachToPhysically(InvisibleModel, new Vector3(0, -4.3f, 0), Vector3.Zero);
+
+            // Add blip to train
             Blip = InvisibleModel.AddBlip();
             Blip.Sprite = (BlipSprite)795;
             Blip.Color = (BlipColor)70;
             Blip.Name = "Rogers Sierra No.3";
 
+            // Add train to trains list
             Trains.Add(this);
 
+            // Initialize every component
             RegisterHandlers();
-        }
-
-        /// <summary>
-        /// Permanently delete all spawned trains.
-        /// </summary>
-        public static void DeleteAllInstances()
-        {
-            Trains.ForEach(x => x.Dispose(true));
         }
 
         /// <summary>
@@ -201,32 +160,56 @@ namespace RogersSierra.Sierra
         }
 
         /// <summary>
-        /// Adds all train components in the list and spawns props.
+        /// Adds all train components in the list.
         /// </summary>
         private void RegisterHandlers()
         {
             // Initialize all components
-            Utils.ProcessAllClassFieldsByType<Component>(this, field =>
+            Utils.ProcessAllClassFieldsByType<Component>(this, componentField =>
             {
-                var type = field.FieldType;
-
-                var component = (Component) Activator.CreateInstance(type, this);
-                field.SetValue(this, component);
-
-                // Spawn all props
-                Utils.ProcessAllValuesFieldsByType<AnimateProp>(component, x =>
+                var type = componentField.GetType();
+                if (type != typeof(DrivetrainComponent))
                 {
-                    x.SpawnProp();
-                });
+                    // Create and set instance of component
+                    var component = (Component)Activator.CreateInstance(componentField.FieldType, this);
+                    componentField.SetValue(this, component);
 
-                Components.Add(component);
+                    Components.Add(component);
+                }
             });
+
+            // Add all props to prop component
+            for (int i = 0; i < Components.Count; i++)
+            {
+                var component = Components[i];
+
+                // AnimateProp
+                PropComponent.AnimateProps.AddRange(Utils.GetAllFieldValues<AnimateProp>(component));
+
+                // AnimatePropsHandler
+                var animatePropHandlers = Utils.GetAllFieldValues<AnimatePropsHandler>(component);
+                for (int k = 0; k < animatePropHandlers.Count; k++)
+                {
+                    var handler = animatePropHandlers[k];
+                    PropComponent.AnimateProps.AddRange(handler.Props);
+                }
+
+                // List<AnimateProp>
+                var animatePropList = Utils.GetAllFieldValues<List<AnimateProp>>(component);
+                for (int k = 0; k < animatePropList.Count; k++)
+                {
+                    var propList = animatePropList[i];
+                    PropComponent.AnimateProps.AddRange(propList);
+                }
+            }
 
             // Call onInit
             Utils.ProcessAllValuesFieldsByType<Component>(this, x =>
             {
                 x.OnInit();
             });
+
+            AreComponentsInitialized = true;
         }
         
         /// <summary>
@@ -234,55 +217,17 @@ namespace RogersSierra.Sierra
         /// </summary>
         public void OnTick()
         {
+            if (!AreComponentsInitialized)
+                return;
+
+            // Calls on tick for every component
             for(int i = 0; i < Components.Count; i++)
             {
                 Components[i].OnTick();
             }
-        }
-
-        /// <summary>
-        /// Destroys train instance.
-        /// </summary>
-        /// <param name="deletePermanent">If train is deleted permanently it won't be possible to respawn it later.</param>
-        public void Dispose(bool deletePermanent = false)
-        {
-            if (this == ActiveTrain)
-                ActiveTrain = null;
-
-            if (deletePermanent)
-                InvisibleModel.Delete();
-            else
-            {
-                // Mark sierra as non-script one
-                Decorator.SetBool(Constants.TrainDecorator, false);
-            }
-
-            Blip.Delete();
-
-            VisibleModel.Delete();
-
-            OnDispose?.Invoke();
-
-            for (int i = 0; i < Components.Count; i++)
-            {
-                var component = Components[i];
-
-                // TODO: Make function accept list of object types
-
-                // Dispose AnimateProp, List<AnimateProp and Rope
-                Utils.ProcessAllValuesFieldsByType<InteractiveController>(component, x => x.Dispose());
-                Utils.ProcessAllValuesFieldsByType<AnimateProp>(component, x => x.Dispose());
-                Utils.ProcessAllValuesFieldsByType<AnimatePropsHandler>(component, x => x.Dispose());
-                Utils.ProcessAllValuesFieldsByType<List<AnimateProp>>(component, x =>
-                {
-                    for (int k = 0; k < x.Count; k++)
-                        x[k].Dispose();
-                });
-                Utils.ProcessAllValuesFieldsByType<InteractiveRope>(component, x => x.Dispose());
-            }
-            Components.Clear();
-
-            Disposed = true;
+            
+            // Remove dirt because it's not supported by train model.
+            VisibleModel.DirtLevel = 0;
         }
 
         /// <summary>
@@ -294,6 +239,56 @@ namespace RogersSierra.Sierra
             IsDerailed = true;
 
             OnDerail?.Invoke();
+        }
+
+        /// <summary>
+        /// Destroys train instance.
+        /// </summary>
+        /// <param name="deletePermanent">If train is deleted permanently it won't be possible to respawn it later.</param>
+        public void Dispose(bool deletePermanent = false)
+        {
+            // If this train was active one, reset active train variable
+            // so we won't access null pointer.
+            if (this == ActiveTrain)
+                ActiveTrain = null;
+
+            // Remove invisible model completely if train doesn't needs to be respawned later,
+            // otherwise mark train as disposed but don't delete it.
+            if (deletePermanent)
+                InvisibleModel.Delete();
+            else
+            {
+                // Mark sierra as non-script one
+                Decorator.SetBool(Constants.TrainDecorator, false);
+            }
+
+            // Remove other models
+            Blip.Delete();
+            VisibleModel.Delete();
+
+            // Make sure to call OnDispose before removing all components.
+            OnDispose?.Invoke();
+
+            // Remove all components
+            for (int i = 0; i < Components.Count; i++)
+            {
+                var component = Components[i];
+
+                Utils.ProcessAllValuesFieldsByType<InteractiveController>(component, x => x.Dispose());
+                Utils.ProcessAllValuesFieldsByType<InteractiveRope>(component, x => x.Dispose());
+            }
+            Components.Clear();
+
+            // Mark train as disposed.
+            Disposed = true;
+        }
+
+        /// <summary>
+        /// Permanently delete all spawned trains.
+        /// </summary>
+        public static void DeleteAllInstances()
+        {
+            Trains.ForEach(x => x.Dispose(true));
         }
 
         /// <summary>

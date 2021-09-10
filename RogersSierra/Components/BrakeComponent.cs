@@ -4,6 +4,9 @@ using RogersSierra.Sierra;
 
 namespace RogersSierra.Components
 {
+    /// <summary>
+    /// Handles train brakes.
+    /// </summary>
     public class BrakeComponent : Component
     {
         /// <summary>
@@ -35,7 +38,6 @@ namespace RogersSierra.Components
             Brakes.Add(new AnimateProp(Models.Brake1, Train.VisibleModel, "brake_1"));
             Brakes.Add(new AnimateProp(Models.Brake2, Train.VisibleModel, "brake_2"));
             Brakes.Add(new AnimateProp(Models.Brake3, Train.VisibleModel, "brake_3"));
-            Brakes.SpawnProp();
         }
 
         public override void OnInit()

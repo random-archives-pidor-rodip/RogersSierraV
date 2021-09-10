@@ -80,6 +80,7 @@
     <Compile Include="Components\DynamoComponent.cs" />
     <Compile Include="Components\InteractionUtils\InteractiveRope.cs" />
     <Compile Include="Components\ParticleComponent.cs" />
+    <Compile Include="Components\PropComponent.cs" />
     <Compile Include="Components\SoundsComponent.cs" />
     <Compile Include="Components\SpeedComponent.cs" />
     <Compile Include="Components\WheelComponent.cs" />

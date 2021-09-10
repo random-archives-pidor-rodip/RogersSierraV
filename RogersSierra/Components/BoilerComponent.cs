@@ -1,12 +1,12 @@
-﻿using FusionLibrary;
-using FusionLibrary.Extensions;
-using GTA;
-using LemonUI.TimerBars;
+﻿using GTA;
 using RogersSierra.Abstract;
 using RogersSierra.Sierra;
 
 namespace RogersSierra.Components
 {
+    /// <summary>
+    /// Simple simulation of boiler pressure.
+    /// </summary>
     public class BoilerComponent : Component
     {
         /// <summary>

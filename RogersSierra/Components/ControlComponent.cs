@@ -110,10 +110,7 @@ namespace RogersSierra.Components
             ProcessArcadeControls();
             ProcessInteraction();
 
-            if (Game.IsControlJustPressed(Control.VehicleHeadlight) && IsPlayerDrivingTrain)
-            {
-                Train.DynamoComponent.SwitchHeadlight();
-            }
+            //GTA.UI.Screen.ShowSubtitle(IsPlayerDrivingTrain.ToString());
         }
 
         /// <summary>
@@ -198,7 +195,8 @@ namespace RogersSierra.Components
         /// </summary>
         public void Leave()
         {
-            Game.Player.Character.Task.LeaveVehicle();
+            Game.Player.Character.Position = Train.VisibleModel.Bones["cab_center"].Position;
+            //Game.Player.Character.Task.LeaveVehicle();
 
             CabCamera?.Delete();
 
@@ -210,7 +208,7 @@ namespace RogersSierra.Components
         /// </summary>
         public void Enter()
         {
-            Game.Player.Character.Task.WarpIntoVehicle(Train.VisibleModel, VehicleSeat.Passenger);
+            Game.Player.Character.Task.EnterVehicle(Train.VisibleModel, VehicleSeat.Driver);
 
             // Create cab camera
             CabCamera = World.CreateCamera(Train.VisibleModel.Position, Train.VisibleModel.Rotation, 65);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace RogersSierra.Sierra
@@ -62,16 +63,33 @@ namespace RogersSierra.Sierra
         /// Executes action for all field values of given type.
         /// </summary>
         /// <typeparam name="T">Type of field.</typeparam>
-        /// <param name="obj">Class object.</param>
+        /// <param name="instance">Class object.</param>
         /// <param name="action">Action to execute.</param>
-        public static void ProcessAllValuesFieldsByType<T>(object obj, Action<T> action)
+        public static void ProcessAllValuesFieldsByType<T>(object instance, Action<T> action)
         {
-            ProcessAllClassFieldsByType<T>(obj, field =>
+            ProcessAllClassFieldsByType<T>(instance, field =>
             {
-                var fieldValue = (T)field.GetValue(obj);
+                var fieldValue = (T)field.GetValue(instance);
 
                 action(fieldValue);
             });
+        }
+
+        public static List<T> GetAllFieldValues<T>(object instance)
+        {
+            var fields = instance.GetType().GetFields();
+            var list = new List<T>();
+            
+            // Go through every class field
+            for(int i = 0; i < fields.Length; i++)
+            {
+                var field = fields[i];
+
+                // Check if it have type of T
+                if(field.FieldType == typeof(T))
+                    list.Add((T)field.GetValue(instance));
+            }
+            return list;
         }
     }
 }

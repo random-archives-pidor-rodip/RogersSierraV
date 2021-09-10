@@ -1,17 +1,16 @@
 ﻿using FusionLibrary;
 using FusionLibrary.Extensions;
-using GTA;
 using GTA.Math;
-using GTA.Native;
 using RogersSierra.Abstract;
 using RogersSierra.Sierra;
 using System;
-using System.Drawing;
-using System.Threading;
 using static FusionLibrary.FusionEnums;
 
 namespace RogersSierra.Components
 {
+    /// <summary>
+    /// Handles drivetrain animation.
+    /// </summary>
     public class DrivetrainComponent : Component
     {
         public AnimateProp CouplingRod;
@@ -48,11 +47,11 @@ namespace RogersSierra.Components
             CombinationLever = new AnimateProp(Models.CombinationLever, Train.VisibleModel, "combination_lever");
             CombinationLever.SpawnProp();
 
-            RadiusRod = new AnimateProp(Models.RadiusRod, CombinationLever, "radius_rod_mounting");
+            RadiusRod = new AnimateProp(Models.RadiusRod, CombinationLever, "radius_rod_mounting", Vector3.Zero, Vector3.Zero, false);
             RadiusRod.UseFixedRot = false;
             RadiusRod.SpawnProp();
 
-            ValveRod = new AnimateProp(Models.ValveRod, RadiusRod, "radius_rod_end");
+            ValveRod = new AnimateProp(Models.ValveRod, RadiusRod, "radius_rod_end", Vector3.Zero, Vector3.Zero, false);
             ValveRod.UseFixedRot = false;
 
             // Calculate distance from mounting point of coupling rod to center of wheel
