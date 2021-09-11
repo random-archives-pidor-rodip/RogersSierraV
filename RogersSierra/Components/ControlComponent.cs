@@ -208,7 +208,7 @@ namespace RogersSierra.Components
         /// </summary>
         public void Enter()
         {
-            Game.Player.Character.Task.EnterVehicle(Train.VisibleModel, VehicleSeat.Driver);
+            Game.Player.Character.Task.WarpIntoVehicle(Train.VisibleModel, VehicleSeat.Driver);
 
             // Create cab camera
             CabCamera = World.CreateCamera(Train.VisibleModel.Position, Train.VisibleModel.Rotation, 65);

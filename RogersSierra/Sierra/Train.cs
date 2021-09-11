@@ -1,10 +1,10 @@
 ﻿using FusionLibrary;
-using FusionLibrary.Extensions;
 using GTA;
 using GTA.Math;
 using RogersSierra.Abstract;
 using RogersSierra.Components;
 using RogersSierra.Components.InteractionUtils;
+using RogersSierra.Extensions;
 using RogersSierra.Natives;
 using System;
 using System.Collections.Generic;
@@ -93,6 +93,21 @@ namespace RogersSierra.Sierra
         public bool AreComponentsInitialized { get; private set; }
 
         /// <summary>
+        /// Was train already attached to invisible model or not.
+        /// </summary>
+        private bool _wasTrainAttached;
+
+        /// <summary>
+        /// Gametime when train will be attached to invisible model.
+        /// </summary>
+        private int _attachTime;
+
+        /// <summary>
+        /// Temporary train for attach collision bug workaround.
+        /// </summary>
+        private Vehicle _tempTrain;
+
+        /// <summary>
         /// Base constructor of <see cref="Train"/>.
         /// </summary>
         /// <param name="invisibleModel">Invisible vehicle of train.</param>
@@ -111,13 +126,21 @@ namespace RogersSierra.Sierra
             if(direction != null)
                 Decorator.SetBool(Constants.TrainDirection, (bool) direction);
 
-            // Make invisible model... invisible
+            // Make invisible model... invisible and disable its collision
             invisibleModel.IsVisible = false;
             invisibleModel.IsCollisionEnabled = false;
 
-            // TODO: Remove offset, is there any point though?
+            // We apply force and attach it after some time in order to get
+            // collision work properly, if u don't do this player will go through
+            // train and raycast may not work correctly
+            visibleModel.Position += Vector3.WorldUp * 50;
+            visibleModel.ApplyForce(Vector3.UnitX);
+            _attachTime = Game.GameTime + 1500;
 
-            visibleModel.AttachToPhysically(InvisibleModel, new Vector3(0, -4.3f, 0), Vector3.Zero);
+            _tempTrain = World.CreateVehicle(visibleModel.Model, visibleModel.Position + Vector3.WorldUp * 1, 0);
+            _tempTrain.Opacity = 0;
+            _tempTrain.IsPersistent = true;
+            _tempTrain.IsInvincible = false;
 
             // Add blip to train
             Blip = InvisibleModel.AddBlip();
@@ -142,7 +165,7 @@ namespace RogersSierra.Sierra
         {
             var invModel = NVehicle.CreateTrain(26, position, direction);
             var visModel = World.CreateVehicle(Models.VisibleSierra.Model, position);
-
+            
             return new Train(invModel, visModel, direction);
         }
 
@@ -219,6 +242,16 @@ namespace RogersSierra.Sierra
         {
             if (!AreComponentsInitialized)
                 return;
+
+            // Attach collision bug workaround, explained in constructor
+            if(!_wasTrainAttached && Game.GameTime > _attachTime)
+            {
+                VisibleModel.AttachToWithCollision(InvisibleModel, Vector3.Zero, Vector3.Zero);
+                _tempTrain.Delete();
+                _tempTrain = null;
+
+                _wasTrainAttached = true;
+            }
 
             // Calls on tick for every component
             for(int i = 0; i < Components.Count; i++)
