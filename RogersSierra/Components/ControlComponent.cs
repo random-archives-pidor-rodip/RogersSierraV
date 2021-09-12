@@ -17,7 +17,7 @@ namespace RogersSierra.Components
         /// Returns True if player is in train, otherwise False.
         /// </summary>
         public bool IsPlayerDrivingTrain =>
-            Game.Player.Character.CurrentVehicle == Train.Locomotive.InvisibleVehicle;
+            Game.Player.Character.CurrentVehicle == Train.LocomotiveCarriage.InvisibleVehicle;
 
         /// <summary>
         /// Whether player is inside cab or not.
@@ -207,7 +207,7 @@ namespace RogersSierra.Components
         /// </summary>
         public void Enter()
         {
-            Game.Player.Character.Task.WarpIntoVehicle(Train.Locomotive.InvisibleVehicle, VehicleSeat.Driver);
+            Game.Player.Character.Task.WarpIntoVehicle(Train.LocomotiveCarriage.InvisibleVehicle, VehicleSeat.Driver);
 
             // Create cab camera
             CabCamera = World.CreateCamera(Locomotive.Position, Locomotive.Rotation, 65);

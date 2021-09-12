@@ -29,17 +29,17 @@ namespace RogersSierra
         /// <summary>
         /// CustomTrain handler for this train.
         /// </summary>
-        public readonly CustomTrain Train;
+        public readonly CustomTrain CustomTrain;
 
         /// <summary>
         /// Locomotive carriage.
         /// </summary>
-        public readonly Carriage Locomotive;
+        public readonly Carriage LocomotiveCarriage;
         
         /// <summary>
         /// Tender carriage.
         /// </summary>
-        public readonly Carriage Tender;
+        public readonly Carriage TenderCarriage;
 
         /// <summary>
         /// List of all sierra components.
@@ -67,7 +67,7 @@ namespace RogersSierra
         public BrakeComponent BrakeComponent;
         public CabComponent CabComponent;
         public ControlComponent ControlComponent;
-        public DerailComponent DerailComponent;
+        public CollisionComponent DerailComponent;
         public DynamoComponent DynamoComponent;
         public ParticleComponent ParticleComponent;
         public SoundsComponent SoundsComponent;
@@ -85,9 +85,9 @@ namespace RogersSierra
         /// </summary>
         private RogersSierra(CustomTrain train)
         {
-            Train = train;
-            Locomotive = Train.GetCarriage(Models.VisibleSierra);
-            Tender = Train.GetCarriage(Models.VisibleTender);
+            CustomTrain = train;
+            LocomotiveCarriage = CustomTrain.GetCarriage(Models.VisibleSierra);
+            TenderCarriage = CustomTrain.GetCarriage(Models.VisibleTender);
 
             // Add train to trains list
             AllSierras.Add(this);
@@ -194,12 +194,12 @@ namespace RogersSierra
             }
 
             // Remove dirt because it's not supported by train model
-            Locomotive.VisibleVehicle.DirtLevel = 0;
-            Tender.VisibleVehicle.DirtLevel = 0;
+            LocomotiveCarriage.VisibleVehicle.DirtLevel = 0;
+            TenderCarriage.VisibleVehicle.DirtLevel = 0;
 
             // May be damaged when spawning, we don't need it anyway
-            Locomotive.VisibleVehicle.PetrolTankHealth = 0;
-            Tender.VisibleVehicle.PetrolTankHealth = 0;
+            LocomotiveCarriage.VisibleVehicle.PetrolTankHealth = 0;
+            TenderCarriage.VisibleVehicle.PetrolTankHealth = 0;
         }
 
         ///// <summary>
@@ -226,7 +226,7 @@ namespace RogersSierra
 
             // Remove with customtrain if train doesn't needs to be respawned later
             if (deletePermanent)
-                Train.Dispose();
+                CustomTrain.Dispose();
 
             // Make sure to call OnDispose before removing all components.
             OnDispose?.Invoke();

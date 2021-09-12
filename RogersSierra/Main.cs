@@ -31,6 +31,12 @@ namespace RogersSierra
         /// </summary>
         private void OnTick(object sender, EventArgs e)
         {
+                //            var vehs = World.GetAllVehicles();
+                //for (int i = 0; i < vehs.Length; i++)
+                //{
+                //    vehs[i].Delete();
+                //}
+
             // First frame code
             if (!FirstTick)
             {

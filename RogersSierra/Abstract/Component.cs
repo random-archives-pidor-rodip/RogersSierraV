@@ -16,12 +16,12 @@ namespace RogersSierra.Abstract
         /// <summary>
         /// Locomotive vehicle of this train.
         /// </summary>
-        public Vehicle Locomotive => Train.Locomotive.VisibleVehicle;
+        public Vehicle Locomotive => Train.LocomotiveCarriage.VisibleVehicle;
 
         /// <summary>
         /// Tender vehicle of this train.
         /// </summary>
-        public Vehicle Tender => Train.Tender.VisibleVehicle;
+        public Vehicle Tender => Train.TenderCarriage.VisibleVehicle;
 
         public Component(RogersSierra train)
         {

@@ -79,7 +79,7 @@ namespace RogersSierra.Components
         public override void OnInit()
         {
             // TODO: Move to customtrain
-            Function.Call(Hash.SET_TRAIN_CRUISE_SPEED, Train.Locomotive.InvisibleVehicle, 0);
+            Function.Call(Hash.SET_TRAIN_CRUISE_SPEED, Train.LocomotiveCarriage.InvisibleVehicle, 0);
         }
 
         public override void OnTick()
@@ -91,7 +91,7 @@ namespace RogersSierra.Components
 
             _prevSpeed = Speed;
 
-            float velocty = Train.Locomotive.InvisibleVehicle.Velocity.Length();
+            float velocty = Train.LocomotiveCarriage.InvisibleVehicle.Velocity.Length();
             float airBrakeInput = Train.BrakeComponent.AirbrakeForce;
             float steamBrakeInput = 1 - Train.BrakeComponent.SteamBrake;
             float boilerPressure = Train.BoilerComponent.Pressure.Remap(0, 300, 0, 1);
@@ -164,7 +164,7 @@ namespace RogersSierra.Components
             Train.WheelComponent.DriveWheelSpeed = baseWheelSpeed * wheelTraction * steamBrakeInput * forceDirection;
 
             // Set speed
-            Train.Train.Speed = Speed;
+            Train.CustomTrain.Speed = Speed;
 
             // Check if train is accelerating
             IsTrainAccelerating = Math.Abs(steamForce) > 0;
