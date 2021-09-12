@@ -4,7 +4,6 @@ using GTA;
 using GTA.Native;
 using RogersSierra.Abstract;
 using RogersSierra.Natives;
-using RogersSierra.Sierra;
 using System;
 using System.IO;
 
@@ -72,14 +71,15 @@ namespace RogersSierra.Components
         /// </summary>
         public bool IsTrainAccelerating { get; private set; }
 
-        public SpeedComponent(Train train) : base(train)
+        public SpeedComponent(RogersSierra train) : base(train)
         {
 
         }
 
         public override void OnInit()
         {
-            Function.Call(Hash.SET_TRAIN_CRUISE_SPEED, Train.InvisibleModel, 0);
+            // TODO: Move to customtrain
+            Function.Call(Hash.SET_TRAIN_CRUISE_SPEED, Train.Locomotive.InvisibleVehicle, 0);
         }
 
         public override void OnTick()
@@ -91,7 +91,7 @@ namespace RogersSierra.Components
 
             _prevSpeed = Speed;
 
-            float velocty = Train.InvisibleModel.Velocity.Length();
+            float velocty = Train.Locomotive.InvisibleVehicle.Velocity.Length();
             float airBrakeInput = Train.BrakeComponent.AirbrakeForce;
             float steamBrakeInput = 1 - Train.BrakeComponent.SteamBrake;
             float boilerPressure = Train.BoilerComponent.Pressure.Remap(0, 300, 0, 1);
@@ -135,7 +135,7 @@ namespace RogersSierra.Components
             // Brake multiplier
             float brakeMultiplier = airBrakeInput.Remap(0, 1, 1, 0);
 
-            if(Train.IsDerailed)
+            if(Train.IsLocomotiveDerailed)
             {
                 steamForce = 0;
                 acceleration = 0;
@@ -163,7 +163,8 @@ namespace RogersSierra.Components
             Train.WheelComponent.FrontWheelSpeed = baseWheelSpeed * forceDirection;
             Train.WheelComponent.DriveWheelSpeed = baseWheelSpeed * wheelTraction * steamBrakeInput * forceDirection;
 
-            NVehicle.SetTrainSpeed(Train.InvisibleModel, Speed);
+            // Set speed
+            Train.Train.Speed = Speed;
 
             // Check if train is accelerating
             IsTrainAccelerating = Math.Abs(steamForce) > 0;

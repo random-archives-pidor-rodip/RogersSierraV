@@ -4,7 +4,6 @@ using GTA;
 using GTA.Math;
 using GTA.Native;
 using RogersSierra.Abstract;
-using RogersSierra.Sierra;
 using System;
 
 namespace RogersSierra.Components
@@ -18,7 +17,7 @@ namespace RogersSierra.Components
         /// Returns True if player is in train, otherwise False.
         /// </summary>
         public bool IsPlayerDrivingTrain =>
-            Game.Player.Character.CurrentVehicle == Train.VisibleModel;
+            Game.Player.Character.CurrentVehicle == Locomotive;
 
         /// <summary>
         /// Whether player is inside cab or not.
@@ -60,7 +59,7 @@ namespace RogersSierra.Components
         /// Constructs new instance of <see cref="ControlComponent"/>.
         /// </summary>
         /// <param name="train"></param>
-        public ControlComponent(Train train) : base(train)
+        public ControlComponent(RogersSierra train) : base(train)
         {            
             Train.OnDispose += () =>
             {
@@ -82,7 +81,7 @@ namespace RogersSierra.Components
 
         public override void OnInit()
         {
-            _prevTrainAngle = Train.VisibleModel.Rotation.Z;
+            _prevTrainAngle = Locomotive.Rotation.Z;
         }
 
         public override void OnTick()
@@ -90,18 +89,18 @@ namespace RogersSierra.Components
             // TODO: Disable controls only when player is looking at interactable item
 
             PlayerDistanceToTrain =
-                Game.Player.Character.Position.DistanceToSquared(Train.VisibleModel.Bones["seat_pside_f"].Position);
+                Game.Player.Character.Position.DistanceToSquared(Locomotive.Bones["cab_center"].Position);
 
             // Check if player is in cab and set active train if he is
-            IsPlayerInsideCab = (PlayerDistanceToTrain < 3.3 * 3.3) || IsPlayerDrivingTrain;
+            IsPlayerInsideCab = (PlayerDistanceToTrain < 4) || IsPlayerDrivingTrain;
 
             if (IsPlayerInsideCab)
             {
-                Train.ActiveTrain = Train;
+                RogersSierra.ActiveTrain = Train;
             }
-            else if(!IsPlayerInsideCab && Train.ActiveTrain == Train)
+            else if(!IsPlayerInsideCab && RogersSierra.ActiveTrain == Train)
             {
-                Train.ActiveTrain = null;
+                RogersSierra.ActiveTrain = null;
             }
 
             Train.CabComponent.InteractableProps.UseAltControl = IsPlayerInsideCab && IsPlayerDrivingTrain;
@@ -131,7 +130,7 @@ namespace RogersSierra.Components
 
                 // Rotate camera with train
 
-                var trainAngle = Train.VisibleModel.Rotation.Z;
+                var trainAngle = Locomotive.Rotation.Z;
                 var prevAngle = _prevTrainAngle;
                 _prevTrainAngle = trainAngle;
 
@@ -195,7 +194,7 @@ namespace RogersSierra.Components
         /// </summary>
         public void Leave()
         {
-            Game.Player.Character.Position = Train.VisibleModel.Bones["cab_center"].Position;
+            Game.Player.Character.PositionNoOffset = Locomotive.GetOffsetPosition(new Vector3(-0.016f, -4.831f, 2.243f));
             //Game.Player.Character.Task.LeaveVehicle();
 
             CabCamera?.Delete();
@@ -208,13 +207,13 @@ namespace RogersSierra.Components
         /// </summary>
         public void Enter()
         {
-            Game.Player.Character.Task.WarpIntoVehicle(Train.VisibleModel, VehicleSeat.Driver);
+            Game.Player.Character.Task.WarpIntoVehicle(Locomotive, VehicleSeat.Driver);
 
             // Create cab camera
-            CabCamera = World.CreateCamera(Train.VisibleModel.Position, Train.VisibleModel.Rotation, 65);
-            CabCamera.AttachTo(Train.VisibleModel, new Vector3(1.17f, -0.69f, 3.21f));
+            CabCamera = World.CreateCamera(Locomotive.Position, Locomotive.Rotation, 65);
+            CabCamera.AttachTo(Locomotive, new Vector3(1.17f, -0.69f, 3.21f));
 
-            CabCamera.Direction = Train.VisibleModel.Quaternion * Vector3.RelativeFront;
+            CabCamera.Direction = Locomotive.Quaternion * Vector3.RelativeFront;
         }
 
         /// <summary>

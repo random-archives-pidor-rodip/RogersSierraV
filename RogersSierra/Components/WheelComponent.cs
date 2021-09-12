@@ -1,8 +1,10 @@
 ﻿using FusionLibrary;
 using FusionLibrary.Extensions;
+using GTA;
 using GTA.Math;
 using RogersSierra.Abstract;
-using RogersSierra.Sierra;
+using RogersSierra.Data;
+using RogersSierra.Other;
 using System;
 
 namespace RogersSierra.Components
@@ -61,7 +63,7 @@ namespace RogersSierra.Components
         /// Constructs new instance of <see cref="WheelComponent"/>.
         /// </summary>
         /// <param name="train"><see cref="Train"/> instance.</param>
-        public WheelComponent(Train train) : base(train)
+        public WheelComponent(RogersSierra train) : base(train)
         {
             // Length of cylinder is diameter * pi
 
@@ -69,36 +71,32 @@ namespace RogersSierra.Components
             _driveLength = (float)(Models.DrivingWheel.Model.GetSize().height * Math.PI);
             _tenderLength = (float)(Models.TenderWheel.Model.GetSize().height * Math.PI);
 
-            AddWheel(Models.FrontWheel, "fwheel_", 2, FrontWheels);
-            AddWheel(Models.DrivingWheel, "dwheel_", 3, DriveWheels);
-            AddWheel(Models.TenderWheel, "twheel_", 4, TenderWheels);
-        }
+            AddWheel(Locomotive, Models.FrontWheel, "fwheel_", 2, FrontWheels);
+            AddWheel(Locomotive, Models.DrivingWheel, "dwheel_", 3, DriveWheels);
+            AddWheel(Tender, Models.TenderWheel, "twheel_", 4, TenderWheels);
 
-        private void AddWheel(CustomModel wheelModel, string boneBase, int boneNumber, AnimatePropsHandler wheelHandler)
-        {
-            // TODO: Move function to utils
-
-            for(int i = 0; i < boneNumber; i++)
+            void AddWheel(Vehicle vehicle, CustomModel wheelModel, string boneBase, int boneNumber, AnimatePropsHandler wheelHandler)
             {
-                string bone = boneBase + (i + 1);
+                Utils.ProcessMultipleBones(boneBase, boneNumber, bone =>
+                {
+                    // TODO: Temporary solution, model needs to be rotated
+                    var rotOffset = Vector3.Zero;
+                    if (wheelModel == Models.DrivingWheel)
+                        rotOffset.X = 85;
 
-                // TODO: Temporary solution, model needs to be rotated
-                var rotOffset = Vector3.Zero;
-                if (wheelModel == Models.DrivingWheel)
-                    rotOffset.X = 85;
+                    var wheelProp = new AnimateProp(wheelModel, vehicle, bone, Vector3.Zero, rotOffset);
 
-                var wheelProp = new AnimateProp(wheelModel, Train.VisibleModel, bone, Vector3.Zero, rotOffset);
-
-                wheelHandler.Add(wheelProp);
+                    wheelHandler.Add(wheelProp);
+                });
             }
         }
 
         public override void OnInit()
         {
-            Train.OnDerail += () =>
-            {
-                Utils.ProcessAllValuesFieldsByType<AnimatePropsHandler>(this, x => x.Detach());
-            };
+            //Train.OnDerail += () =>
+            //{
+            //    Utils.ProcessAllValuesFieldsByType<AnimatePropsHandler>(this, x => x.Detach());
+            //};
         }
 
         public override void OnTick()

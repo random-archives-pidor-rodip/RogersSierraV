@@ -1,5 +1,4 @@
 ﻿using RogersSierra.Abstract;
-using RogersSierra.Sierra;
 
 namespace RogersSierra.Components
 {
@@ -12,7 +11,7 @@ namespace RogersSierra.Components
         /// Constructs new instance of <see cref="BindComponent"/>.
         /// </summary>
         /// <param name="train"></param>
-        public BindComponent(Train train) :base(train)
+        public BindComponent(RogersSierra train) :base(train)
         {
 
         }

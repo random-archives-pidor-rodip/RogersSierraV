@@ -3,7 +3,7 @@ using FusionLibrary.Extensions;
 using GTA;
 using RogersSierra.Abstract;
 using RogersSierra.Components.InteractionUtils;
-using RogersSierra.Sierra;
+using RogersSierra.Data;
 using System;
 using static FusionLibrary.FusionEnums;
 
@@ -81,11 +81,11 @@ namespace RogersSierra.Components
         /// Constructs new instance of <see cref="CabComponent"/>.
         /// </summary>
         /// <param name="train"></param>
-        public CabComponent(Train train) : base(train)
+        public CabComponent(RogersSierra train) : base(train)
         {
             ThrottleLever = InteractableProps.Add(
                 Models.CabThrottleLever, 
-                Train.VisibleModel,
+                Locomotive,
                 "cab_throttle_lever", 
                 AnimationType.Rotation,
                 Coordinate.Z, 
@@ -107,7 +107,7 @@ namespace RogersSierra.Components
             
             GearLever = InteractableProps.Add(
                 Models.CabGearLever,
-                Train.VisibleModel,
+                Locomotive,
                 "cab_gear_lever", 
                 AnimationType.Rotation, 
                 Coordinate.X, 
@@ -129,7 +129,7 @@ namespace RogersSierra.Components
 
             AirBrakeLever = InteractableProps.Add(
                 Models.CabSteamBrakeLever,
-                Train.VisibleModel,
+                Locomotive,
                 "cab_steambrake_lever",
                 AnimationType.Rotation,
                 Coordinate.X, 
@@ -139,7 +139,7 @@ namespace RogersSierra.Components
 
             SteamBrakeLever = InteractableProps.Add(
                 Models.CabAirBrakeLever,
-                Train.VisibleModel,
+                Locomotive,
                 "cab_airbrake_lever",
                 AnimationType.Rotation,
                 Coordinate.Z,
@@ -147,12 +147,12 @@ namespace RogersSierra.Components
                 false, -30, 0, 0, 10);
             SteamBrakeLever.SetupAltControl(Control.LookLeft, false);
 
-            RightWindow = InteractableProps.Add(Models.CabWindowRight, Train.VisibleModel, "cab_window_right", AnimationType.Offset, Coordinate.X, true, -0.03f, 0, 0, 0.03f, 1, false, false);
+            RightWindow = InteractableProps.Add(Models.CabWindowRight, Locomotive, "cab_window_right", AnimationType.Offset, Coordinate.X, true, -0.03f, 0, 0, 0.03f, 1, false, false);
             RightWindow.AnimateProp.PlayNextSteps = true;
             RightWindow.AnimateProp.PlayReverse = true;
             RightWindow.AnimateProp[AnimationType.Offset][AnimationStep.Second][Coordinate.Y].Setup(true, true, 0, Models.CabWindowRight.Model.GetSize().width + 0.04f, 1, 0.5f, 1, true);
 
-            WhistleRope = new InteractiveRope(Train.VisibleModel, "whistle_rope_pull_start", "whistle_rope_pull_end", true, true);
+            WhistleRope = new InteractiveRope(Locomotive, "whistle_rope_pull_start", "whistle_rope_pull_end", true, true);
         }
 
         private void ThrottleLever_OnHoverEnded(object sender, InteractiveProp e)

@@ -4,7 +4,6 @@ using GTA.Native;
 using RogersSierra.Abstract;
 using RogersSierra.Components.ComponentEnums;
 using RogersSierra.Extentions;
-using RogersSierra.Sierra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +31,7 @@ namespace RogersSierra.Components
         /// Constructs new instance of <see cref="DynamoComponent"/>.
         /// </summary>
         /// <param name="train"></param>
-        public DynamoComponent(Train train) : base(train)
+        public DynamoComponent(RogersSierra train) : base(train)
         {
             //train.VisibleModel.IsEngineRunning = true;
             //Function.Call(Hash._FORCE_VEHICLE_ENGINE_AUDIO, Train.VisibleModel, "freight");
@@ -57,7 +56,7 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
-            Train.VisibleModel.IsEngineRunning = IsDynamoWorking;
+            Locomotive.IsEngineRunning = IsDynamoWorking;
             //ProcessBoilerLight();
         }
 

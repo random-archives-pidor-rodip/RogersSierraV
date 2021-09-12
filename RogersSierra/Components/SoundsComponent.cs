@@ -1,7 +1,7 @@
 ﻿using FusionLibrary.Extensions;
 using KlangRageAudioLibrary;
 using RogersSierra.Abstract;
-using RogersSierra.Sierra;
+using RogersSierra.Data;
 using System;
 using System.Collections.Generic;
 
@@ -63,13 +63,12 @@ namespace RogersSierra.Components
         /// <summary>
         /// Constructs new instance of <see cref="SoundsComponent"/>.
         /// </summary>
-        /// <param name="train"></param>
-        public SoundsComponent(Train train) : base(train)
+        public SoundsComponent(RogersSierra train) : base(train)
         {
             _audioEngine = new AudioEngine()
             {
                 BaseSoundFolder = Files.SoundsFolder,
-                DefaultSourceEntity = Train.VisibleModel
+                DefaultSourceEntity = Locomotive
             };
 
             // Brake sounds
@@ -140,7 +139,7 @@ namespace RogersSierra.Components
 
             Train.SpeedComponent.OnTrainStart += () =>
             {
-                if(!IsWheelSlipping() && !Train.IsDerailed)
+                if(!IsWheelSlipping() && !Train.IsLocomotiveDerailed)
                     Start.Play();
             };
         }

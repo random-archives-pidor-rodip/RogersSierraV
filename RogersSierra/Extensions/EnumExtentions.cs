@@ -21,6 +21,5 @@ namespace RogersSierra.Extentions
             int j = Array.IndexOf<T>(Arr, src) + 1;
             return (Arr.Length == j) ? Arr[0] : Arr[j];
         }
-
     }
 }

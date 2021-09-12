@@ -4,7 +4,6 @@ using GTA;
 using GTA.Math;
 using GTA.Native;
 using RogersSierra.Physics;
-using RogersSierra.Sierra;
 using System;
 using System.Collections.Generic;
 using System.Linq;

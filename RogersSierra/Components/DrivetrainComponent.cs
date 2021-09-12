@@ -2,7 +2,7 @@
 using FusionLibrary.Extensions;
 using GTA.Math;
 using RogersSierra.Abstract;
-using RogersSierra.Sierra;
+using RogersSierra.Data;
 using System;
 using static FusionLibrary.FusionEnums;
 
@@ -38,13 +38,13 @@ namespace RogersSierra.Components
 
         private bool _onPistonCalled = false;
 
-        public DrivetrainComponent(Train train) : base(train)
+        public DrivetrainComponent(RogersSierra train) : base(train)
         {
-            CouplingRod = new AnimateProp(Models.CouplingRod, Train.VisibleModel, "dwheel_1");
-            ConnectingRod = new AnimateProp(Models.ConnectingRod, Train.VisibleModel, "dwheel_1");
-            Piston = new AnimateProp(Models.Piston, Train.VisibleModel, "piston");
+            CouplingRod = new AnimateProp(Models.CouplingRod, Locomotive, "dwheel_1");
+            ConnectingRod = new AnimateProp(Models.ConnectingRod, Locomotive, "dwheel_1");
+            Piston = new AnimateProp(Models.Piston, Locomotive, "piston");
 
-            CombinationLever = new AnimateProp(Models.CombinationLever, Train.VisibleModel, "combination_lever");
+            CombinationLever = new AnimateProp(Models.CombinationLever, Locomotive, "combination_lever");
             CombinationLever.SpawnProp();
 
             RadiusRod = new AnimateProp(Models.RadiusRod, CombinationLever, "radius_rod_mounting", Vector3.Zero, Vector3.Zero, false);
@@ -55,32 +55,32 @@ namespace RogersSierra.Components
             ValveRod.UseFixedRot = false;
 
             // Calculate distance from mounting point of coupling rod to center of wheel
-            var rodPos = Train.VisibleModel.GetOffsetPosition(Train.VisibleModel.Bones["rod"].Position);
-            var wheelpos = Train.VisibleModel.GetOffsetPosition(Train.VisibleModel.Bones["dwheel_1"].Position);
+            var rodPos = Locomotive.GetOffsetPosition(Locomotive.Bones["rod"].Position);
+            var wheelpos = Locomotive.GetOffsetPosition(Locomotive.Bones["dwheel_1"].Position);
             _distanceToRod = Vector3.Distance(rodPos, wheelpos) - 0.045f;
 
-            rodPos = Train.VisibleModel.GetOffsetPosition(RadiusRod.Prop.Position);
-            wheelpos = Train.VisibleModel.GetOffsetPosition(Train.VisibleModel.Bones["valve_rod"].Position);
+            rodPos = Locomotive.GetOffsetPosition(RadiusRod.Prop.Position);
+            wheelpos = Locomotive.GetOffsetPosition(Locomotive.Bones["valve_rod"].Position);
             _radiusRodLength = Vector3.Distance(rodPos, wheelpos);
 
             _connectingRodLength = Models.ConnectingRod.Model.GetSize().width - 0.375f;
-            _pistonRelativePosY = Train.VisibleModel.Bones["piston"].RelativePosition.Y;
-            _pistonRelativePosZ = Train.VisibleModel.Bones["piston"].RelativePosition.Z;
+            _pistonRelativePosY = Locomotive.Bones["piston"].RelativePosition.Y;
+            _pistonRelativePosZ = Locomotive.Bones["piston"].RelativePosition.Z;
 
-            _valveRelativePosZ = Train.VisibleModel.Bones["valve_rod"].RelativePosition.Z;
+            _valveRelativePosZ = Locomotive.Bones["valve_rod"].RelativePosition.Z;
         }
 
         public override void OnInit()
         {
-            Train.OnDerail += () => 
-            {
-                Utils.ProcessAllValuesFieldsByType<AnimateProp>(this, x => x.Detach());
-            };
+            //Train.OnDerail += () => 
+            //{
+            //    Utils.ProcessAllValuesFieldsByType<AnimateProp>(this, x => x.Detach());
+            //};
         }
 
         public override void OnTick()
         {
-            if (Train.IsDerailed)
+            if (Train.IsLocomotiveDerailed)
                 return;
 
             float angleRad = Train.WheelComponent.DrivingWheelAngle.ToRad();
@@ -126,11 +126,11 @@ namespace RogersSierra.Components
 
             CombinationLever.setRotation(Coordinate.X, dAngle);
 
-            dAngle = 90 - MathExtensions.ToDeg((float)MathExtensions.ArcCos((_valveRelativePosZ - Math.Abs(Train.VisibleModel.GetPositionOffset(RadiusRod.Position).Z)) / _radiusRodLength));
+            dAngle = 90 - MathExtensions.ToDeg((float)MathExtensions.ArcCos((_valveRelativePosZ - Math.Abs(Locomotive.GetPositionOffset(RadiusRod.Position).Z)) / _radiusRodLength));
 
-            RadiusRod.setRotation(Train.VisibleModel.Rotation.GetSingleOffset(Coordinate.X, dAngle));
+            RadiusRod.setRotation(Locomotive.Rotation.GetSingleOffset(Coordinate.X, dAngle));
 
-            ValveRod.setRotation(Train.VisibleModel.Rotation);
+            ValveRod.setRotation(Locomotive.Rotation);
         }
     }
 }

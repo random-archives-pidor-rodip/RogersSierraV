@@ -1,6 +1,6 @@
 ﻿using FusionLibrary;
 using RogersSierra.Abstract;
-using RogersSierra.Sierra;
+using RogersSierra.Data;
 
 namespace RogersSierra.Components
 {
@@ -29,15 +29,15 @@ namespace RogersSierra.Components
         private const float _airbrakeLeverOffset = -6;
         private const float _brakeAngle = -5;
 
-        public BrakeComponent(Train train) : base(train)
+        public BrakeComponent(RogersSierra train) : base(train)
         {
-            AirbrakeMain = new AnimateProp(Models.AirbrakeMain, Train.VisibleModel, "chassis");
-            AirbrakeRod = new AnimateProp(Models.AirbrakeRod, Train.VisibleModel, "chassis");
-            AirbrakeLever = new AnimateProp(Models.AirbrakeLever, Train.VisibleModel, "airbrake_lever");
+            AirbrakeMain = new AnimateProp(Models.AirbrakeMain, Locomotive, "chassis");
+            AirbrakeRod = new AnimateProp(Models.AirbrakeRod, Locomotive, "chassis");
+            AirbrakeLever = new AnimateProp(Models.AirbrakeLever, Locomotive, "airbrake_lever");
 
-            Brakes.Add(new AnimateProp(Models.Brake1, Train.VisibleModel, "brake_1"));
-            Brakes.Add(new AnimateProp(Models.Brake2, Train.VisibleModel, "brake_2"));
-            Brakes.Add(new AnimateProp(Models.Brake3, Train.VisibleModel, "brake_3"));
+            Brakes.Add(new AnimateProp(Models.Brake1, Locomotive, "brake_1"));
+            Brakes.Add(new AnimateProp(Models.Brake2, Locomotive, "brake_2"));
+            Brakes.Add(new AnimateProp(Models.Brake3, Locomotive, "brake_3"));
         }
 
         public override void OnInit()
@@ -48,7 +48,7 @@ namespace RogersSierra.Components
         public override void OnTick()
         {
             var mainOffset = _airbrakeMainOffset * AirbrakeForce;
-            var rodOffset = Train.VisibleModel.GetPositionOffset(
+            var rodOffset = Locomotive.GetPositionOffset(
                 AirbrakeLever.Prop.Bones["airbrake_rod_mount"].Position);
             var leverAngle = _airbrakeLeverOffset * AirbrakeForce;
             var brakeAngle = _brakeAngle * AirbrakeForce;

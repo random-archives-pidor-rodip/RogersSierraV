@@ -1,4 +1,4 @@
-﻿namespace RogersSierra.Sierra
+﻿namespace RogersSierra.Data
 {
     /// <summary>
     /// Contains path's for script files.

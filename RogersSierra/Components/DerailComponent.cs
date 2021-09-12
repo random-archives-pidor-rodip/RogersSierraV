@@ -1,13 +1,7 @@
-﻿using GTA;
-using GTA.Math;
-using GTA.Native;
+﻿using GTA.Math;
 using RogersSierra.Abstract;
-using RogersSierra.Sierra;
+using RogersSierra.Other;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RogersSierra.Components
 {
@@ -28,7 +22,7 @@ namespace RogersSierra.Components
         /// Constructs new instance of <see cref="DerailComponent"/>.
         /// </summary>
         /// <param name="train"></param>
-        public DerailComponent(Train train) : base(train)
+        public DerailComponent(RogersSierra train) : base(train)
         {
 
         }
@@ -44,7 +38,7 @@ namespace RogersSierra.Components
 
             // We're basically comparing forward vector of previous frame and current frame
             // and if difference is too high and speed is higher than derailing minumum then train derails.
-            var forwardVector = Train.InvisibleModel.ForwardVector;
+            var forwardVector = Locomotive.ForwardVector;
             if (Math.Abs(Train.SpeedComponent.Speed) >= DerailMinSpeed)
             {
                 float angle = Vector3.Angle(forwardVector, _previousForwardAngle);
@@ -81,7 +75,7 @@ namespace RogersSierra.Components
         /// </summary>
         public void Derail()
         {
-            Train.Derail();
+            //Train.Derail();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using GTA;
 using RogersSierra.Abstract;
-using RogersSierra.Sierra;
 
 namespace RogersSierra.Components
 {
@@ -19,7 +18,7 @@ namespace RogersSierra.Components
         /// </summary>
         public bool CylindersSteam => Pressure > 160;
 
-        public BoilerComponent(Train train) : base(train)
+        public BoilerComponent(RogersSierra train) : base(train)
         {
             Pressure = 0;
         }

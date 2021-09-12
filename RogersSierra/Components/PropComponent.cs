@@ -1,6 +1,5 @@
 ﻿using FusionLibrary;
 using RogersSierra.Abstract;
-using RogersSierra.Sierra;
 using System.Collections.Generic;
 
 namespace RogersSierra.Components
@@ -16,7 +15,7 @@ namespace RogersSierra.Components
         /// Constructs new instance of <see cref="PropComponent"/>.
         /// </summary>
         /// <param name="train"></param>
-        public PropComponent(Train train) : base(train)
+        public PropComponent(RogersSierra train) : base(train)
         {
 
         } 

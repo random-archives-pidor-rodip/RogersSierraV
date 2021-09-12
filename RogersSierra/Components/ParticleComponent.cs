@@ -2,7 +2,7 @@
 using GTA.Math;
 using RogersSierra.Abstract;
 using RogersSierra.Extensions;
-using RogersSierra.Sierra;
+using RogersSierra.Other;
 using System;
 using static FusionLibrary.FusionEnums;
 
@@ -46,14 +46,13 @@ namespace RogersSierra.Components
         /// <summary>
         /// Constructs new instance of <see cref="ParticleComponent"/>.
         /// </summary>
-        /// <param name="train"></param>
-        public ParticleComponent(Train train) : base(train)
+        public ParticleComponent(RogersSierra train) : base(train)
         {
             // Spark particles
             Utils.ProcessSideBones("dhweel_spark_", 6, bone =>
             {
                 _wheelSparks.Add
-                    ("core", "veh_train_sparks", ParticleType.Looped, Train.VisibleModel, bone, Vector3.Zero, Vector3.Zero);
+                    ("core", "veh_train_sparks", ParticleType.Looped, Locomotive, bone, Vector3.Zero, Vector3.Zero);
             });
             _wheelSparks.SetEvolutionParam("LOD", 1);
             _wheelSparks.SetEvolutionParam("squeal", 1);
@@ -65,20 +64,20 @@ namespace RogersSierra.Components
                 _cylinderSteam.Add
                      ("cut_pacific_fin", "cs_pac_fin_skid_smoke", 
                      ParticleType.Looped, 
-                     Train.VisibleModel, 
+                     Locomotive, 
                      bone, new Vector3(0, 0, 0.4f), new Vector3(-90, 0, 0));
 
                 // Drips
                 _cylinderSteam.Add
                     ("scr_apartment_mp", "scr_apa_jacuzzi_drips",
                     ParticleType.Looped,
-                    train.VisibleModel,
+                    Locomotive,
                     bone, Vector3.Zero, Vector3.Zero, 3);
             });
 
             // Dynamo
             _dynamoSteam = new ParticlePlayer(
-                "scr_gr_bunk", "scr_gr_bunk_drill_smoke", ParticleType.Looped, Train.VisibleModel, "dynamo_steam", Vector3.Zero, Vector3.Zero);
+                "scr_gr_bunk", "scr_gr_bunk_drill_smoke", ParticleType.Looped, Locomotive, "dynamo_steam", Vector3.Zero, Vector3.Zero);
 
             Train.OnDispose += () =>
             {

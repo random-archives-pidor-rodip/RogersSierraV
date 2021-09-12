@@ -1,12 +1,17 @@
 ﻿using FusionLibrary;
+using GTA;
 
-namespace RogersSierra.Sierra
+namespace RogersSierra.Data
 {
     public class Models : CustomModelHandler
     {
         // Train
         public static CustomModel InvisibleSierra = new CustomModel("sierra_debug");
         public static CustomModel VisibleSierra = new CustomModel("sierra");
+
+        // Tender
+        public static CustomModel InvisibleTender = new CustomModel("tender_debug");
+        public static CustomModel VisibleTender = new CustomModel("tender");
 
         // Wheels
         public static CustomModel FrontWheel = new CustomModel("sierra_fwheel");
@@ -46,7 +51,9 @@ namespace RogersSierra.Sierra
             var allModels = GetAllModels(typeof(Models));
 
             for (int i = 0; i < allModels.Count; i++)
+            {
                 allModels[i].Request();
+            }
         }
     }
 }
