@@ -79,6 +79,9 @@ namespace RogersSierra.Train
             // Spawn new train. It returns first carriage.
             var trainHead = NVehicle.CreateTrain(config.Id, position, direction);
 
+            // Mark train as custom
+            trainHead.Decorator().SetBool(Constants.TrainIsCustom, true);
+
             // Set number of carriages as decorator so we can recover them after reload
             trainHead.Decorator().SetInt(Constants.TrainCarriagesNumber, config.Models.Count);
 
@@ -146,6 +149,16 @@ namespace RogersSierra.Train
             }
 
             return new CustomTrain(null, carriages, trainHead);
+        }
+
+        /// <summary>
+        /// Checks if vehicle is <see cref="CustomTrain"/>.
+        /// </summary>
+        /// <param name="vehicle">Vehicle to check.</param>
+        /// <returns>True if train is <see cref="CustomTrain"/>, otherwise False.</returns>
+        public static bool IsCustomTrain(Vehicle vehicle)
+        {
+            return vehicle.Decorator().GetBool(Constants.TrainIsCustom);
         }
 
         /// <summary>

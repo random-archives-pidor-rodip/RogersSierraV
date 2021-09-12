@@ -42,7 +42,10 @@ namespace RogersSierra
                 var trains = World.GetAllVehicles(Models.InvisibleSierra);
                 for (int i = 0; i < trains.Length; i++)
                 {
-                    RogersSierra.Respawn(CustomTrain.Respawn(trains[i]));
+                    var train = trains[i];
+                    
+                    if(CustomTrain.IsCustomTrain(train))
+                        RogersSierra.Respawn(CustomTrain.Respawn(train));
                 }
                 FirstTick = true;
             }
