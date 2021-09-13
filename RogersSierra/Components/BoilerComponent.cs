@@ -1,36 +1,40 @@
-﻿using FusionLibrary;
-using FusionLibrary.Extensions;
-using GTA;
-using LemonUI.TimerBars;
+﻿using GTA;
 using RogersSierra.Abstract;
-using RogersSierra.Sierra;
 
 namespace RogersSierra.Components
 {
+    /// <summary>
+    /// Simple simulation of boiler pressure.
+    /// </summary>
     public class BoilerComponent : Component
     {
         /// <summary>
-        /// Pressure of the boiler
+        /// Pressure of the boiler in PSI.
         /// </summary>
         public float Pressure { get; private set; }
 
-        public BoilerComponent(Train train) : base(train)
+        /// <summary>
+        /// Is there steam coming cylinder.
+        /// </summary>
+        public bool CylindersSteam => Pressure > 160;
+
+        public BoilerComponent(RogersSierra train) : base(train)
         {
-            Pressure = 10;
+            Pressure = 0;
         }
 
         public override void OnInit()
         {
-
+            Pressure = 260;
         }
 
         private float _releaseTime = 0;
         public override void OnTick()
         {
-            Pressure += 0.3f * Game.LastFrameTime;
+            Pressure += 3f * Game.LastFrameTime;
 
-            // Release steam if theres too much of it
-            if (Pressure > 12)
+            // Safety valve
+            if (Pressure > 260)
                 _releaseTime = Game.GameTime + 1000;
             else
                 _releaseTime = 0;
@@ -42,9 +46,9 @@ namespace RogersSierra.Components
 
             var throttle = Train.SpeedComponent.Throttle;
 
-            Pressure -= 0.375f * throttle * Game.LastFrameTime;
+            Pressure -= 3.1f * throttle * Game.LastFrameTime;
             
-            //GTA.UI.Screen.ShowSubtitle($"Boiler Pressure: {Pressure.ToString("0.00")}");
+           // GTA.UI.Screen.ShowSubtitle($"Boiler Pressure: {Pressure.ToString("0.00")}");
         }
     }
 }

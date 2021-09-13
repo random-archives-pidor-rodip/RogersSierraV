@@ -1,11 +1,11 @@
 ﻿using FusionLibrary;
 using FusionLibrary.Extensions;
 using GTA;
+using GTA.Math;
 using RogersSierra.Abstract;
-using RogersSierra.Sierra;
+using RogersSierra.Data;
+using RogersSierra.Other;
 using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace RogersSierra.Components
 {
@@ -15,98 +15,111 @@ namespace RogersSierra.Components
     public class WheelComponent : Component
     {
         /// <summary>
-        /// Wheel speed in m/s
+        /// Drive wheel speed in m/s
         /// </summary>
-        public float WheelSpeed { get; set; }
+        public float DriveWheelSpeed { get; set; }
 
         /// <summary>
-        /// Number of front wheels.
+        /// Front wheel speed in m/s
         /// </summary>
-        private const int _numberOfFrontWheels = 2;
+        public float FrontWheelSpeed { get; set; }
 
         /// <summary>
-        /// Number of driving wheels.
+        /// Drive wheel props.
         /// </summary>
-        private const int _numberOfMainWheels = 3;
+        public readonly AnimatePropsHandler DriveWheels = new AnimatePropsHandler();
 
         /// <summary>
-        /// Wheel models
+        /// Front wheels props.
         /// </summary>
-        public readonly List<AnimateProp> _wheels = new List<AnimateProp>();
+        public readonly AnimatePropsHandler FrontWheels = new AnimatePropsHandler();
 
         /// <summary>
-        /// Reference to driving wheel.
+        /// Tender wheels props.
         /// </summary>
-        private readonly AnimateProp _drivingWheel;
+        public readonly AnimatePropsHandler TenderWheels = new AnimatePropsHandler();
+
+        /// <summary>
+        /// Drive wheel length.
+        /// </summary>
+        private readonly float _driveLength;
+
+        /// <summary>
+        /// Front wheel length.
+        /// </summary>
+        private readonly float _frontLength;
+
+        /// <summary>
+        /// Tender wheel length.
+        /// </summary>
+        private readonly float _tenderLength;
 
         /// <summary>
         /// Returns angle of driving wheel.
         /// </summary>
-        public float DrivingWheelAngle => _drivingWheel.CurrentRotation.X;
+        public float DrivingWheelAngle => DriveWheels[0].SecondRotation.X;
 
         /// <summary>
-        /// Total length of every wheel.
+        /// Constructs new instance of <see cref="WheelComponent"/>.
         /// </summary>
-        private readonly float[] _wheelLengths;
-
-        public WheelComponent(Train train) : base(train)
+        /// <param name="train"><see cref="Train"/> instance.</param>
+        public WheelComponent(RogersSierra train) : base(train)
         {
-            // TODO: Move bones to debug model
+            // Length of cylinder is diameter * pi
 
-            var totalWheels = _numberOfFrontWheels + _numberOfMainWheels;
+            _frontLength = (float)(Models.FrontWheel.Model.GetSize().height * Math.PI);
+            _driveLength = (float)(Models.DrivingWheel.Model.GetSize().height * Math.PI);
+            _tenderLength = (float)(Models.TenderWheel.Model.GetSize().height * Math.PI);
 
-            _wheelLengths = new float[totalWheels];
+            AddWheel(Locomotive, Models.FrontWheel, "fwheel_", 2, FrontWheels);
+            AddWheel(Locomotive, Models.DrivingWheel, "dwheel_", 3, DriveWheels);
+            AddWheel(Tender, Models.TenderWheel, "twheel_", 4, TenderWheels);
 
-            int f = 0, m = 0, d = 0;
-            while(totalWheels > 0)
+            void AddWheel(Vehicle vehicle, CustomModel wheelModel, string boneBase, int boneNumber, AnimatePropsHandler wheelHandler)
             {
-                // Select which model to spawn - front or main
-                var isFront = f < _numberOfFrontWheels;
+                Utils.ProcessMultipleBones(boneBase, boneNumber, bone =>
+                {
+                    // TODO: Temporary solution, model needs to be rotated
+                    var rotOffset = Vector3.Zero;
+                    if (wheelModel == Models.DrivingWheel)
+                        rotOffset.X = 85;
 
-                var model = isFront ? Models.FrontWheel : Models.DrivingWheel;
-                var bone = isFront ? "fwheel_" : "dwheel_";
-                var counter = isFront ? f++ : m++;
+                    var wheelProp = new AnimateProp(wheelModel, vehicle, bone, Vector3.Zero, rotOffset);
 
-                // Because bone numeration starts from 1
-                counter++;
-                bone += counter;
-
-                var prop = new AnimateProp(model, train.VisibleModel, bone);
-                prop.SpawnProp();
-
-                if (bone == "dwheel_1")
-                    _drivingWheel = prop;
-
-                // Length of cylinder is diameter * pi
-                var wheelLength = (float)(model.Model.GetSize().height * Math.PI);
-                _wheelLengths[d++] = wheelLength;
-
-                _wheels.Add(prop);
-
-                totalWheels--;
+                    wheelHandler.Add(wheelProp);
+                });
             }
         }
 
         public override void OnInit()
         {
-
+            //Train.OnDerail += () =>
+            //{
+            //    Utils.ProcessAllValuesFieldsByType<AnimatePropsHandler>(this, x => x.Detach());
+            //};
         }
 
         public override void OnTick()
-        {
-            for (int i = 0; i < _wheels.Count; i++)
-            {
-                var wheel = _wheels[i];
+        {   
+            // 2,3 wheel turn = 2.3 * 360 = 828~ degrees
+            // tick calls 1/fps times per second, so 828 / 60 = 13,8 degrees per tick
 
-                // 10m / 4.3m = 2,3~ full wheel turn
-                // 2,3 wheel turn = 2.3 * 360 = 828~ degrees
-                // tick calls 1/fps times per second, so 828 / 60 = 13,8 degrees per tick
+            // Calculate wheel rotations per frame
 
-                // Calculate wheel rotation per frame
-                var newAngle = WheelSpeed.AngularSpeed(_wheelLengths[i], wheel.CurrentRotation.X);
+            // Drive wheels
+            float frameAngle = DriveWheelSpeed.AngularSpeed(_driveLength, DriveWheels[0].SecondRotation.X);
 
-                wheel.setRotation(FusionEnums.Coordinate.X, newAngle);
-            }
+            DriveWheels.setRotation(FusionEnums.Coordinate.X, frameAngle);
+
+            // Front wheels
+            frameAngle = FrontWheelSpeed.AngularSpeed(_frontLength, FrontWheels[0].SecondRotation.X);
+
+            FrontWheels.setRotation(FusionEnums.Coordinate.X, frameAngle);
+
+            // Tender wheels
+            frameAngle = FrontWheelSpeed.AngularSpeed(_tenderLength, TenderWheels[0].SecondRotation.X);
+
+            TenderWheels.setRotation(FusionEnums.Coordinate.X, frameAngle);
         }
     }
 }

@@ -1,33 +1,43 @@
-﻿using RogersSierra.Abstract;
-using RogersSierra.Sierra;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FusionLibrary;
+using RogersSierra.Abstract;
+using RogersSierra.Data;
 
 namespace RogersSierra.Components
 {
+    /// <summary>
+    /// Handles train brakes.
+    /// </summary>
     public class BrakeComponent : Component
     {
         /// <summary>
-        /// How fast train brakes.
+        /// Current level of airbrake. 0 - no brake, 1 - full brake.
         /// </summary>
-        public float BrakeMultiplier = 0.6f;
+        public float AirbrakeForce { get; set; }
 
-        private float _force;
-        public float Force
+        /// <summary>
+        /// Steam brake blocks any wheel movement.
+        /// </summary>
+        public int SteamBrake { get; set; }
+
+        public AnimateProp AirbrakeMain;
+        public AnimateProp AirbrakeRod;
+        public AnimateProp AirbrakeLever;
+
+        public readonly AnimatePropsHandler Brakes = new AnimatePropsHandler();
+
+        private const float _airbrakeMainOffset = 0.1f;
+        private const float _airbrakeLeverOffset = -6;
+        private const float _brakeAngle = -5;
+
+        public BrakeComponent(RogersSierra train) : base(train)
         {
-            get => _force * BrakeMultiplier;
-            set
-            {
-                _force = value;
-            }
-        }
+            AirbrakeMain = new AnimateProp(Models.AirbrakeMain, Locomotive, "chassis");
+            AirbrakeRod = new AnimateProp(Models.AirbrakeRod, Locomotive, "chassis");
+            AirbrakeLever = new AnimateProp(Models.AirbrakeLever, Locomotive, "airbrake_lever");
 
-        public BrakeComponent(Train train) : base(train)
-        {
-
+            Brakes.Add(new AnimateProp(Models.Brake1, Locomotive, "brake_1"));
+            Brakes.Add(new AnimateProp(Models.Brake2, Locomotive, "brake_2"));
+            Brakes.Add(new AnimateProp(Models.Brake3, Locomotive, "brake_3"));
         }
 
         public override void OnInit()
@@ -37,7 +47,16 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
+            var mainOffset = _airbrakeMainOffset * AirbrakeForce;
+            var rodOffset = Locomotive.GetPositionOffset(
+                AirbrakeLever.Prop.Bones["airbrake_rod_mount"].Position);
+            var leverAngle = _airbrakeLeverOffset * AirbrakeForce;
+            var brakeAngle = _brakeAngle * AirbrakeForce;
 
+            AirbrakeMain.setOffset(FusionEnums.Coordinate.Y, mainOffset);
+            AirbrakeRod.setOffset(rodOffset);
+            AirbrakeLever.setRotation(FusionEnums.Coordinate.X, leverAngle);
+            Brakes.setRotation(FusionEnums.Coordinate.X, brakeAngle);
         }
     }
 }

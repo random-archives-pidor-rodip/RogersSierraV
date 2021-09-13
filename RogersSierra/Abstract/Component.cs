@@ -1,4 +1,4 @@
-﻿using RogersSierra.Sierra;
+﻿using GTA;
 
 namespace RogersSierra.Abstract
 {
@@ -11,9 +11,19 @@ namespace RogersSierra.Abstract
         /// <summary>
         /// Train this handler attached to.
         /// </summary>
-        public Train Train { get; }
+        public RogersSierra Train { get; }
 
-        public Component(Train train)
+        /// <summary>
+        /// Locomotive vehicle of this train.
+        /// </summary>
+        public Vehicle Locomotive => Train.LocomotiveCarriage.VisibleVehicle;
+
+        /// <summary>
+        /// Tender vehicle of this train.
+        /// </summary>
+        public Vehicle Tender => Train.TenderCarriage.VisibleVehicle;
+
+        public Component(RogersSierra train)
         {
             Train = train;
         }

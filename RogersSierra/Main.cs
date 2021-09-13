@@ -1,10 +1,11 @@
 ﻿using FusionLibrary;
 using GTA;
-using GTA.Native;
 using RogersSierra.Components.InteractionUtils;
-using RogersSierra.Sierra;
+using RogersSierra.Data;
+using RogersSierra.Components.StaticComponents;
 using System;
 using System.Windows.Forms;
+using RogersSierra.Train;
 
 namespace RogersSierra
 {
@@ -30,6 +31,12 @@ namespace RogersSierra
         /// </summary>
         private void OnTick(object sender, EventArgs e)
         {
+                //            var vehs = World.GetAllVehicles();
+                //for (int i = 0; i < vehs.Length; i++)
+                //{
+                //    vehs[i].Delete();
+                //}
+
             // First frame code
             if (!FirstTick)
             {
@@ -37,22 +44,26 @@ namespace RogersSierra
                 Constants.RegisterDecorators();
 
                 // Respawn trains from previous session
+
                 var trains = World.GetAllVehicles(Models.InvisibleSierra);
-                for(int i = 0; i < trains.Length; i++)
+                for (int i = 0; i < trains.Length; i++)
                 {
-                    Train.Respawn(trains[i]);  
+                    var train = trains[i];
+                    
+                    if(CustomTrain.IsCustomTrain(train))
+                        RogersSierra.Respawn(CustomTrain.Respawn(train));
                 }
                 FirstTick = true;
             }
 
             // Process onTick for all train instances and user gui
-            for (int i = 0; i < Train.Trains.Count; i++)
+            for (int i = 0; i < RogersSierra.AllSierras.Count; i++)
             {
-                Train.Trains[i].OnTick();
+                RogersSierra.AllSierras[i].OnTick();
             }
-            UserInterface.OnTick();
+            Gui.OnTick();
 
-            for(int i = 0; i < InteractiveRope.Ropes.Count; i++)
+            for (int i = 0; i < InteractiveRope.Ropes.Count; i++)
             {
                 InteractiveRope.Ropes[i].OnTick();
             }
@@ -61,21 +72,30 @@ namespace RogersSierra
             FusionUtils.RandomTrains = false;
         }
 
+        /// <summary>
+        /// Debug hotkeys.
+        /// </summary>
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if(e.KeyCode == Keys.L)
+                RogersSierra.Create(Game.Player.Character.Position, true);
+
+            if (e.KeyCode == Keys.O)
             {
-                var train = Train.Spawn(Game.Player.Character.Position, true);
+                var prop = new AnimateProp(Models.DrivingWheel, Game.Player.Character.CurrentVehicle, "combination_lever");
+                prop.SpawnProp();
             }
+
             if (e.KeyCode == Keys.K)
-            {
-                Train.DeleteAllInstances();
-            }
+                RogersSierra.DeleteAllInstances();
         }
 
+        /// <summary>
+        /// Invokes train dispose.
+        /// </summary>
         private void OnAbort(object sender, EventArgs e)
         {
-            Train.OnAbort();
+            RogersSierra.OnAbort();
         }
     }
 }

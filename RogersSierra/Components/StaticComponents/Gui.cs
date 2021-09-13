@@ -3,9 +3,9 @@ using FusionLibrary.Extensions;
 using LemonUI.TimerBars;
 using System.Drawing;
 
-namespace RogersSierra.Sierra
+namespace RogersSierra.Components.StaticComponents
 {
-    public class UserInterface
+    public class Gui
     {
         private static TimerBarCollection _barCollection { get; }
 
@@ -29,7 +29,7 @@ namespace RogersSierra.Sierra
         /// </summary>
         private static TimerBarProgress _pressureBar { get; }
 
-        static UserInterface()
+        static Gui()
         {
             _brakeBar = new TimerBarProgress("Brakes");
             _throttleBar = new TimerBarProgress("Throttle");
@@ -53,17 +53,17 @@ namespace RogersSierra.Sierra
         public static void OnTick()
         {
             // Set GUI visibility depended on if player in train or not
-            if(Train.ActiveTrain == null)
+            if(RogersSierra.ActiveTrain == null)
             {
                 _barCollection.Visible = false;
                 return;
             }
             _barCollection.Visible = true;
 
-            _brakeBar.Progress = Train.ActiveTrain.BrakeComponent.Force.Remap(0, Train.ActiveTrain.BrakeComponent.BrakeMultiplier, 0, 100);
-            _pressureBar.Progress = Train.ActiveTrain.BoilerComponent.Pressure.Remap(0, 20, 0, 100);
-            _throttleBar.Progress = Train.ActiveTrain.SpeedComponent.Throttle.Remap(0, 1, 0, 100);
-            _gearBar.Progress = Train.ActiveTrain.SpeedComponent.Gear.Remap(-1, 1, 0, 100);
+            _brakeBar.Progress = RogersSierra.ActiveTrain.BrakeComponent.AirbrakeForce.Remap(0, 1, 0, 100);
+            _pressureBar.Progress = RogersSierra.ActiveTrain.BoilerComponent.Pressure.Remap(0, 300, 0, 100);
+            _throttleBar.Progress = RogersSierra.ActiveTrain.SpeedComponent.Throttle.Remap(0, 1, 0, 100);
+            _gearBar.Progress = RogersSierra.ActiveTrain.SpeedComponent.Gear.Remap(-1, 1, 0, 100);
         }
     }
 }
