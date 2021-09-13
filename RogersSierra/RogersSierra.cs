@@ -90,7 +90,7 @@ namespace RogersSierra
             LocomotiveCarriage = CustomTrain.GetCarriage(Models.VisibleSierra);
             TenderCarriage = CustomTrain.GetCarriage(Models.VisibleTender);
 
-            Locomotive.VisibleVehicle.SetPlayerLights(true);
+            LocomotiveCarriage.VisibleVehicle.SetPlayerLights(true);
 
             // Add train to trains list
             AllSierras.Add(this);

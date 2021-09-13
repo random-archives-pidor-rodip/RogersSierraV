@@ -90,8 +90,8 @@ namespace RogersSierra.Components
                 }
             }
 
-            Train.Locomotive.VisibleVehicle.AreLightsOn = lightState;
-            Train.Locomotive.VisibleVehicle.AreHighBeamsOn = highBeamState;
+            Train.LocomotiveCarriage.VisibleVehicle.AreLightsOn = lightState;
+            Train.LocomotiveCarriage.VisibleVehicle.AreHighBeamsOn = highBeamState;
         }
     }
 }
