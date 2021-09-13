@@ -31,6 +31,12 @@ namespace RogersSierra
         /// </summary>
         private void OnTick(object sender, EventArgs e)
         {
+                //            var vehs = World.GetAllVehicles();
+                //for (int i = 0; i < vehs.Length; i++)
+                //{
+                //    vehs[i].Delete();
+                //}
+
             // First frame code
             if (!FirstTick)
             {
@@ -42,7 +48,10 @@ namespace RogersSierra
                 var trains = World.GetAllVehicles(Models.InvisibleSierra);
                 for (int i = 0; i < trains.Length; i++)
                 {
-                    RogersSierra.Respawn(CustomTrain.Respawn(trains[i]));
+                    var train = trains[i];
+                    
+                    if(CustomTrain.IsCustomTrain(train))
+                        RogersSierra.Respawn(CustomTrain.Respawn(train));
                 }
                 FirstTick = true;
             }

@@ -7,6 +7,7 @@ using RogersSierra.Data;
 using RogersSierra.Natives;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RogersSierra.Train
 {
@@ -15,6 +16,8 @@ namespace RogersSierra.Train
     /// </summary>
     public class CustomTrain
     {
+        public static readonly List<CustomTrain> AllTrains = new List<CustomTrain>();
+
         /// <summary>
         /// Head (in most cases - locomotive) of the train.
         /// </summary>
@@ -24,7 +27,7 @@ namespace RogersSierra.Train
         /// All carriages of this train.
         /// </summary>
         public readonly List<Carriage> Carriages;
-
+        
         private float _speed;
         /// <summary>
         /// Speed of this train in m/s.
@@ -34,15 +37,30 @@ namespace RogersSierra.Train
             get => _speed;
             set
             {
+                if (_coupledTrains != null)
+                    value += _coupledTrains.Sum(x => x.Speed);
+
                 _speed = value;
                 NVehicle.SetTrainSpeed(TrainHead, value);
             }
         }
 
         /// <summary>
+        /// Unique number of this train.
+        /// </summary>
+        public readonly int Guid;
+
+        /// <summary>
         /// Blip of this train.
         /// </summary>
         public readonly Blip Blip;
+
+        /// <summary>
+        /// Counter of spawned trains as Guid.
+        /// </summary>
+        private static int GuidCounter;
+
+        private readonly List<CustomTrain> _coupledTrains = new List<CustomTrain>();
 
         /// <summary>
         /// Constructs new instance of <see cref="CustomTrain"/>.
@@ -56,18 +74,44 @@ namespace RogersSierra.Train
             // Apply decorator that will help us to detect trains after reload
             TrainHead.Decorator().SetBool(Constants.TrainDecorator, true);
 
-            // For recovered trains
-            if (config == null)
-                return;
-
-            // Add blip to train
-            if (config.BlipName != "")
+            // Set "Guid"
+            Guid = GuidCounter++;
+            for (int i = 0; i < Carriages.Count; i++)
             {
-                Blip = TrainHead.AddBlip();
-                Blip.Sprite = (BlipSprite)795;
-                Blip.Color = (BlipColor)70;
-                Blip.Name = config.BlipName;
+                var carriage = carriages[i];
+                carriage.InvisibleVehicle.Decorator().SetInt(Constants.TrainGuid, Guid);
+                carriage.VisibleVehicle.Decorator().SetInt(Constants.TrainGuid, Guid);
+
+                // Set handle of train head
+                carriage.VisibleVehicle.Decorator().SetInt(Constants.TrainHeadHandle, TrainHead.Handle);
             }
+
+            // For new trains
+            if (config != null)
+            {
+                // Add blip to train
+                if (config.BlipName != "")
+                {
+                    Blip = TrainHead.AddBlip();
+                    Blip.Sprite = (BlipSprite)795;
+                    Blip.Color = (BlipColor)70;
+                    Blip.Name = config.BlipName;
+                }
+            }
+
+            AllTrains.Add(this);
+        }
+
+        public static CustomTrain Find(int handle)
+        {
+            for(int i = 0; i < AllTrains.Count; i++)
+            {
+                var train = AllTrains[i];
+
+                if (train.TrainHead.Handle == handle)
+                    return train;
+            }
+            return null;
         }
 
         /// <summary>
@@ -78,6 +122,9 @@ namespace RogersSierra.Train
         {
             // Spawn new train. It returns first carriage.
             var trainHead = NVehicle.CreateTrain(config.Id, position, direction);
+
+            // Mark train as custom
+            trainHead.Decorator().SetBool(Constants.TrainIsCustom, true);
 
             // Set number of carriages as decorator so we can recover them after reload
             trainHead.Decorator().SetInt(Constants.TrainCarriagesNumber, config.Models.Count);
@@ -149,6 +196,16 @@ namespace RogersSierra.Train
         }
 
         /// <summary>
+        /// Checks if vehicle is <see cref="CustomTrain"/>.
+        /// </summary>
+        /// <param name="vehicle">Vehicle to check.</param>
+        /// <returns>True if train is <see cref="CustomTrain"/>, otherwise False.</returns>
+        public static bool IsCustomTrain(Vehicle vehicle)
+        {
+            return vehicle.Decorator().GetBool(Constants.TrainIsCustom);
+        }
+
+        /// <summary>
         /// Gets train carriage.
         /// </summary>
         /// <param name="index">Index of the carriage. Starts from 0.</param>
@@ -165,11 +222,12 @@ namespace RogersSierra.Train
         /// <returns>Carriage of specified model.</returns>
         public Carriage GetCarriage(CustomModel model)
         {
-            for(int i = 0; i < Carriages.Count; i++)
+            var searchModel = model.Model;
+
+            for (int i = 0; i < Carriages.Count; i++)
             {
                 var carriage = Carriages[i];
 
-                var searchModel = model.Model;
                 var invisibleModel = carriage.InvisibleVehicle.Model;
                 var visibleModel = carriage.VisibleVehicle.Model;
 
@@ -179,6 +237,12 @@ namespace RogersSierra.Train
                 }
             }
             throw new ArgumentException($"Requested carriage {model.Name} is not found.");
+        }
+
+        public void Couple(CustomTrain train)
+        {
+            if(!_coupledTrains.Contains(train))
+                _coupledTrains.Add(train);
         }
 
         /// <summary>

@@ -6,8 +6,12 @@ namespace RogersSierra.Data
     {
         public const string TrainDecorator = "IsTrain";
         public const string TrainDirection = "Direction";
+        
         public const string TrainCarriagesNumber = "TrainCarriagesNumber";
         public const string TrainVisibleCarriageHandle = "TrainCarriageEntityHandle";
+        public const string TrainHeadHandle = "TrainHeadEntityHandle";
+        public const string TrainIsCustom = "IsCustomTrain";
+        public const string TrainGuid = "TrainGuid";
 
         public const string InteractableEntity = "InteractableEntity";
         public const string InteractableId = "InteractableId";
@@ -19,6 +23,9 @@ namespace RogersSierra.Data
             Decorator.Register(TrainDirection, FusionEnums.DecorType.Bool);
             Decorator.Register(TrainCarriagesNumber, FusionEnums.DecorType.Int);
             Decorator.Register(TrainVisibleCarriageHandle, FusionEnums.DecorType.Int);
+            Decorator.Register(TrainHeadHandle, FusionEnums.DecorType.Int);
+            Decorator.Register(TrainIsCustom, FusionEnums.DecorType.Bool);
+            Decorator.Register(TrainGuid, FusionEnums.DecorType.Int);
 
             Decorator.Register(InteractableEntity, FusionEnums.DecorType.Bool);
             Decorator.Register(InteractableId, FusionEnums.DecorType.Int);
