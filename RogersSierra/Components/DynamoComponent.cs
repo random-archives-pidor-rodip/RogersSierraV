@@ -17,10 +17,10 @@ namespace RogersSierra.Components
     /// </summary>
     public class DynamoComponent : Component
     {
-        ///// <summary>
-        ///// Current state of boiler light.
-        ///// </summary>
-        //public LightState BoilerLightState { get; set; }
+        /// <summary>
+        /// Current state of boiler light.
+        /// </summary>
+        public LightState BoilerLightState { get; set; } = LightState.Disabled;
 
         /// <summary>
         /// Whether dynamo generator is currently on or not.
@@ -46,7 +46,7 @@ namespace RogersSierra.Components
         /// </summary>
         public void SwitchHeadlight()
         {
-            //BoilerLightState = BoilerLightState.Next();
+            BoilerLightState = BoilerLightState.Next();
         }
 
         public override void OnInit()
@@ -57,41 +57,41 @@ namespace RogersSierra.Components
         public override void OnTick()
         {
             Locomotive.IsEngineRunning = IsDynamoWorking;
-            //ProcessBoilerLight();
+            ProcessBoilerLight();
         }
 
         private void ProcessBoilerLight()
         {
-            //bool lightState = false;
-            //bool highBeamState = false;
+            bool lightState = false;
+            bool highBeamState = false;
 
-            //if (IsDynamoWorking)
-            //{
-            //    switch (BoilerLightState)
-            //    {
-            //        case LightState.Disabled:
-            //            {
-            //                lightState = false;
-            //                highBeamState = false;
-            //                break;
-            //            }
-            //        case LightState.LowBeam:
-            //            {
-            //                lightState = true;
-            //                highBeamState = false;
-            //                break;
-            //            }
-            //        case LightState.HighBeam:
-            //            {
-            //                lightState = true;
-            //                highBeamState = true;
-            //                break;
-            //            }
-            //    }
-            //}
+            if (IsDynamoWorking)
+            {
+                switch (BoilerLightState)
+                {
+                    case LightState.Disabled:
+                        {
+                            lightState = false;
+                            highBeamState = false;
+                            break;
+                        }
+                    case LightState.LowBeam:
+                        {
+                            lightState = true;
+                            highBeamState = false;
+                            break;
+                        }
+                    case LightState.HighBeam:
+                        {
+                            lightState = true;
+                            highBeamState = true;
+                            break;
+                        }
+                }
+            }
 
-            //Train.VisibleModel.AreLightsOn = lightState;
-            //Train.VisibleModel.AreHighBeamsOn = highBeamState;
+            Train.Locomotive.VisibleVehicle.AreLightsOn = lightState;
+            Train.Locomotive.VisibleVehicle.AreHighBeamsOn = highBeamState;
         }
     }
 }
