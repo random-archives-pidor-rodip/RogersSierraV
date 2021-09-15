@@ -8,6 +8,7 @@ using RogersSierra.Other;
 using RogersSierra.Train;
 using System;
 using System.Collections.Generic;
+using FusionLibrary.Extensions;
 
 namespace RogersSierra
 {
@@ -88,6 +89,8 @@ namespace RogersSierra
             CustomTrain = train;
             LocomotiveCarriage = CustomTrain.GetCarriage(Models.VisibleSierra);
             TenderCarriage = CustomTrain.GetCarriage(Models.VisibleTender);
+
+            LocomotiveCarriage.VisibleVehicle.SetPlayerLights(true);
 
             // Add train to trains list
             AllSierras.Add(this);
@@ -191,7 +194,7 @@ namespace RogersSierra
             for(int i = 0; i < Components.Count; i++)
             {
                 Components[i].OnTick();
-            }
+            }            
 
             // Remove dirt because it's not supported by train model
             LocomotiveCarriage.VisibleVehicle.DirtLevel = 0;

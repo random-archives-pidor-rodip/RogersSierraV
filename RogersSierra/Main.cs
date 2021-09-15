@@ -80,12 +80,6 @@ namespace RogersSierra
             if(e.KeyCode == Keys.L)
                 RogersSierra.Create(Game.Player.Character.Position, true);
 
-            if (e.KeyCode == Keys.O)
-            {
-                var prop = new AnimateProp(Models.DrivingWheel, Game.Player.Character.CurrentVehicle, "combination_lever");
-                prop.SpawnProp();
-            }
-
             if (e.KeyCode == Keys.K)
                 RogersSierra.DeleteAllInstances();
         }
