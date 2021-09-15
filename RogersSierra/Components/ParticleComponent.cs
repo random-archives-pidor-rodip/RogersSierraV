@@ -98,7 +98,7 @@ namespace RogersSierra.Components
             _dynamoSteam.SetState(AreDynamoSteamShown);
             _cylinderSteam.SetState(IsCylinderSteamShown);
 
-            _dynamoSteam.Rotation = Math.Abs(Train.SpeedComponent.Speed) < 3 ? Vector3.Zero : new Vector3(90, 0, 0);
+            _dynamoSteam.Rotation = Math.Abs(Train.CustomTrain.SpeedComponent.Speed) < 3 ? Vector3.Zero : new Vector3(90, 0, 0);
             for(int i = 0; i < _wheelSparks.ParticlePlayers.Count; i++)
             {
                 _wheelSparks[i].Rotation = Train.WheelComponent.DriveWheelSpeed >= 0 ? Vector3.Zero : new Vector3(190, 0, 0);

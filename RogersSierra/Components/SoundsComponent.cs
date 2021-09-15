@@ -137,7 +137,7 @@ namespace RogersSierra.Components
                 //GTA.UI.Screen.ShowSubtitle(_currentPistonId.ToString());
             };
 
-            Train.SpeedComponent.OnTrainStart += () =>
+            Train.CustomTrain.SpeedComponent.OnTrainStart += () =>
             {
                 if(!IsWheelSlipping() && !Train.IsLocomotiveDerailed)
                     Start.Play();
@@ -186,11 +186,11 @@ namespace RogersSierra.Components
                 WheelSlip.Stop();
 
             // Start
-            if (!Train.SpeedComponent.IsTrainAccelerating)
+            if (!Train.CustomTrain.SpeedComponent.IsTrainAccelerating)
                 Start.Stop();
 
             // Steam brakes
-            if(Train.SpeedComponent.Speed > 0)
+            if(Train.CustomTrain.SpeedComponent.Speed > 0)
             {
                 if(TrainStartedBraking())
                 {
@@ -234,7 +234,7 @@ namespace RogersSierra.Components
             _previousAmbientId = _currentAmbientId;
 
             // TODO: Add list with ability to define speed for every level
-            _currentAmbientId = (int)Train.SpeedComponent.Speed.Clamp(0, 20).Remap(0, 20, 0, _ambientMoveLevels - 1);
+            _currentAmbientId = (int)Train.CustomTrain.SpeedComponent.Speed.Clamp(0, 20).Remap(0, 20, 0, _ambientMoveLevels - 1);
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace RogersSierra.Components
         /// <returns>True if wheel are slipping, otherwise False.</returns>
         private bool IsWheelSlipping()
         {
-            return Train.SpeedComponent.AreWheelSpark;
+            return Train.CustomTrain.SpeedComponent.AreWheelSpark;
         }
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace RogersSierra.Components
         /// <returns>True if train is moving, otherwise False</returns>
         private bool IsTrainMoving()
         {
-            return Train.SpeedComponent.Speed > 1;
+            return Train.CustomTrain.SpeedComponent.Speed > 1;
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ namespace RogersSierra.Components
         /// <returns>True if train is idling, otherwise False.</returns>
         private bool TrainIdling()
         {
-            if (Train.SpeedComponent.Speed < 2)
+            if (Train.CustomTrain.SpeedComponent.Speed < 2)
                 return true;
             else
                 return false;
@@ -273,8 +273,8 @@ namespace RogersSierra.Components
         /// <returns>True if player is currently braking, otherwise False.</returns>
         private bool TrainIsCurrentlyBraking()
         {
-            if (Train.BrakeComponent.SteamBrake == 1 &&
-                Train.SpeedComponent.Speed > 1)
+            if (Train.CustomTrain.BrakeComponent.SteamBrake == 1 &&
+                Train.CustomTrain.SpeedComponent.Speed > 1)
             {
                 return true;
             }
@@ -287,8 +287,8 @@ namespace RogersSierra.Components
         /// <returns>True if train started braking, otherwise False.</returns>
         private bool TrainStartedBraking()
         {
-            if (Train.BrakeComponent.SteamBrake == 1 &&
-                Train.SpeedComponent.Speed > 2 &&
+            if (Train.CustomTrain.BrakeComponent.SteamBrake == 1 &&
+                Train.CustomTrain.SpeedComponent.Speed > 2 &&
                 !SteamBrakeStart.IsAnyInstancePlaying &&
                 !SteamBrakeLoop.IsAnyInstancePlaying &&
                 !SteamBrakeEnd.IsAnyInstancePlaying)
@@ -307,7 +307,7 @@ namespace RogersSierra.Components
         /// <returns>True if train stopped after braking, otherwise Fale.</returns>
         private bool TrainStoppedAfterBraking()
         {
-            if (Train.SpeedComponent.Speed < 1 &&
+            if (Train.CustomTrain.SpeedComponent.Speed < 1 &&
                 !SteamBrakeEnd.IsAnyInstancePlaying &&
                 SteamBrakeLoop.IsAnyInstancePlaying)
             {

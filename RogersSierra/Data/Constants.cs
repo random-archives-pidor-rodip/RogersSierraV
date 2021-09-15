@@ -2,6 +2,9 @@
 
 namespace RogersSierra.Data
 {
+    /// <summary>
+    /// Decorator constants.
+    /// </summary>
     public class Constants
     {
         public const string TrainDecorator = "IsTrain";

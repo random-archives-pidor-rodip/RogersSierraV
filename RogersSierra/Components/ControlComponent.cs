@@ -263,7 +263,7 @@ namespace RogersSierra.Components
             var combineInput = Math.Abs(accelerateInput + brakeInput);
 
             var gear = accelerateInput + brakeInput;
-            var trainSpeed = (int)Train.SpeedComponent.Speed;
+            var trainSpeed = (int)Train.CustomTrain.SpeedComponent.Speed;
             float brakeLeverInput = 0;
 
             if (trainSpeed > 0)

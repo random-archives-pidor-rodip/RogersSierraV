@@ -49,6 +49,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AdvancedTrainSystem">
+      <HintPath>$(GTAPath)\scripts\AdvancedTrainSystem.dll</HintPath>
+    </Reference>
     <Reference Include="KlangRageAudioLibrary">
       <HintPath>$(GTAPath)\scripts\KlangRageAudioLibrary.dll</HintPath>
     </Reference>
@@ -70,19 +73,16 @@
   <ItemGroup>
     <Compile Include="Abstract\Component.cs" />
     <Compile Include="Components\BindComponent.cs" />
-    <Compile Include="Components\BoilerComponent.cs" />
     <Compile Include="Components\BrakeComponent.cs" />
     <Compile Include="Components\CabComponent.cs" />
     <Compile Include="Components\ComponentEnums\LightState.cs" />
     <Compile Include="Components\ControlComponent.cs" />
-    <Compile Include="Components\CollisionComponent.cs" />
     <Compile Include="Components\DrivetrainComponent.cs" />
     <Compile Include="Components\DynamoComponent.cs" />
     <Compile Include="Components\InteractionUtils\InteractiveRope.cs" />
     <Compile Include="Components\ParticleComponent.cs" />
     <Compile Include="Components\PropComponent.cs" />
     <Compile Include="Components\SoundsComponent.cs" />
-    <Compile Include="Components\SpeedComponent.cs" />
     <Compile Include="Components\WheelComponent.cs" />
     <Compile Include="Extensions\EnumExtentions.cs" />
     <Compile Include="Extensions\OtherExtensions.cs" />
@@ -98,10 +98,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Components\StaticComponents\Gui.cs" />
     <Compile Include="Other\Utils.cs" />
-    <Compile Include="Train\Carriage.cs" />
-    <Compile Include="Train\CustomTrain.cs" />
-    <Compile Include="Train\TrainConfig.cs" />
-    <Compile Include="Train\TrainModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />

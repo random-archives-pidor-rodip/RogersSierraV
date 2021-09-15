@@ -60,10 +60,10 @@ namespace RogersSierra.Components.StaticComponents
             }
             _barCollection.Visible = true;
 
-            _brakeBar.Progress = RogersSierra.ActiveTrain.BrakeComponent.AirbrakeForce.Remap(0, 1, 0, 100);
+            _brakeBar.Progress = RogersSierra.ActiveTrain.CustomTrain.BrakeComponent.AirbrakeForce.Remap(0, 1, 0, 100);
             _pressureBar.Progress = RogersSierra.ActiveTrain.BoilerComponent.Pressure.Remap(0, 300, 0, 100);
-            _throttleBar.Progress = RogersSierra.ActiveTrain.SpeedComponent.Throttle.Remap(0, 1, 0, 100);
-            _gearBar.Progress = RogersSierra.ActiveTrain.SpeedComponent.Gear.Remap(-1, 1, 0, 100);
+            _throttleBar.Progress = RogersSierra.ActiveTrain.CustomTrain.SpeedComponent.Throttle.Remap(0, 1, 0, 100);
+            _gearBar.Progress = RogersSierra.ActiveTrain.CustomTrain.SpeedComponent.Gear.Remap(-1, 1, 0, 100);
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿using FusionLibrary;
+﻿using AdvancedTrainSystem.Train;
+using FusionLibrary;
 using GTA.Math;
 using RogersSierra.Abstract;
 using RogersSierra.Components;
 using RogersSierra.Components.InteractionUtils;
 using RogersSierra.Data;
 using RogersSierra.Other;
-using RogersSierra.Train;
 using System;
 using System.Collections.Generic;
 
@@ -71,7 +71,6 @@ namespace RogersSierra
         public DynamoComponent DynamoComponent;
         public ParticleComponent ParticleComponent;
         public SoundsComponent SoundsComponent;
-        public SpeedComponent SpeedComponent;
         public WheelComponent WheelComponent;
         public DrivetrainComponent DrivetrainComponent;
 

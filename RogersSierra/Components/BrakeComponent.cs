@@ -9,16 +9,6 @@ namespace RogersSierra.Components
     /// </summary>
     public class BrakeComponent : Component
     {
-        /// <summary>
-        /// Current level of airbrake. 0 - no brake, 1 - full brake.
-        /// </summary>
-        public float AirbrakeForce { get; set; }
-
-        /// <summary>
-        /// Steam brake blocks any wheel movement.
-        /// </summary>
-        public int SteamBrake { get; set; }
-
         public AnimateProp AirbrakeMain;
         public AnimateProp AirbrakeRod;
         public AnimateProp AirbrakeLever;
@@ -47,11 +37,13 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
-            var mainOffset = _airbrakeMainOffset * AirbrakeForce;
+            var airbrakeForce = Train.CustomTrain.BrakeComponent.AirbrakeForce;
+
+            var mainOffset = _airbrakeMainOffset * airbrakeForce;
             var rodOffset = Locomotive.GetPositionOffset(
                 AirbrakeLever.Prop.Bones["airbrake_rod_mount"].Position);
-            var leverAngle = _airbrakeLeverOffset * AirbrakeForce;
-            var brakeAngle = _brakeAngle * AirbrakeForce;
+            var leverAngle = _airbrakeLeverOffset * airbrakeForce;
+            var brakeAngle = _brakeAngle * airbrakeForce;
 
             AirbrakeMain.setOffset(FusionEnums.Coordinate.Y, mainOffset);
             AirbrakeRod.setOffset(rodOffset);

@@ -24,16 +24,16 @@ namespace RogersSierra.Components
         public override void OnTick()
         {
             // SpeedComponent
-            Train.SpeedComponent.Throttle = Train.CabComponent.ThrottleLeverState;
-            Train.SpeedComponent.Gear = Train.CabComponent.GearLeverState;
+            Train.CustomTrain.SpeedComponent.Throttle = Train.CabComponent.ThrottleLeverState;
+            Train.CustomTrain.SpeedComponent.Gear = Train.CabComponent.GearLeverState;
 
             // BrakeComponent
-            Train.BrakeComponent.AirbrakeForce = Train.CabComponent.AirBrakeLeverState;
-            Train.BrakeComponent.SteamBrake = Train.CabComponent.SteamBrakeLeverState;
+            Train.CustomTrain.BrakeComponent.AirbrakeForce = Train.CabComponent.AirBrakeLeverState;
+            Train.CustomTrain.BrakeComponent.SteamBrake = Train.CabComponent.SteamBrakeLeverState;
 
             // ParticleComponent
             Train.ParticleComponent.AreDynamoSteamShown = Train.DynamoComponent.IsDynamoWorking;
-            Train.ParticleComponent.AreWheelSparksShown = Train.SpeedComponent.AreWheelSpark;
+            Train.ParticleComponent.AreWheelSparksShown = Train.CustomTrain.SpeedComponent.AreWheelSpark;
             Train.ParticleComponent.IsCylinderSteamShown = Train.BoilerComponent.CylindersSteam;
         }
     }
