@@ -34,7 +34,7 @@ namespace RogersSierra.Components
             // ParticleComponent
             Train.ParticleComponent.AreDynamoSteamShown = Train.DynamoComponent.IsDynamoWorking;
             Train.ParticleComponent.AreWheelSparksShown = Train.CustomTrain.SpeedComponent.AreWheelSpark;
-            Train.ParticleComponent.IsCylinderSteamShown = Train.BoilerComponent.CylindersSteam;
+            Train.ParticleComponent.IsCylinderSteamShown = Train.CustomTrain.BoilerComponent.CylindersSteam;
         }
     }
 }

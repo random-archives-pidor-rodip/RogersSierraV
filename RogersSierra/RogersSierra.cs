@@ -64,11 +64,9 @@ namespace RogersSierra
 
         public PropComponent PropComponent;
         public BindComponent BindComponent;
-        public BoilerComponent BoilerComponent;
         public BrakeComponent BrakeComponent;
         public CabComponent CabComponent;
         public ControlComponent ControlComponent;
-        public CollisionComponent DerailComponent;
         public DynamoComponent DynamoComponent;
         public ParticleComponent ParticleComponent;
         public SoundsComponent SoundsComponent;

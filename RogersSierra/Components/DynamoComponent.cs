@@ -25,7 +25,7 @@ namespace RogersSierra.Components
         /// <summary>
         /// Whether dynamo generator is currently on or not.
         /// </summary>
-        public bool IsDynamoWorking => Train.BoilerComponent.Pressure > 160;
+        public bool IsDynamoWorking => Train.CustomTrain.BoilerComponent.Pressure > 160;
 
         /// <summary>
         /// Constructs new instance of <see cref="DynamoComponent"/>.
