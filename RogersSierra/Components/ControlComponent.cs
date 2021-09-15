@@ -182,6 +182,9 @@ namespace RogersSierra.Components
                 // Enable crosshair
                 Function.Call(Hash.DISPLAY_SNIPER_SCOPE_THIS_FRAME);
 
+                if (Game.IsControlJustPressed(Control.VehicleHeadlight))
+                    Train.DynamoComponent.SwitchHeadlight();
+
                 if (!Train.CabComponent.InteractableProps.IsPlaying)
                     Train.CabComponent.InteractableProps.Play();
             } 
