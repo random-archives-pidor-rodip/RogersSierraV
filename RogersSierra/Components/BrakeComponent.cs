@@ -37,6 +37,7 @@ namespace RogersSierra.Components
 
         public override void OnTick()
         {
+            return;
             var airbrakeForce = Train.CustomTrain.BrakeComponent.AirbrakeForce;
 
             var mainOffset = _airbrakeMainOffset * airbrakeForce;

@@ -1,6 +1,7 @@
 ﻿using AdvancedTrainSystem.Train;
 using FusionLibrary;
 using GTA;
+using GTA.Native;
 using RogersSierra.Components.InteractionUtils;
 using RogersSierra.Components.StaticComponents;
 using RogersSierra.Data;
@@ -31,11 +32,11 @@ namespace RogersSierra
         /// </summary>
         private void OnTick(object sender, EventArgs e)
         {
-                //            var vehs = World.GetAllVehicles();
-                //for (int i = 0; i < vehs.Length; i++)
-                //{
-                //    vehs[i].Delete();
-                //}
+            //var vehs = World.GetAllVehicles();
+            //for (int i = 0; i < vehs.Length; i++)
+            //{
+            //    vehs[i].Delete();
+            //}
 
             // First frame code
             if (!FirstTick)
@@ -79,6 +80,16 @@ namespace RogersSierra
         {
             if(e.KeyCode == Keys.L)
                 RogersSierra.Create(Game.Player.Character.Position, true);
+
+            if(e.KeyCode == Keys.H)
+            {
+                //var veh = Game.Player.Character.CurrentVehicle;
+                //var vehTrailer = World.CreateVehicle(Models.VisibleTender, veh.Position + GTA.Math.Vector3.RelativeBack * 2);
+                ////World.GetClosestVehicle(Game.Player.Character.Position, 100, Models.VisibleTender);
+                //veh.IsCollisionEnabled = false;
+                ////  
+                //Function.Call(Hash.ATTACH_VEHICLE_TO_TRAILER, veh, vehTrailer, 90);
+            }
 
             if (e.KeyCode == Keys.K)
                 RogersSierra.DeleteAllInstances();

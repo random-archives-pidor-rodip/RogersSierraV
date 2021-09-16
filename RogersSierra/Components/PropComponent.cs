@@ -22,7 +22,7 @@ namespace RogersSierra.Components
 
         public override void OnInit()
         {
-            SpawnAllProps();
+            //SpawnAllProps();
 
             Train.OnDispose += DisposeAllProps;
         }
