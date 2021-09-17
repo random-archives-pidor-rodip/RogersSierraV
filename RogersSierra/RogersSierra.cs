@@ -161,6 +161,8 @@ namespace RogersSierra
             // Make sure to call OnDispose before removing all components.
             OnDispose?.Invoke();
 
+            TrainComponents.OnAbort();
+
             // Mark train as disposed.
             Disposed = true;
         }
