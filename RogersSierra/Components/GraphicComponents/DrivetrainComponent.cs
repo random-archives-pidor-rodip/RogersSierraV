@@ -1,17 +1,17 @@
 ﻿using FusionLibrary;
 using FusionLibrary.Extensions;
 using GTA.Math;
-using RogersSierra.Abstract;
+using RageComponent;
 using RogersSierra.Data;
 using System;
 using static FusionLibrary.FusionEnums;
 
-namespace RogersSierra.Components
+namespace RogersSierra.Components.GraphicComponents
 {
     /// <summary>
     /// Handles drivetrain animation.
     /// </summary>
-    public class DrivetrainComponent : Component
+    public class DrivetrainComponent : Component<RogersSierra>
     {
         public AnimateProp CouplingRod;
         public AnimateProp ConnectingRod;
@@ -38,13 +38,16 @@ namespace RogersSierra.Components
 
         private bool _onPistonCalled = false;
 
-        public DrivetrainComponent(RogersSierra train) : base(train)
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public override void Start()
         {
-            CouplingRod = new AnimateProp(Models.CouplingRod, Locomotive, "dwheel_1");
-            ConnectingRod = new AnimateProp(Models.ConnectingRod, Locomotive, "dwheel_1");
-            Piston = new AnimateProp(Models.Piston, Locomotive, "piston");
+            CouplingRod = new AnimateProp(Models.CouplingRod, Entity, "dwheel_1");
+            ConnectingRod = new AnimateProp(Models.ConnectingRod, Entity, "dwheel_1");
+            Piston = new AnimateProp(Models.Piston, Entity, "piston");
 
-            CombinationLever = new AnimateProp(Models.CombinationLever, Locomotive, "combination_lever");
+            CombinationLever = new AnimateProp(Models.CombinationLever, Entity, "combination_lever");
             CombinationLever.SpawnProp();
 
             RadiusRod = new AnimateProp(Models.RadiusRod, CombinationLever, "radius_rod_mounting", Vector3.Zero, Vector3.Zero, false);
@@ -55,35 +58,35 @@ namespace RogersSierra.Components
             ValveRod.UseFixedRot = false;
 
             // Calculate distance from mounting point of coupling rod to center of wheel
-            var rodPos = Locomotive.GetOffsetPosition(Locomotive.Bones["rod"].Position);
-            var wheelpos = Locomotive.GetOffsetPosition(Locomotive.Bones["dwheel_1"].Position);
+            var rodPos = Entity.GetOffsetPosition(Entity.Bones["rod"].Position);
+            var wheelpos = Entity.GetOffsetPosition(Entity.Bones["dwheel_1"].Position);
             _distanceToRod = Vector3.Distance(rodPos, wheelpos) - 0.045f;
 
-            rodPos = Locomotive.GetOffsetPosition(RadiusRod.Prop.Position);
-            wheelpos = Locomotive.GetOffsetPosition(Locomotive.Bones["valve_rod"].Position);
+            rodPos = Entity.GetOffsetPosition(RadiusRod.Prop.Position);
+            wheelpos = Entity.GetOffsetPosition(Entity.Bones["valve_rod"].Position);
             _radiusRodLength = Vector3.Distance(rodPos, wheelpos);
 
             _connectingRodLength = Models.ConnectingRod.Model.GetSize().width - 0.375f;
-            _pistonRelativePosY = Locomotive.Bones["piston"].RelativePosition.Y;
-            _pistonRelativePosZ = Locomotive.Bones["piston"].RelativePosition.Z;
+            _pistonRelativePosY = Entity.Bones["piston"].RelativePosition.Y;
+            _pistonRelativePosZ = Entity.Bones["piston"].RelativePosition.Z;
 
-            _valveRelativePosZ = Locomotive.Bones["valve_rod"].RelativePosition.Z;
-        }
+            _valveRelativePosZ = Entity.Bones["valve_rod"].RelativePosition.Z;
 
-        public override void OnInit()
-        {
             //Train.OnDerail += () => 
             //{
             //    Utils.ProcessAllValuesFieldsByType<AnimateProp>(this, x => x.Detach());
             //};
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public override void OnTick()
         {
-            if (Train.IsLocomotiveDerailed)
+            if (Base.CustomTrain.CollisionComponent.IsDerailed)
                 return;
 
-            float angleRad = Train.WheelComponent.DrivingWheelAngle.ToRad();
+            float angleRad = Base.WheelComponent.DrivingWheelAngle.ToRad();
             float angleCos = (float)Math.Cos(angleRad);
             float angleSin = (float)Math.Sin(angleRad);
 
@@ -96,13 +99,17 @@ namespace RogersSierra.Components
             ConnectingRod.setOffset(Coordinate.Y, dY);
             ConnectingRod.setOffset(Coordinate.Z, dZ);
 
-            float dAngle = 90 - MathExtensions.ToDeg((float)MathExtensions.ArcCos((_pistonRelativePosZ - ConnectingRod.RelativePosition.Z) / _connectingRodLength));
+            float dAngle = 90 - MathExtensions.ToDeg(
+                (float)MathExtensions.ArcCos(
+                    (_pistonRelativePosZ - ConnectingRod.RelativePosition.Z) / _connectingRodLength));
 
             ConnectingRod.setRotation(Coordinate.X, dAngle, true);
 
-            Piston.setOffset(Coordinate.Y, _connectingRodLength * (float)Math.Cos(MathExtensions.ToRad(dAngle)) - (_pistonRelativePosY - ConnectingRod.RelativePosition.Y), true);
+            Piston.setOffset(
+                Coordinate.Y, _connectingRodLength * (float)Math.Cos(
+                    MathExtensions.ToRad(dAngle)) - (_pistonRelativePosY - ConnectingRod.RelativePosition.Y), true);
 
-            dAngle = Train.WheelComponent.DrivingWheelAngle;
+            dAngle = Base.WheelComponent.DrivingWheelAngle;
 
             if (dAngle < 180)
                 dAngle = dAngle.Remap(0, 180, 0, -12);
@@ -126,11 +133,13 @@ namespace RogersSierra.Components
 
             CombinationLever.setRotation(Coordinate.X, dAngle);
 
-            dAngle = 90 - MathExtensions.ToDeg((float)MathExtensions.ArcCos((_valveRelativePosZ - Math.Abs(Locomotive.GetPositionOffset(RadiusRod.Position).Z)) / _radiusRodLength));
+            dAngle = 90 - MathExtensions.ToDeg(
+                (float)MathExtensions.ArcCos(
+                    (_valveRelativePosZ - Math.Abs(Entity.GetPositionOffset(RadiusRod.Position).Z)) / _radiusRodLength));
 
-            RadiusRod.setRotation(Locomotive.Rotation.GetSingleOffset(Coordinate.X, dAngle));
+            RadiusRod.setRotation(Entity.Rotation.GetSingleOffset(Coordinate.X, dAngle));
 
-            ValveRod.setRotation(Locomotive.Rotation);
+            ValveRod.setRotation(Entity.Rotation);
         }
     }
 }

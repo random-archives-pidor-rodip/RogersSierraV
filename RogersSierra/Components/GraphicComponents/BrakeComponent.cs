@@ -1,13 +1,13 @@
 ﻿using FusionLibrary;
-using RogersSierra.Abstract;
+using RageComponent;
 using RogersSierra.Data;
 
-namespace RogersSierra.Components
+namespace RogersSierra.Components.GraphicComponents
 {
     /// <summary>
     /// Handles train brakes.
     /// </summary>
-    public class BrakeComponent : Component
+    public class BrakeComponent : Component<RogersSierra>
     {
         public AnimateProp AirbrakeMain;
         public AnimateProp AirbrakeRod;
@@ -19,29 +19,29 @@ namespace RogersSierra.Components
         private const float _airbrakeLeverOffset = -6;
         private const float _brakeAngle = -5;
 
-        public BrakeComponent(RogersSierra train) : base(train)
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public override void Start()
         {
-            AirbrakeMain = new AnimateProp(Models.AirbrakeMain, Locomotive, "chassis");
-            AirbrakeRod = new AnimateProp(Models.AirbrakeRod, Locomotive, "chassis");
-            AirbrakeLever = new AnimateProp(Models.AirbrakeLever, Locomotive, "airbrake_lever");
+            AirbrakeMain = new AnimateProp(Models.AirbrakeMain, Entity, "chassis");
+            AirbrakeRod = new AnimateProp(Models.AirbrakeRod, Entity, "chassis");
+            AirbrakeLever = new AnimateProp(Models.AirbrakeLever, Entity, "airbrake_lever");
 
-            Brakes.Add(new AnimateProp(Models.Brake1, Locomotive, "brake_1"));
-            Brakes.Add(new AnimateProp(Models.Brake2, Locomotive, "brake_2"));
-            Brakes.Add(new AnimateProp(Models.Brake3, Locomotive, "brake_3"));
+            Brakes.Add(new AnimateProp(Models.Brake1, Entity, "brake_1"));
+            Brakes.Add(new AnimateProp(Models.Brake2, Entity, "brake_2"));
+            Brakes.Add(new AnimateProp(Models.Brake3, Entity, "brake_3"));
         }
 
-        public override void OnInit()
-        {
-
-        }
-
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public override void OnTick()
         {
-            return;
-            var airbrakeForce = Train.CustomTrain.BrakeComponent.AirbrakeForce;
+            var airbrakeForce = Base.CustomTrain.BrakeComponent.AirbrakeForce;
 
             var mainOffset = _airbrakeMainOffset * airbrakeForce;
-            var rodOffset = Locomotive.GetPositionOffset(
+            var rodOffset = Entity.GetPositionOffset(
                 AirbrakeLever.Prop.Bones["airbrake_rod_mount"].Position);
             var leverAngle = _airbrakeLeverOffset * airbrakeForce;
             var brakeAngle = _brakeAngle * airbrakeForce;

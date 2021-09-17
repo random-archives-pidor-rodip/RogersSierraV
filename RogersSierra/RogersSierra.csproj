@@ -49,15 +49,20 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AdvancedTrainSystem">
-      <HintPath>$(GTAPath)\scripts\AdvancedTrainSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="KlangRageAudioLibrary">
-      <HintPath>$(GTAPath)\scripts\KlangRageAudioLibrary.dll</HintPath>
+    <Reference Include="AdvancedTrainSystem, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\SteamLibrary\steamapps\common\Grand Theft Auto V\scripts\AdvancedTrainSystem.dll</HintPath>
     </Reference>
     <Reference Include="FusionLibrary">
-      <HintPath>$(GTAPath)\scripts\FusionLibrary.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>S:\SteamLibrary\steamapps\common\Grand Theft Auto V\scripts\FusionLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="KlangRageAudioLibrary, Version=1.0.7914.2013, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\SteamLibrary\steamapps\common\Grand Theft Auto V\scripts\KlangRageAudioLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="RageComponent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\SteamLibrary\steamapps\common\Grand Theft Auto V\scripts\RageComponent.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,28 +76,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abstract\Component.cs" />
-    <Compile Include="Components\BindComponent.cs" />
-    <Compile Include="Components\BrakeComponent.cs" />
-    <Compile Include="Components\CabComponent.cs" />
-    <Compile Include="Components\ComponentEnums\LightState.cs" />
-    <Compile Include="Components\ControlComponent.cs" />
-    <Compile Include="Components\DrivetrainComponent.cs" />
-    <Compile Include="Components\DynamoComponent.cs" />
+    <Compile Include="Components\GraphicComponents\BrakeComponent.cs" />
+    <Compile Include="Components\FunctionalComponents\CabComponent.cs" />
+    <Compile Include="Components\FunctionalComponents\ControlComponent.cs" />
+    <Compile Include="Components\GraphicComponents\DrivetrainComponent.cs" />
     <Compile Include="Components\InteractionUtils\InteractiveRope.cs" />
-    <Compile Include="Components\ParticleComponent.cs" />
-    <Compile Include="Components\PropComponent.cs" />
-    <Compile Include="Components\SoundsComponent.cs" />
-    <Compile Include="Components\WheelComponent.cs" />
-    <Compile Include="Extensions\EnumExtentions.cs" />
-    <Compile Include="Extensions\OtherExtensions.cs" />
+    <Compile Include="Components\GraphicComponents\ParticleComponent.cs" />
+    <Compile Include="Components\GraphicComponents\SoundsComponent.cs" />
+    <Compile Include="Components\GraphicComponents\WheelComponent.cs" />
+    <Compile Include="Data\TrainConfigs.cs" />
     <Compile Include="Physics\CustomRope.cs" />
     <Compile Include="Physics\RopeSegment.cs" />
     <Compile Include="Data\Constants.cs" />
-    <Compile Include="Extensions\MathExtentions.cs" />
     <Compile Include="Data\Files.cs" />
     <Compile Include="Data\Models.cs" />
-    <Compile Include="Natives\NVehicle.cs" />
     <Compile Include="RogersSierra.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

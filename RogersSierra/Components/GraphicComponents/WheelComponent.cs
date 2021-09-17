@@ -2,17 +2,17 @@
 using FusionLibrary.Extensions;
 using GTA;
 using GTA.Math;
-using RogersSierra.Abstract;
+using RageComponent;
 using RogersSierra.Data;
 using RogersSierra.Other;
 using System;
 
-namespace RogersSierra.Components
+namespace RogersSierra.Components.GraphicComponents
 {
     /// <summary>
     /// Handles rotation of train wheels.
     /// </summary>
-    public class WheelComponent : Component
+    public class WheelComponent : Component<RogersSierra>
     {
         /// <summary>
         /// Drive wheel speed in m/s
@@ -42,17 +42,17 @@ namespace RogersSierra.Components
         /// <summary>
         /// Drive wheel length.
         /// </summary>
-        private readonly float _driveLength;
+        private float _driveLength;
 
         /// <summary>
         /// Front wheel length.
         /// </summary>
-        private readonly float _frontLength;
+        private float _frontLength;
 
         /// <summary>
         /// Tender wheel length.
         /// </summary>
-        private readonly float _tenderLength;
+        private float _tenderLength;
 
         /// <summary>
         /// Returns angle of driving wheel.
@@ -60,10 +60,9 @@ namespace RogersSierra.Components
         public float DrivingWheelAngle => DriveWheels[0].SecondRotation.X;
 
         /// <summary>
-        /// Constructs new instance of <see cref="WheelComponent"/>.
+        /// <inheritdoc/>
         /// </summary>
-        /// <param name="train"><see cref="Train"/> instance.</param>
-        public WheelComponent(RogersSierra train) : base(train)
+        public override void Start()
         {
             // Length of cylinder is diameter * pi
 
@@ -71,9 +70,9 @@ namespace RogersSierra.Components
             _driveLength = (float)(Models.DrivingWheel.Model.GetSize().height * Math.PI);
             _tenderLength = (float)(Models.TenderWheel.Model.GetSize().height * Math.PI);
 
-            AddWheel(Locomotive, Models.FrontWheel, "fwheel_", 2, FrontWheels);
-            AddWheel(Locomotive, Models.DrivingWheel, "dwheel_", 3, DriveWheels);
-            AddWheel(Tender, Models.TenderWheel, "twheel_", 4, TenderWheels);
+            AddWheel(Base.VisibleLocomotive, Models.FrontWheel, "fwheel_", 2, FrontWheels);
+            AddWheel(Base.VisibleLocomotive, Models.DrivingWheel, "dwheel_", 3, DriveWheels);
+            AddWheel(Base.TenderCarriage.VisibleVehicle, Models.TenderWheel, "twheel_", 4, TenderWheels);
 
             void AddWheel(Vehicle vehicle, CustomModel wheelModel, string boneBase, int boneNumber, AnimatePropsHandler wheelHandler)
             {
@@ -89,16 +88,16 @@ namespace RogersSierra.Components
                     wheelHandler.Add(wheelProp);
                 });
             }
-        }
 
-        public override void OnInit()
-        {
             //Train.OnDerail += () =>
             //{
             //    Utils.ProcessAllValuesFieldsByType<AnimatePropsHandler>(this, x => x.Detach());
             //};
         }
-
+        
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public override void OnTick()
         {   
             // 2,3 wheel turn = 2.3 * 360 = 828~ degrees

@@ -3,21 +3,22 @@ using FusionLibrary.Extensions;
 using GTA;
 using GTA.Math;
 using GTA.Native;
-using RogersSierra.Abstract;
+using RageComponent;
 using System;
 
-namespace RogersSierra.Components
+namespace RogersSierra.Components.FunctionalComponent
 {
     /// <summary>
     /// Handles all control input from player.
     /// </summary>
-    public class ControlComponent : Component
+    public class ControlComponent : Component<RogersSierra>
     {
         /// <summary>
         /// Returns True if player is in train, otherwise False.
         /// </summary>
         public bool IsPlayerDrivingTrain =>
-            Game.Player.Character.CurrentVehicle == Train.LocomotiveCarriage.InvisibleVehicle;
+            Game.Player.Character.CurrentVehicle == Base.LocomotiveCarriage.InvisibleVehicle ||
+            Game.Player.Character.CurrentVehicle == Base.LocomotiveCarriage.VisibleVehicle;
 
         /// <summary>
         /// Whether player is inside cab or not.
@@ -55,13 +56,9 @@ namespace RogersSierra.Components
         /// </summary>
         private readonly NativeInput _trainEnterInput = new NativeInput(Control.Enter);
 
-        /// <summary>
-        /// Constructs new instance of <see cref="ControlComponent"/>.
-        /// </summary>
-        /// <param name="train"></param>
-        public ControlComponent(RogersSierra train) : base(train)
-        {            
-            Train.OnDispose += () =>
+        public override void Start()
+        {
+            Base.OnDispose += () =>
             {
                 if (World.RenderingCamera == CabCamera)
                     World.RenderingCamera = null;
@@ -77,11 +74,8 @@ namespace RogersSierra.Components
             // For keeping cab camera after reload
             if (IsPlayerDrivingTrain)
                 Enter();
-        }
 
-        public override void OnInit()
-        {
-            _prevTrainAngle = Locomotive.Rotation.Z;
+            _prevTrainAngle = Entity.Rotation.Z;
         }
 
         public override void OnTick()
@@ -89,21 +83,21 @@ namespace RogersSierra.Components
             // TODO: Disable controls only when player is looking at interactable item
 
             PlayerDistanceToTrain =
-                Game.Player.Character.Position.DistanceToSquared(Locomotive.Bones["cab_center"].Position);
+                Game.Player.Character.Position.DistanceToSquared(Entity.Bones["cab_center"].Position);
 
             // Check if player is in cab and set active train if he is
             IsPlayerInsideCab = (PlayerDistanceToTrain < 4) || IsPlayerDrivingTrain;
 
             if (IsPlayerInsideCab)
             {
-                RogersSierra.ActiveTrain = Train;
+                RogersSierra.ActiveTrain = Base;
             }
-            else if(!IsPlayerInsideCab && RogersSierra.ActiveTrain == Train)
+            else if(!IsPlayerInsideCab && RogersSierra.ActiveTrain == Base)
             {
                 RogersSierra.ActiveTrain = null;
             }
 
-            Train.CabComponent.InteractableProps.UseAltControl = IsPlayerInsideCab && IsPlayerDrivingTrain;
+            Base.CabComponent.InteractableProps.UseAltControl = IsPlayerInsideCab && IsPlayerDrivingTrain;
 
             ProcessCabCamera();            
             ProcessArcadeControls();
@@ -130,7 +124,7 @@ namespace RogersSierra.Components
 
                 // Rotate camera with train
 
-                var trainAngle = Locomotive.Rotation.Z;
+                var trainAngle = Entity.Rotation.Z;
                 var prevAngle = _prevTrainAngle;
                 _prevTrainAngle = trainAngle;
 
@@ -183,13 +177,13 @@ namespace RogersSierra.Components
                 Function.Call(Hash.DISPLAY_SNIPER_SCOPE_THIS_FRAME);
 
                 if (Game.IsControlJustPressed(Control.VehicleHeadlight))
-                    Train.DynamoComponent.SwitchHeadlight();
+                    Base.CustomTrain.DynamoComponent.SwitchHeadlight();
 
-                if (!Train.CabComponent.InteractableProps.IsPlaying)
-                    Train.CabComponent.InteractableProps.Play();
+                if (!Base.CabComponent.InteractableProps.IsPlaying)
+                    Base.CabComponent.InteractableProps.Play();
             } 
-            else if (Train.CabComponent.InteractableProps.IsPlaying)
-                Train.CabComponent.InteractableProps.Stop();
+            else if (Base.CabComponent.InteractableProps.IsPlaying)
+                Base.CabComponent.InteractableProps.Stop();
         }
 
         /// <summary>
@@ -197,7 +191,7 @@ namespace RogersSierra.Components
         /// </summary>
         public void Leave()
         {
-            Game.Player.Character.PositionNoOffset = Locomotive.GetOffsetPosition(new Vector3(-0.016f, -4.831f, 2.243f));
+            Game.Player.Character.PositionNoOffset = Entity.GetOffsetPosition(new Vector3(-0.016f, -4.831f, 2.243f));
             //Game.Player.Character.Task.LeaveVehicle();
 
             CabCamera?.Delete();
@@ -210,15 +204,15 @@ namespace RogersSierra.Components
         /// </summary>
         public void Enter()
         {
-            Game.Player.Character.Task.WarpIntoVehicle(Train.LocomotiveCarriage.InvisibleVehicle, VehicleSeat.Driver);
+            Game.Player.Character.Task.WarpIntoVehicle(Base.LocomotiveCarriage.InvisibleVehicle, VehicleSeat.Driver);
 
             // Create cab camera
-            CabCamera = World.CreateCamera(Locomotive.Position, Locomotive.Rotation, 65);
+            CabCamera = World.CreateCamera(Entity.Position, Entity.Rotation, 65);
 
-            Vector3 cameraPos = Locomotive.Bones["seat_dside_f"].GetRelativeOffsetPosition(new Vector3(0, -0.1f, 0.75f));
-            CabCamera.AttachTo(Locomotive, cameraPos);
+            Vector3 cameraPos = Entity.Bones["seat_dside_f"].GetRelativeOffsetPosition(new Vector3(0, -0.1f, 0.75f));
+            CabCamera.AttachTo(Entity, cameraPos);
 
-            CabCamera.Direction = Locomotive.Quaternion * Vector3.RelativeFront;
+            CabCamera.Direction = Entity.Quaternion * Vector3.RelativeFront;
         }
 
         /// <summary>
@@ -256,7 +250,7 @@ namespace RogersSierra.Components
             // Check if player pressed / released any buttons
             _arcadeControls = accelerateInput < 0 | brakeInput > 0 | shiftInput > 0;
 
-            Train.CabComponent.InteractableProps.IgnoreGamepadInput = _arcadeControls;
+            Base.CabComponent.InteractableProps.IgnoreGamepadInput = _arcadeControls;
 
             if (!_arcadeControls && !_preArcadeControls)
                 return;
@@ -266,7 +260,7 @@ namespace RogersSierra.Components
             var combineInput = Math.Abs(accelerateInput + brakeInput);
 
             var gear = accelerateInput + brakeInput;
-            var trainSpeed = (int)Train.CustomTrain.SpeedComponent.Speed;
+            var trainSpeed = (int)Base.CustomTrain.SpeedComponent.Speed;
             float brakeLeverInput = 0;
 
             if (trainSpeed > 0)
@@ -299,10 +293,10 @@ namespace RogersSierra.Components
             if (brakeLeverInput == _prevBrakeLeverInput && combineInput == _prevCombineInput && gear == _prevGearInput && spacebarInput == _prevSpacebarInput)
                 return;
 
-            Train.CabComponent.AirBrakeLever.SetValue(brakeLeverInput);
-            Train.CabComponent.SteamBrakeLever.SetValue(spacebarInput);
-            Train.CabComponent.ThrottleLever.SetValue(combineInput.Remap(0, 1, 1, 0));
-            Train.CabComponent.GearLever.SetValue(gear.Remap(-1, 1, 0, 1));
+            Base.CabComponent.AirBrakeLever.SetValue(brakeLeverInput);
+            Base.CabComponent.SteamBrakeLever.SetValue(spacebarInput);
+            Base.CabComponent.ThrottleLever.SetValue(combineInput.Remap(0, 1, 1, 0));
+            Base.CabComponent.GearLever.SetValue(gear.Remap(-1, 1, 0, 1));
 
             _prevBrakeLeverInput = brakeLeverInput;
             _prevCombineInput = combineInput;            
