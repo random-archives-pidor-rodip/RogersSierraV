@@ -17,12 +17,12 @@ namespace RogersSierra.Components.GraphicComponents
         /// <summary>
         /// Drive wheel speed in m/s
         /// </summary>
-        public float DriveWheelSpeed { get; set; }
+        public float DriveWheelSpeed => Base.CustomTrain.SpeedComponent.DriveWheelSpeed;
 
         /// <summary>
         /// Front wheel speed in m/s
         /// </summary>
-        public float FrontWheelSpeed { get; set; }
+        public float FrontWheelSpeed => Base.CustomTrain.SpeedComponent.Speed;
 
         /// <summary>
         /// Drive wheel props.

@@ -171,10 +171,10 @@ namespace RogersSierra.Components.FunctionalComponent
         /// </summary>
         public override void OnTick()
         {
-            Base.CustomTrain.CabComponent.ThrottleLeverState = ThrottleLever.CurrentValue.Remap(0, 1, 1, 0);
-            Base.CustomTrain.CabComponent.GearLeverState = GearLever.CurrentValue.Remap(0, 1, 1, -1);
-            Base.CustomTrain.CabComponent.FullBrakeLeverState = (int) Math.Round(SteamBrakeLever.CurrentValue);
-            Base.CustomTrain.CabComponent.AirBrakeLeverState = AirBrakeLever.CurrentValue;
+            Base.CustomTrain.ControlComponent.ThrottleLeverState = ThrottleLever.CurrentValue.Remap(0, 1, 1, 0);
+            Base.CustomTrain.ControlComponent.GearLeverState = GearLever.CurrentValue.Remap(0, 1, 1, -1);
+            Base.CustomTrain.ControlComponent.FullBrakeLeverState = (int) Math.Round(SteamBrakeLever.CurrentValue);
+            Base.CustomTrain.ControlComponent.AirBrakeLeverState = AirBrakeLever.CurrentValue;
         }
     }
 }

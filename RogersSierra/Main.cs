@@ -79,7 +79,10 @@ namespace RogersSierra
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if(e.KeyCode == Keys.L)
-                RogersSierra.Create(Game.Player.Character.Position, true);
+            {
+                var train1 = RogersSierra.Create(Game.Player.Character.Position, true);
+                var train2 = RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * 100, false);
+            }
 
             if (e.KeyCode == Keys.K)
                 RogersSierra.DeleteAllInstances();
