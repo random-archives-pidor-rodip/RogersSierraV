@@ -72,23 +72,23 @@ namespace RogersSierra
                 InteractiveRope.Ropes[i].OnTick();
             }
 
-            if (train1 != null && train2 != null)
-            {
-                //train1.CustomTrain.ControlComponent.ThrottleLeverState = 1;
-                //train1.CustomTrain.ControlComponent.GearLeverState = 1;
-                //train1.CustomTrain.ControlComponent.FullBrakeLeverState = 0;
-                //train1.CustomTrain.ControlComponent.AirBrakeLeverState = 0;
+            //if (train1 != null && train2 != null)
+            //{
+            //    //train1.CustomTrain.ControlComponent.ThrottleLeverState = 1;
+            //    //train1.CustomTrain.ControlComponent.GearLeverState = 1;
+            //    //train1.CustomTrain.ControlComponent.FullBrakeLeverState = 0;
+            //    //train1.CustomTrain.ControlComponent.AirBrakeLeverState = 0;
 
-                train2.CustomTrain.ControlComponent.ThrottleLeverState = 1;
-                train2.CustomTrain.ControlComponent.GearLeverState = 1;
-                train2.CustomTrain.ControlComponent.FullBrakeLeverState = 0;
-                train2.CustomTrain.ControlComponent.AirBrakeLeverState = 0;
-            }
+            //    train2.CustomTrain.ControlComponent.ThrottleLeverState = 1;
+            //    train2.CustomTrain.ControlComponent.GearLeverState = 1;
+            //    train2.CustomTrain.ControlComponent.FullBrakeLeverState = 0;
+            //    train2.CustomTrain.ControlComponent.AirBrakeLeverState = 0;
+            //}
         }
-        Prop test;
+        //Prop test;
 
-        private RogersSierra train1;
-        private RogersSierra train2;
+        //private RogersSierra train1;
+        //private RogersSierra train2;
         /// <summary>
         /// Debug hotkeys.
         /// </summary>
@@ -96,20 +96,21 @@ namespace RogersSierra
         {
             if(e.KeyCode == Keys.L)
             {
-                train1 = RogersSierra.Create(Game.Player.Character.Position, true);
-                train2 = RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * 300, false);
+                //train1 = 
+                RogersSierra.Create(Game.Player.Character.Position, true);
+                //train2 = RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * 300, false);
             }
 
-            if (e.KeyCode == Keys.U)
-            {
-                var train = World.CreateVehicle(Models.VisibleSierra, Game.Player.Character.Position + GTA.Math.Vector3.RelativeFront * 10);
+            //if (e.KeyCode == Keys.U)
+            //{
+            //    var train = World.CreateVehicle(Models.VisibleSierra, Game.Player.Character.Position + GTA.Math.Vector3.RelativeFront * 10);
 
-                //test = World.CreateProp(Models.Brake1, Game.Player.Character.Position, false, false);
-            }
+            //    //test = World.CreateProp(Models.Brake1, Game.Player.Character.Position, false, false);
+            //}
 
             if(e.KeyCode == Keys.T)
             {
-                var head = World.GetClosestVehicle(Game.Player.Character.Position, 100);
+                //var head = World.GetClosestVehicle(Game.Player.Character.Position, 100);
                 //train1.CustomTrain.CollisionComponent.Derail();
                 //train2.CustomTrain.CollisionComponent.Derail();
 
