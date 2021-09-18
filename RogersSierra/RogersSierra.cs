@@ -2,8 +2,10 @@
 using FusionLibrary.Extensions;
 using GTA;
 using GTA.Math;
+using GTA.Native;
 using RageComponent;
 using RogersSierra.Components.FunctionalComponent;
+using RogersSierra.Components.FunctionalComponents;
 using RogersSierra.Components.GraphicComponents;
 using RogersSierra.Data;
 using System;
@@ -52,9 +54,9 @@ namespace RogersSierra
         public Action OnDispose { get; set; }
 
         /// <summary>
-        /// Returns True if all components are initialized, otherwise False.
+        /// Returns True if object was disposed, otherwise False.
         /// </summary>
-        public bool AreComponentsInitialized { get; private set; }
+        public bool Disposed { get; private set; }
 
         /// <summary>
         /// All train components.
@@ -73,17 +75,14 @@ namespace RogersSierra
         [Entity(EntityProperty = nameof(VisibleLocomotive))]
         public ParticleComponent ParticleComponent;
 
-        public SoundsComponent SoundsComponent;
-
-        public WheelComponent WheelComponent;
-
         [Entity(EntityProperty = nameof(VisibleLocomotive))]
         public DrivetrainComponent DrivetrainComponent;
 
-        /// <summary>
-        /// Returns True if object was disposed, otherwise False.
-        /// </summary>
-        public bool Disposed { get; private set; }
+        [Entity(EntityProperty = nameof(VisibleLocomotive))]
+        public SoundsComponent SoundsComponent;
+
+        public WheelComponent WheelComponent;
+        public CollisionComponent CollisionComponent;
 
         /// <summary>
         /// Base constructor of <see cref="RogersSierra"/>.
@@ -104,6 +103,8 @@ namespace RogersSierra
             // Initialize every component
             TrainComponents = ComponentsHandler<RogersSierra>.RegisterComponentHandler();
             TrainComponents.RegisterComponents(this);
+
+            //CustomTrain.CollisionComponent.Derail();
         }
 
         /// <summary>
@@ -139,8 +140,8 @@ namespace RogersSierra
             TenderCarriage.VisibleVehicle.DirtLevel = 0;
 
             // May be damaged when spawning, we don't need it anyway
-            LocomotiveCarriage.VisibleVehicle.PetrolTankHealth = 0;
-            TenderCarriage.VisibleVehicle.PetrolTankHealth = 0;
+            LocomotiveCarriage.VisibleVehicle.PetrolTankHealth = 1000;
+            TenderCarriage.VisibleVehicle.PetrolTankHealth = 1000;
         }
 
         /// <summary>

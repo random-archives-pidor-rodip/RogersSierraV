@@ -98,6 +98,7 @@ namespace RogersSierra.Components.GraphicComponents
             _dynamoSteam.Rotation = Math.Abs(Base.CustomTrain.SpeedComponent.Speed) < 3 ? Vector3.Zero : new Vector3(90, 0, 0);
             for(int i = 0; i < _wheelSparks.ParticlePlayers.Count; i++)
             {
+                // TODO: Still wrong direction if steam brake reversing
                 _wheelSparks[i].Rotation = Base.WheelComponent.DriveWheelSpeed >= 0 ? Vector3.Zero : new Vector3(190, 0, 0);
             }
         }

@@ -1,11 +1,13 @@
 ﻿using AdvancedTrainSystem.Train;
 using FusionLibrary;
 using GTA;
+using GTA.Math;
 using GTA.Native;
 using RogersSierra.Components.InteractionUtils;
 using RogersSierra.Components.StaticComponents;
 using RogersSierra.Data;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace RogersSierra
@@ -37,6 +39,7 @@ namespace RogersSierra
             //{
             //    vehs[i].Delete();
             //}
+           // GTA.UI.Screen.ShowSubtitle(test?.Health.ToString());
 
             // First frame code
             if (!FirstTick)
@@ -69,10 +72,23 @@ namespace RogersSierra
                 InteractiveRope.Ropes[i].OnTick();
             }
 
-            // DEBUG ONLY, DELETE LATER!
-            FusionUtils.RandomTrains = false;
-        }
+            if (train1 != null && train2 != null)
+            {
+                //train1.CustomTrain.ControlComponent.ThrottleLeverState = 1;
+                //train1.CustomTrain.ControlComponent.GearLeverState = 1;
+                //train1.CustomTrain.ControlComponent.FullBrakeLeverState = 0;
+                //train1.CustomTrain.ControlComponent.AirBrakeLeverState = 0;
 
+                train2.CustomTrain.ControlComponent.ThrottleLeverState = 1;
+                train2.CustomTrain.ControlComponent.GearLeverState = 1;
+                train2.CustomTrain.ControlComponent.FullBrakeLeverState = 0;
+                train2.CustomTrain.ControlComponent.AirBrakeLeverState = 0;
+            }
+        }
+        Prop test;
+
+        private RogersSierra train1;
+        private RogersSierra train2;
         /// <summary>
         /// Debug hotkeys.
         /// </summary>
@@ -80,8 +96,48 @@ namespace RogersSierra
         {
             if(e.KeyCode == Keys.L)
             {
-                var train1 = RogersSierra.Create(Game.Player.Character.Position, true);
-                var train2 = RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * 100, false);
+                train1 = RogersSierra.Create(Game.Player.Character.Position, true);
+                train2 = RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * 300, false);
+            }
+
+            if (e.KeyCode == Keys.U)
+            {
+                var train = World.CreateVehicle(Models.VisibleSierra, Game.Player.Character.Position + GTA.Math.Vector3.RelativeFront * 10);
+
+                //test = World.CreateProp(Models.Brake1, Game.Player.Character.Position, false, false);
+            }
+
+            if(e.KeyCode == Keys.T)
+            {
+                var head = World.GetClosestVehicle(Game.Player.Character.Position, 100);
+                //train1.CustomTrain.CollisionComponent.Derail();
+                //train2.CustomTrain.CollisionComponent.Derail();
+
+                //var direction = Vector3.WorldUp;
+                //var rotation = new Vector3(0, 65, 0);
+                //Function.Call(Hash.APPLY_FORCE_TO_ENTITY,
+                //    head, 3,
+                //    direction.X, direction.Y, direction.Z,
+                //    rotation.X, rotation.Y, rotation.Z,
+                //    head.Bones["fwheel_1"].Index,
+                //    false, true, true, false, true);
+
+                //direction = head.RightVector;
+                //rotation = new Vector3(0, 100, 0);
+                //Function.Call(Hash.APPLY_FORCE_TO_ENTITY,
+                //    head, 5,
+                //    direction.X, direction.Y, direction.Z,
+                //    rotation.X, rotation.Y, rotation.Z,
+                //    head.Bones["fwheel_1"].Index,
+                //    false, true, true, false, true);
+                //direction = head.UpVector;
+                //rotation = new Vector3(0, 0, 0);
+                //Function.Call(Hash.APPLY_FORCE_TO_ENTITY,
+                //    head, 5,
+                //    direction.X, direction.Y, direction.Z,
+                //    rotation.X, rotation.Y, rotation.Z,
+                //    head.Bones["fwheel_1"].Index,
+                //    false, true, true, false, true);
             }
 
             if (e.KeyCode == Keys.K)

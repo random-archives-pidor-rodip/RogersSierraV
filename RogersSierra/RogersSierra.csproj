@@ -76,6 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\FunctionalComponents\CollisionComponent.cs" />
     <Compile Include="Components\GraphicComponents\BrakeComponent.cs" />
     <Compile Include="Components\FunctionalComponents\CabComponent.cs" />
     <Compile Include="Components\FunctionalComponents\ControlComponent.cs" />

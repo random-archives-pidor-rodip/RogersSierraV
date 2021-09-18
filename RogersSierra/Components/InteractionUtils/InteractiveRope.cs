@@ -80,7 +80,9 @@ namespace RogersSierra.Components.InteractionUtils
         /// </summary>
         private Vector3 _vertexOrigPos;
 
-        //private CustomRope _customRope;
+        private CustomRope _customRope;
+
+        private Entity Speed;
 
         /// <summary>
         /// Constructs a new <see cref="InteractiveRope"/> instance.
@@ -89,12 +91,13 @@ namespace RogersSierra.Components.InteractionUtils
         /// <param name="boneStart">Bone name of rope start position.</param>
         /// <param name="boneEnd">Bone name of rope end position.</param>
         /// <param name="draggable">Is rope should be draggable.</param>
-        public InteractiveRope(Entity attachTo, string boneStart, string boneEnd, bool draggable = true, bool breakable = false)
+        public InteractiveRope(Entity attachTo, Entity speed, string boneStart, string boneEnd, bool draggable = true, bool breakable = false)
         {
             Entity = attachTo;
             BoneStart = boneStart;
             BoneEnd = boneEnd;
             Draggable = draggable;
+            Speed = speed;
 
             UpdateRopePositions();
 
@@ -116,7 +119,7 @@ namespace RogersSierra.Components.InteractionUtils
             Rope.Connect(attachTo, _ropeStartPos, attachTo, _ropeEndPos, distance);
             Rope.ActivatePhysics();
 
-            //_customRope = new CustomRope(_ropeStartPos);
+            _customRope = new CustomRope(_ropeStartPos);
 
             Ropes.Add(this);
             Rope.Delete();
@@ -130,7 +133,16 @@ namespace RogersSierra.Components.InteractionUtils
         /// </summary>
         public void OnTick()
         {
+            return;
+            var offset = Entity.ForwardVector * Speed.Speed * Game.LastFrameTime;
+            GTA.UI.Screen.ShowSubtitle(offset.ToString());
+            _customRope.Pos = _ropeStartPos + offset;
+            _customRope.OnTick();
+
             UpdateRopePositions();
+            return;
+            //
+
             // Function.Call(Hash.START_ROPE_WINDING, Rope.Handle);
             //Function.Call(Hash.FREEZE_​ENTITY_​POSITION, Entity, true);
 
