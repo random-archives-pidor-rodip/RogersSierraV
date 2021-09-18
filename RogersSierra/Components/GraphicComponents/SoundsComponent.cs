@@ -135,7 +135,7 @@ namespace RogersSierra.Components.GraphicComponents
 
             Base.CustomTrain.SpeedComponent.OnTrainStart += () =>
             {
-                if(!IsWheelSlipping() && !Base.CustomTrain.CollisionComponent.IsDerailed)
+                if(!IsWheelSlipping() && !Base.CustomTrain.DerailComponent.IsDerailed)
                     TrainStart.Play();
             };
         }

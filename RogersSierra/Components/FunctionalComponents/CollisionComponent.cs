@@ -16,7 +16,7 @@ namespace RogersSierra.Components.FunctionalComponents
         public override void Start()
         {
             // Detach every prop on collision
-            Base.CustomTrain.CollisionComponent.OnDerail += () =>
+            Base.CustomTrain.DerailComponent.OnDerail += () =>
             {
                 var totalProps = Base.TrainComponents.AllHandlerComponentProps.Count;
                 for (int i = 0; i < FusionUtils.Random.Next(5, totalProps); i++)

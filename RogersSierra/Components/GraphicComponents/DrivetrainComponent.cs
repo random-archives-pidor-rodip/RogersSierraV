@@ -83,7 +83,7 @@ namespace RogersSierra.Components.GraphicComponents
         /// </summary>
         public override void OnTick()
         {
-            if (Base.CustomTrain.CollisionComponent.IsDerailed)
+            if (Base.CustomTrain.DerailComponent.IsDerailed)
                 return;
 
             float angleRad = Base.WheelComponent.DrivingWheelAngle.ToRad();
