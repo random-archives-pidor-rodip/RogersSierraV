@@ -157,24 +157,47 @@ namespace RogersSierra.Components.FunctionalComponent
                 Control.LookLeft,
                 false, -30, 0, 0, 10);
             SteamBrakeLever.SetupAltControl(Control.LookLeft, false);
-
+            
             RightWindow = InteractableProps.Add(Models.CabWindowRight, Entity, "cab_window_right", AnimationType.Offset, Coordinate.X, true, -0.03f, 0, 0, 0.03f, 1, false, false);
             RightWindow.AnimateProp.PlayNextSteps = true;
             RightWindow.AnimateProp.PlayReverse = true;
             RightWindow.AnimateProp[AnimationType.Offset][AnimationStep.Second][Coordinate.Y].Setup(true, true, 0, Models.CabWindowRight.Model.GetSize().width + 0.04f, 1, 0.5f, 1, true);
 
-            WhistleRope = new InteractiveRope(Entity, "whistle_rope_pull_start", "whistle_rope_pull_end", true, true);
+            WhistleRope = new InteractiveRope(Entity, 
+                Base.LocomotiveCarriage.InvisibleVehicle, "whistle_rope_pull_start", "whistle_rope_pull_end", true, true);
         }
+
+        private float _throttleLeverPrevious;
+        private float _gearLeverPrevious;
+        private float _steamBrakeLeverPrevious;
+        private float _airBrakePrevious;
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         public override void OnTick()
         {
-            Base.CustomTrain.ControlComponent.ThrottleLeverState = ThrottleLever.CurrentValue.Remap(0, 1, 1, 0);
-            Base.CustomTrain.ControlComponent.GearLeverState = GearLever.CurrentValue.Remap(0, 1, 1, -1);
-            Base.CustomTrain.ControlComponent.FullBrakeLeverState = (int) Math.Round(SteamBrakeLever.CurrentValue);
-            Base.CustomTrain.ControlComponent.AirBrakeLeverState = AirBrakeLever.CurrentValue;
+            var throttleLever = ThrottleLever.CurrentValue.Remap(0, 1, 1, 0);
+            var gearLever = GearLever.CurrentValue.Remap(0, 1, 1, -1);
+            var steamBrakeLever = (int)Math.Round(SteamBrakeLever.CurrentValue);
+            var airBrakeLever = AirBrakeLever.CurrentValue;
+
+            if (throttleLever != _throttleLeverPrevious)
+                Base.CustomTrain.ControlComponent.ThrottleLeverState = throttleLever;
+
+            if (gearLever != _gearLeverPrevious)
+                Base.CustomTrain.ControlComponent.GearLeverState = gearLever;
+
+            if (steamBrakeLever != _steamBrakeLeverPrevious)
+                Base.CustomTrain.ControlComponent.FullBrakeLeverState = steamBrakeLever;
+
+            if (airBrakeLever != _airBrakePrevious)
+                Base.CustomTrain.ControlComponent.AirBrakeLeverState = airBrakeLever;
+
+            _throttleLeverPrevious = throttleLever;
+            _gearLeverPrevious = gearLever;
+            _steamBrakeLeverPrevious = steamBrakeLever;
+            _airBrakePrevious = airBrakeLever;
         }
     }
 }
