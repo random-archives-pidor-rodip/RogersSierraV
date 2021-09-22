@@ -42,7 +42,7 @@ namespace RogersSierra.Components.GraphicComponents
         /// <summary>
         /// Amount of piston move variations.
         /// </summary>
-        private const int _pistonMoveVariations = 5;
+        private const int _pistonMoveVariations = 8;
 
         /// <summary>
         /// Previous level of ambient sound;
@@ -91,7 +91,7 @@ namespace RogersSierra.Components.GraphicComponents
             {
                 var pistonMove =
                     _audioEngine.Create($"{Files.PistonMove}{i + 1}.wav", Presets.ExteriorLoud);
-                pistonMove.Volume = 0.35f;
+                pistonMove.Volume = 0.55f;
 
                 PistonMove.Add(pistonMove);
             }
@@ -122,15 +122,14 @@ namespace RogersSierra.Components.GraphicComponents
             Base.DrivetrainComponent.OnPiston += () =>
             {
                 ////var pistonVariation = Utils.Random.Next(1, _pistonMoveVariations);
-                
-                //PistonMove[_currentPistonId].Play();
-                //PistonMove[_currentPistonId].Last.
 
+                //PistonMove[_currentPistonId++].Play();
+                //PistonMove[_currentPistonId].Last.
                 _currentPistonId++;
                 if (_currentPistonId == _pistonMoveVariations)
                     _currentPistonId = 0;
 
-                //GTA.UI.Screen.ShowSubtitle(_currentPistonId.ToString());
+                //GTA.UI.Screen.ShowSubtitle($"{_currentPistonId} {Base.WheelComponent.DrivingWheelAngle}");
             };
 
             Base.CustomTrain.SpeedComponent.OnTrainStart += () =>

@@ -17,7 +17,7 @@
 
         // Movement
         public const string AmbientMoving = "Moving/ambient_moving";
-        public const string PistonMove = "Moving/piston_";
+        public const string PistonMove = "Moving/Chug/Chug";
         public const string WheelSlip = "Moving/wheel_slip.wav";
         public const string OnTrainStart = "Moving/start.wav";
 

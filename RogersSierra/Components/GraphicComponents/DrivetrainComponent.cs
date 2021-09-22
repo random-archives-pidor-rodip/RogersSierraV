@@ -71,11 +71,44 @@ namespace RogersSierra.Components.GraphicComponents
             _pistonRelativePosZ = Entity.Bones["piston"].RelativePosition.Z;
 
             _valveRelativePosZ = Entity.Bones["valve_rod"].RelativePosition.Z;
+        }
 
-            //Train.OnDerail += () => 
-            //{
-            //    Utils.ProcessAllValuesFieldsByType<AnimateProp>(this, x => x.Detach());
-            //};
+        private bool _piston1Triggered = false;
+        private bool _piston2Triggered = false;
+        private bool _piston3Triggered = false;
+        private bool _piston4Triggered = false;
+        private void ProcessOnPiston()
+        {
+            var dAngle = Base.WheelComponent.DrivingWheelAngle;
+
+            // Angle 0
+            if(dAngle > 0 && dAngle < 90 && !_piston1Triggered)
+            {
+                OnPiston?.Invoke();
+                _piston1Triggered = true;
+                _piston4Triggered = false;
+            }
+            // Angle 90
+            if (dAngle > 90 && dAngle < 180 && !_piston2Triggered)
+            {
+                OnPiston?.Invoke();
+                _piston2Triggered = true;
+                _piston1Triggered = false;
+            }
+            // Angle 180
+            if (dAngle > 180 && dAngle < 270 && !_piston3Triggered)
+            {
+                OnPiston?.Invoke();
+                _piston3Triggered = true;
+                _piston2Triggered = false;
+            }
+            // Angle 270
+            if (dAngle > 270 && dAngle < 360 && !_piston4Triggered)
+            {
+                OnPiston?.Invoke();
+                _piston4Triggered = true;
+                _piston3Triggered = false;
+            }
         }
 
         /// <summary>
@@ -110,26 +143,10 @@ namespace RogersSierra.Components.GraphicComponents
                     MathExtensions.ToRad(dAngle)) - (_pistonRelativePosY - ConnectingRod.RelativePosition.Y), true);
 
             dAngle = Base.WheelComponent.DrivingWheelAngle;
-
             if (dAngle < 180)
                 dAngle = dAngle.Remap(0, 180, 0, -12);
             else
                 dAngle = dAngle.Remap(180, 360, -12, 0);
-
-            // Detect when piston reaches corner
-            var dAngleRound = (int)dAngle;
-            if (dAngleRound == -11 || dAngleRound == 0)
-            {
-                if (!_onPistonCalled)
-                {
-                    OnPiston?.Invoke();
-                    _onPistonCalled = true;
-                }
-            }
-            else
-            {
-                _onPistonCalled = false;
-            }
 
             CombinationLever.setRotation(Coordinate.X, dAngle);
 
@@ -140,6 +157,8 @@ namespace RogersSierra.Components.GraphicComponents
             RadiusRod.setRotation(Entity.Rotation.GetSingleOffset(Coordinate.X, dAngle));
 
             ValveRod.setRotation(Entity.Rotation);
+
+            ProcessOnPiston();
         }
     }
 }

@@ -39,7 +39,6 @@ namespace RogersSierra
             //{
             //    vehs[i].Delete();
             //}
-           // GTA.UI.Screen.ShowSubtitle(test?.Health.ToString());
 
             // First frame code
             if (!FirstTick)
@@ -72,23 +71,26 @@ namespace RogersSierra
                 InteractiveRope.Ropes[i].OnTick();
             }
 
-            //if (train1 != null && train2 != null)
-            //{
-            //    //train1.CustomTrain.ControlComponent.ThrottleLeverState = 1;
-            //    //train1.CustomTrain.ControlComponent.GearLeverState = 1;
-            //    //train1.CustomTrain.ControlComponent.FullBrakeLeverState = 0;
-            //    //train1.CustomTrain.ControlComponent.AirBrakeLeverState = 0;
+            if (train1 != null && train2 != null)
+            {
+                //train1.CustomTrain.ControlComponent.ThrottleLeverState = 1;
+                //train1.CustomTrain.ControlComponent.GearLeverState = 1;
+                //train1.CustomTrain.ControlComponent.FullBrakeLeverState = 0;
+                //train1.CustomTrain.ControlComponent.AirBrakeLeverState = 0;
 
-            //    train2.CustomTrain.ControlComponent.ThrottleLeverState = 1;
-            //    train2.CustomTrain.ControlComponent.GearLeverState = 1;
-            //    train2.CustomTrain.ControlComponent.FullBrakeLeverState = 0;
-            //    train2.CustomTrain.ControlComponent.AirBrakeLeverState = 0;
-            //}
+                //train2.CustomTrain.ControlComponent.ThrottleLeverState = 1;
+                //train2.CustomTrain.ControlComponent.GearLeverState = 1;
+                //train2.CustomTrain.ControlComponent.FullBrakeLeverState = 0;
+                //train2.CustomTrain.ControlComponent.AirBrakeLeverState = 0;
+
+                //train1.CustomTrain.SpeedComponent.AccelerationMultiplier = 1;
+                //train2.CustomTrain.SpeedComponent.AccelerationMultiplier = 1;
+            }
         }
         //Prop test;
 
-        //private RogersSierra train1;
-        //private RogersSierra train2;
+        private RogersSierra train1;
+        private RogersSierra train2;
         /// <summary>
         /// Debug hotkeys.
         /// </summary>
@@ -96,9 +98,8 @@ namespace RogersSierra
         {
             if(e.KeyCode == Keys.L)
             {
-                //train1 = 
-                RogersSierra.Create(Game.Player.Character.Position, true);
-                //train2 = RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * 300, false);
+                train1 = RogersSierra.Create(Game.Player.Character.Position, true);
+                train2 = RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * 34, true);
             }
 
             //if (e.KeyCode == Keys.U)
