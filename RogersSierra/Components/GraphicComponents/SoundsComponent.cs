@@ -111,7 +111,7 @@ namespace RogersSierra.Components.GraphicComponents
             // Idle
             SteamIdle = _audioEngine.Create(Files.SteamIdle, Presets.ExteriorLoudLoop);
             SteamIdle.FadeOutMultiplier = 0.7f;
-            SteamIdle.Volume = 0.3f;
+            SteamIdle.Volume = 0.1f;
 
             // Dispose audio engine on train dispose.
             Base.OnDispose += () =>
