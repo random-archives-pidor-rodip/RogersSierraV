@@ -95,8 +95,6 @@ namespace RogersSierra
 
             VisibleLocomotive = LocomotiveCarriage.VisibleVehicle;
 
-            LocomotiveCarriage.VisibleVehicle.SetPlayerLights(true);
-
             // Add train to trains list
             AllSierras.Add(this);
 
