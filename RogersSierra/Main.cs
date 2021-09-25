@@ -99,7 +99,7 @@ namespace RogersSierra
             if(e.KeyCode == Keys.L)
             {
                 train1 = RogersSierra.Create(Game.Player.Character.Position, true);
-                train2 = RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * 34, true);
+                //train2 = RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * 34, true);
             }
 
             //if (e.KeyCode == Keys.U)
