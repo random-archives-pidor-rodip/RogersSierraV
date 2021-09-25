@@ -20,12 +20,18 @@ namespace RogersSierra.Components.GraphicComponents
         /// <summary>
         /// Are steam from dynamo generator shown or not.
         /// </summary>
-        public bool AreDynamoSteamShown => Base.CustomTrain.DynamoComponent.IsDynamoWorking;
+        public bool AreDynamoSteamShown => 
+            Base.CustomTrain.DynamoComponent.IsDynamoWorking && Math.Abs(Base.CustomTrain.SpeedComponent.Speed) < 3;
 
         /// <summary>
-        /// Is steam from cylinder shown or now.
+        /// Is steam from cylinder shown or not.
         /// </summary>
         public bool IsCylinderSteamShown => Base.CustomTrain.BoilerComponent.CylindersSteam;
+
+        /// <summary>
+        /// Is funnel smoke shown or not.
+        /// </summary>
+        public bool IsFunnelSmokeShown => Base.CustomTrain.BoilerComponent.Pressure > 40;
 
         /// <summary>
         /// Wheel spark particles.
@@ -36,6 +42,16 @@ namespace RogersSierra.Components.GraphicComponents
         /// Smoke and drips coming from piston cylinders.
         /// </summary>
         private readonly ParticlePlayerHandler _cylinderSteam = new ParticlePlayerHandler();
+
+        /// <summary>
+        /// Smoke from funnel.
+        /// </summary>
+        private ParticlePlayer _funnelSmoke;
+
+        /// <summary>
+        /// Smoke from funnel.
+        /// </summary>
+        private ParticlePlayer _funnelSmoke2;
 
         /// <summary>
         /// Steam from dynamo generator.
@@ -78,11 +94,20 @@ namespace RogersSierra.Components.GraphicComponents
             _dynamoSteam = new ParticlePlayer(
                 "scr_gr_bunk", "scr_gr_bunk_drill_smoke", ParticleType.Looped, Entity, "dynamo_steam", Vector3.Zero, Vector3.Zero);
 
+            // Funnel
+            _funnelSmoke = new ParticlePlayer(
+                "scr_carsteal4", "scr_carsteal4_wheel_burnout", ParticleType.ForceLooped, Entity, "funnel_smoke", 
+                new Vector3(0, -0.58f, 0), new Vector3(90, 0, 0));
+            _funnelSmoke.Size = 0.5f;
+            _funnelSmoke.Interval = 55;
+
             Base.OnDispose += () =>
             {
                 _wheelSparks.Dispose();
                 _dynamoSteam.Dispose();
                 _cylinderSteam.Dispose();
+                _funnelSmoke.Dispose();
+                _funnelSmoke2.Dispose();
             };
         }
 
@@ -94,13 +119,15 @@ namespace RogersSierra.Components.GraphicComponents
             _wheelSparks.SetState(AreWheelSparksShown);
             _dynamoSteam.SetState(AreDynamoSteamShown);
             _cylinderSteam.SetState(IsCylinderSteamShown);
+            _funnelSmoke.SetState(IsFunnelSmokeShown);
+            //_funnelSmoke.Color = System.Drawing.Color.FromArgb(45, 45, 45);
 
-            _dynamoSteam.Rotation = Math.Abs(Base.CustomTrain.SpeedComponent.Speed) < 3 ? Vector3.Zero : new Vector3(90, 0, 0);
-            for(int i = 0; i < _wheelSparks.ParticlePlayers.Count; i++)
-            {
-                // TODO: Still wrong direction if steam brake reversing
-                _wheelSparks[i].Rotation = Base.WheelComponent.DriveWheelSpeed >= 0 ? Vector3.Zero : new Vector3(190, 0, 0);
-            }
+            // Spark will be flipped if train is either braking in reverse or wheel slip in reverse
+            bool sparksFlipped = Base.CustomTrain.Speed < 0 || Base.WheelComponent.DriveWheelSpeed < 0;
+            var sparkRotation = sparksFlipped ? new Vector3(190, 0, 0) : Vector3.Zero;
+
+            for (int i = 0; i < _wheelSparks.ParticlePlayers.Count; i++)
+                _wheelSparks[i].Rotation = sparkRotation;
         }
     }
 }
