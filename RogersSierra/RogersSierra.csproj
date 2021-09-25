@@ -11,7 +11,7 @@
     <AssemblyName>RogersSierra</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <Deterministic>false</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,18 +51,18 @@
   <ItemGroup>
     <Reference Include="AdvancedTrainSystem, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>S:\SteamLibrary\steamapps\common\Grand Theft Auto V\scripts\AdvancedTrainSystem.dll</HintPath>
+      <HintPath>$(GTAPath)\scripts\AdvancedTrainSystem.dll</HintPath>
     </Reference>
     <Reference Include="FusionLibrary">
-      <HintPath>S:\SteamLibrary\steamapps\common\Grand Theft Auto V\scripts\FusionLibrary.dll</HintPath>
+      <HintPath>$(GTAPath)\scripts\FusionLibrary.dll</HintPath>
     </Reference>
     <Reference Include="KlangRageAudioLibrary, Version=1.0.7914.2013, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>S:\SteamLibrary\steamapps\common\Grand Theft Auto V\scripts\KlangRageAudioLibrary.dll</HintPath>
+      <HintPath>$(GTAPath)\scripts\KlangRageAudioLibrary.dll</HintPath>
     </Reference>
     <Reference Include="RageComponent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>S:\SteamLibrary\steamapps\common\Grand Theft Auto V\scripts\RageComponent.dll</HintPath>
+      <HintPath>$(GTAPath)\scripts\RageComponent.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -168,7 +168,7 @@ namespace RogersSierra.Components.FunctionalComponent
             RightWindow.AnimateProp.PlayReverse = true;
             RightWindow.AnimateProp[AnimationType.Offset][AnimationStep.Second][Coordinate.Y].Setup(true, true, 0, Models.CabWindowRight.Model.GetSize().width + 0.04f, 1, 0.5f, 1, true);
 
-            LeftWindow = InteractableProps.Add(Models.CabWindowLeft, Entity, "cab_window_left", AnimationType.Offset, Coordinate.X, true, -0.03f, 0, 0, 0.03f, 1, false, false);
+            LeftWindow = InteractableProps.Add(Models.CabWindowLeft, Entity, "cab_window_left", AnimationType.Offset, Coordinate.X, true, 0f, 0.03f, 0, 0.03f, 1, true, false);
             LeftWindow.AnimateProp.PlayNextSteps = true;
             LeftWindow.AnimateProp.PlayReverse = true;
             LeftWindow.AnimateProp[AnimationType.Offset][AnimationStep.Second][Coordinate.Y].Setup(true, true, 0, Models.CabWindowLeft.Model.GetSize().width + 0.04f, 1, 0.5f, 1, true);
