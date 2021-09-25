@@ -114,8 +114,6 @@ namespace RogersSierra.Components.FunctionalComponent
             if (CabCamera == null)
                 return;
 
-            // TODO: Fix camera not rotating with train
-
             if(FusionUtils.IsCameraInFirstPerson() && IsPlayerDrivingTrain)
             {
                 Game.Player.Character.IsVisible = false;
