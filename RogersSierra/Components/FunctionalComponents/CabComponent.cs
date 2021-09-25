@@ -55,6 +55,11 @@ namespace RogersSierra.Components.FunctionalComponent
         public InteractiveProp RightWindow;
 
         /// <summary>
+        /// Left slideable window.
+        /// </summary>
+        public InteractiveProp LeftWindow;
+
+        /// <summary>
         /// Controller for cab props.
         /// </summary>
         public InteractiveController InteractableProps = new InteractiveController();
@@ -162,6 +167,11 @@ namespace RogersSierra.Components.FunctionalComponent
             RightWindow.AnimateProp.PlayNextSteps = true;
             RightWindow.AnimateProp.PlayReverse = true;
             RightWindow.AnimateProp[AnimationType.Offset][AnimationStep.Second][Coordinate.Y].Setup(true, true, 0, Models.CabWindowRight.Model.GetSize().width + 0.04f, 1, 0.5f, 1, true);
+
+            LeftWindow = InteractableProps.Add(Models.CabWindowLeft, Entity, "cab_window_left", AnimationType.Offset, Coordinate.X, true, -0.03f, 0, 0, 0.03f, 1, false, false);
+            LeftWindow.AnimateProp.PlayNextSteps = true;
+            LeftWindow.AnimateProp.PlayReverse = true;
+            LeftWindow.AnimateProp[AnimationType.Offset][AnimationStep.Second][Coordinate.Y].Setup(true, true, 0, Models.CabWindowLeft.Model.GetSize().width + 0.04f, 1, 0.5f, 1, true);
 
             WhistleRope = new InteractiveRope(Entity, 
                 Base.LocomotiveCarriage.InvisibleVehicle, "whistle_rope_pull_start", "whistle_rope_pull_end", true, true);
