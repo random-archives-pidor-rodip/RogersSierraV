@@ -49,11 +49,6 @@ namespace RogersSierra.Components.GraphicComponents
         private ParticlePlayer _funnelSmoke;
 
         /// <summary>
-        /// Smoke from funnel.
-        /// </summary>
-        private ParticlePlayer _funnelSmoke2;
-
-        /// <summary>
         /// Steam from dynamo generator.
         /// </summary>
         private ParticlePlayer _dynamoSteam;
@@ -107,7 +102,6 @@ namespace RogersSierra.Components.GraphicComponents
                 _dynamoSteam.Dispose();
                 _cylinderSteam.Dispose();
                 _funnelSmoke.Dispose();
-                _funnelSmoke2.Dispose();
             };
         }
 
