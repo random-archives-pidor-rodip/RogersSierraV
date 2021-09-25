@@ -291,7 +291,7 @@ namespace RogersSierra.Components.FunctionalComponent
             if (brakeLeverInput == _prevBrakeLeverInput && combineInput == _prevCombineInput && gear == _prevGearInput && spacebarInput == _prevSpacebarInput)
                 return;
 
-            Base.CabComponent.AirBrakeLever.SetValue(brakeLeverInput);
+            Base.CabComponent.AirBrakeLever.SetValue(brakeLeverInput.Remap(0, 1, 1, 0));
             Base.CabComponent.SteamBrakeLever.SetValue(spacebarInput);
             Base.CabComponent.ThrottleLever.SetValue(combineInput.Remap(0, 1, 1, 0));
             Base.CabComponent.GearLever.SetValue(gear.Remap(-1, 1, 0, 1));
