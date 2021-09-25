@@ -14,6 +14,8 @@ namespace RogersSierra
 {
     public class Main : Script
     {
+        private Version Version => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+
         /// <summary>
         /// For executing code at first tick.
         /// </summary>
@@ -24,6 +26,10 @@ namespace RogersSierra
         /// </summary>
         public Main()
         {
+            DateTime buildDate = new DateTime(2000, 1, 1).AddDays(Version.Build).AddSeconds(Version.Revision * 2);
+
+            System.IO.File.AppendAllText($"./ScriptHookVDotNet.log", $"RogersSierraV - {Version} ({buildDate})" + Environment.NewLine);
+
             Tick += OnTick;
             KeyDown += OnKeyDown;
             Aborted += OnAbort;
