@@ -150,7 +150,7 @@ namespace RogersSierra.Components.FunctionalComponent
                 AnimationType.Rotation,
                 Coordinate.X,
                 Control.LookLeft,
-                false, 40, 0, 0, 12);
+                false, 0, 40, 0, 12);
             AirBrakeLever.SetupAltControl(Control.LookUp, false);
 
             SteamBrakeLever = InteractableProps.Add(
@@ -190,7 +190,7 @@ namespace RogersSierra.Components.FunctionalComponent
             var throttleLever = ThrottleLever.CurrentValue.Remap(0, 1, 1, 0);
             var gearLever = GearLever.CurrentValue.Remap(0, 1, 1, -1);
             var steamBrakeLever = (int)Math.Round(SteamBrakeLever.CurrentValue);
-            var airBrakeLever = AirBrakeLever.CurrentValue;
+            var airBrakeLever = AirBrakeLever.CurrentValue.Remap(0, 1, 1, 0);
 
             if (throttleLever != _throttleLeverPrevious)
                 Base.CustomTrain.ControlComponent.ThrottleLeverState = throttleLever;
