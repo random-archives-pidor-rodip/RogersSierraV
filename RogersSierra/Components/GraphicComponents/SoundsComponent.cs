@@ -2,6 +2,7 @@
 using KlangRageAudioLibrary;
 using RageComponent;
 using RogersSierra.Data;
+using System;
 using System.Collections.Generic;
 
 namespace RogersSierra.Components.GraphicComponents
@@ -107,7 +108,7 @@ namespace RogersSierra.Components.GraphicComponents
 
             // Start
             TrainStart = _audioEngine.Create(Files.OnTrainStart, Presets.ExteriorLoud);
-            TrainStart.Volume = 0.7f;
+            TrainStart.Volume = 0.17f;
             TrainStart.FadeOutMultiplier = 2f;
             TrainStart.StopFadeOut = true;
 
@@ -188,7 +189,7 @@ namespace RogersSierra.Components.GraphicComponents
                 TrainStart.Stop();
 
             // Steam brakes
-            if(Base.CustomTrain.SpeedComponent.Speed > 0)
+            if(Base.CustomTrain.SpeedComponent.AbsoluteSpeed > 0)
             {
                 if(TrainStartedBraking())
                 {
@@ -232,7 +233,7 @@ namespace RogersSierra.Components.GraphicComponents
             _previousAmbientId = _currentAmbientId;
 
             // TODO: Add list with ability to define speed for every level
-            _currentAmbientId = (int)Base.CustomTrain.SpeedComponent.Speed.Clamp(0, 20).Remap(0, 20, 0, _ambientMoveLevels - 1);
+            _currentAmbientId = (int)Base.CustomTrain.SpeedComponent.AbsoluteSpeed.Clamp(0, 20).Remap(0, 20, 0, _ambientMoveLevels - 1);
         }
 
         /// <summary>
@@ -241,7 +242,7 @@ namespace RogersSierra.Components.GraphicComponents
         /// <returns>True if wheel are slipping, otherwise False.</returns>
         private bool IsWheelSlipping()
         {
-            return Base.CustomTrain.SpeedComponent.AreWheelSpark;
+            return Base.CustomTrain.SpeedComponent.AreWheelSpark && Base.WheelComponent.AbsoluteDriveWheelSpeed > 2;
         }
 
         /// <summary>
@@ -250,7 +251,7 @@ namespace RogersSierra.Components.GraphicComponents
         /// <returns>True if train is moving, otherwise False</returns>
         private bool IsTrainMoving()
         {
-            return Base.CustomTrain.SpeedComponent.Speed > 1;
+            return Base.CustomTrain.SpeedComponent.AbsoluteSpeed > 1;
         }
 
         /// <summary>
@@ -259,7 +260,7 @@ namespace RogersSierra.Components.GraphicComponents
         /// <returns>True if train is idling, otherwise False.</returns>
         private bool TrainIdling()
         {
-            if (Base.CustomTrain.SpeedComponent.Speed < 2)
+            if (Base.CustomTrain.SpeedComponent.AbsoluteSpeed < 2)
                 return true;
             else
                 return false;
@@ -272,7 +273,7 @@ namespace RogersSierra.Components.GraphicComponents
         private bool TrainIsCurrentlyBraking()
         {
             if (Base.CustomTrain.BrakeComponent.FullBrakeForce == 1 &&
-                Base.CustomTrain.SpeedComponent.Speed > 1)
+                Base.CustomTrain.SpeedComponent.AbsoluteSpeed > 1)
             {
                 return true;
             }
@@ -286,7 +287,7 @@ namespace RogersSierra.Components.GraphicComponents
         private bool TrainStartedBraking()
         {
             if (Base.CustomTrain.BrakeComponent.FullBrakeForce == 1 &&
-                Base.CustomTrain.SpeedComponent.Speed > 2 &&
+                Base.CustomTrain.SpeedComponent.AbsoluteSpeed > 2 &&
                 !SteamBrakeStart.IsAnyInstancePlaying &&
                 !SteamBrakeLoop.IsAnyInstancePlaying &&
                 !SteamBrakeEnd.IsAnyInstancePlaying)
@@ -305,7 +306,7 @@ namespace RogersSierra.Components.GraphicComponents
         /// <returns>True if train stopped after braking, otherwise Fale.</returns>
         private bool TrainStoppedAfterBraking()
         {
-            if (Base.CustomTrain.SpeedComponent.Speed < 1 &&
+            if (Base.CustomTrain.SpeedComponent.AbsoluteSpeed < 1 &&
                 !SteamBrakeEnd.IsAnyInstancePlaying &&
                 SteamBrakeLoop.IsAnyInstancePlaying)
             {

@@ -20,6 +20,11 @@ namespace RogersSierra.Components.GraphicComponents
         public float DriveWheelSpeed => Base.CustomTrain.SpeedComponent.DriveWheelSpeed;
 
         /// <summary>
+        /// Absolute <see cref="DriveWheelSpeed"/>.
+        /// </summary>
+        public float AbsoluteDriveWheelSpeed { get; private set; }
+
+        /// <summary>
         /// Front wheel speed in m/s
         /// </summary>
         public float FrontWheelSpeed => Base.CustomTrain.SpeedComponent.Speed;
@@ -119,6 +124,8 @@ namespace RogersSierra.Components.GraphicComponents
             frameAngle = FrontWheelSpeed.AngularSpeed(_tenderLength, TenderWheels[0].SecondRotation.X);
 
             TenderWheels.setRotation(FusionEnums.Coordinate.X, frameAngle);
+
+            AbsoluteDriveWheelSpeed = Math.Abs(DriveWheelSpeed);
         }
     }
 }
