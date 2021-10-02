@@ -74,14 +74,17 @@ namespace RogersSierra.Components.GraphicComponents
             SteamBrakeStart = _audioEngine.Create(Files.SteamBrakeStart, Presets.ExteriorLoud);
             SteamBrakeEnd = _audioEngine.Create(Files.SteamBrakeEnd, Presets.ExteriorLoud);
             SteamBrakeLoop = _audioEngine.Create(Files.SteamBrakeLoop, Presets.ExteriorLoudLoop);
-            SteamBrakeLoop.FadeOutMultiplier = 1.3f;
+            SteamBrakeStart.Volume = 0.6f;
+            SteamBrakeEnd.Volume = 0.6f;
+            SteamBrakeLoop.Volume = 0.6f;
+            SteamBrakeLoop.FadeOutMultiplier = 0.7f;
 
             // Ambient sounds
             for (int i = 0; i < _ambientMoveLevels; i++)
             {
                 var ambientMove =
                     _audioEngine.Create($"{Files.AmbientMoving}{i + 1}.wav", Presets.ExteriorLoop);
-                ambientMove.Volume = 0.15f;
+                ambientMove.Volume = 0.05f;
 
                 AmbientMove.Add(ambientMove);
             }
@@ -98,7 +101,7 @@ namespace RogersSierra.Components.GraphicComponents
 
             // Wheel slip
             WheelSlip = _audioEngine.Create(Files.WheelSlip, Presets.ExteriorLoud);
-            WheelSlip.Volume = 0.7f;
+            WheelSlip.Volume = 0.5f;
             WheelSlip.FadeOutMultiplier = 2f;
             WheelSlip.StopFadeOut = true;
 
@@ -111,7 +114,7 @@ namespace RogersSierra.Components.GraphicComponents
             // Idle
             SteamIdle = _audioEngine.Create(Files.SteamIdle, Presets.ExteriorLoudLoop);
             SteamIdle.FadeOutMultiplier = 0.7f;
-            SteamIdle.Volume = 0.1f;
+            SteamIdle.Volume = 0.05f;
 
             // Dispose audio engine on train dispose.
             Base.OnDispose += () =>
