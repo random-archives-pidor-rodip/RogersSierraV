@@ -46,10 +46,10 @@ namespace RogersSierra.Components.GraphicComponents
             var leverAngle = _airbrakeLeverOffset * airbrakeForce;
             var brakeAngle = _brakeAngle * airbrakeForce;
 
-            AirbrakeMain.setOffset(FusionEnums.Coordinate.Y, mainOffset);
-            AirbrakeRod.setOffset(rodOffset);
-            AirbrakeLever.setRotation(FusionEnums.Coordinate.X, leverAngle);
-            Brakes.setRotation(FusionEnums.Coordinate.X, brakeAngle);
+            AirbrakeMain.SetOffset(FusionEnums.Coordinate.Y, mainOffset);
+            AirbrakeRod.SetOffset(rodOffset);
+            AirbrakeLever.SetRotation(FusionEnums.Coordinate.X, leverAngle);
+            Brakes.SetRotation(FusionEnums.Coordinate.X, brakeAngle);
         }
     }
 }

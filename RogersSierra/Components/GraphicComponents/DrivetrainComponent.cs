@@ -126,19 +126,19 @@ namespace RogersSierra.Components.GraphicComponents
             float dY = angleCos * _distanceToRod;
             float dZ = angleSin * _distanceToRod;
             
-            CouplingRod.setOffset(Coordinate.Y, dY);
-            CouplingRod.setOffset(Coordinate.Z, dZ);
+            CouplingRod.SetOffset(Coordinate.Y, dY);
+            CouplingRod.SetOffset(Coordinate.Z, dZ);
 
-            ConnectingRod.setOffset(Coordinate.Y, dY);
-            ConnectingRod.setOffset(Coordinate.Z, dZ);
+            ConnectingRod.SetOffset(Coordinate.Y, dY);
+            ConnectingRod.SetOffset(Coordinate.Z, dZ);
 
             float dAngle = 90 - MathExtensions.ToDeg(
                 (float)MathExtensions.ArcCos(
                     (_pistonRelativePosZ - ConnectingRod.RelativePosition.Z) / _connectingRodLength));
 
-            ConnectingRod.setRotation(Coordinate.X, dAngle, true);
+            ConnectingRod.SetRotation(Coordinate.X, dAngle, true);
 
-            Piston.setOffset(
+            Piston.SetOffset(
                 Coordinate.Y, _connectingRodLength * (float)Math.Cos(
                     MathExtensions.ToRad(dAngle)) - (_pistonRelativePosY - ConnectingRod.RelativePosition.Y), true);
 
@@ -148,15 +148,15 @@ namespace RogersSierra.Components.GraphicComponents
             else
                 dAngle = dAngle.Remap(180, 360, -12, 0);
 
-            CombinationLever.setRotation(Coordinate.X, dAngle);
+            CombinationLever.SetRotation(Coordinate.X, dAngle);
 
             dAngle = 90 - MathExtensions.ToDeg(
                 (float)MathExtensions.ArcCos(
                     (_valveRelativePosZ - Math.Abs(Entity.GetPositionOffset(RadiusRod.Position).Z)) / _radiusRodLength));
 
-            RadiusRod.setRotation(Entity.Rotation.GetSingleOffset(Coordinate.X, dAngle));
+            RadiusRod.SetRotation(Entity.Rotation.GetSingleOffset(Coordinate.X, dAngle));
 
-            ValveRod.setRotation(Entity.Rotation);
+            ValveRod.SetRotation(Entity.Rotation);
 
             ProcessOnPiston();
         }

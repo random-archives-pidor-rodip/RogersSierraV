@@ -113,17 +113,17 @@ namespace RogersSierra.Components.GraphicComponents
             // Drive wheels
             float frameAngle = DriveWheelSpeed.AngularSpeed(_driveLength, DriveWheels[0].SecondRotation.X);
 
-            DriveWheels.setRotation(FusionEnums.Coordinate.X, frameAngle);
+            DriveWheels.SetRotation(FusionEnums.Coordinate.X, frameAngle);
 
             // Front wheels
             frameAngle = FrontWheelSpeed.AngularSpeed(_frontLength, FrontWheels[0].SecondRotation.X);
 
-            FrontWheels.setRotation(FusionEnums.Coordinate.X, frameAngle);
+            FrontWheels.SetRotation(FusionEnums.Coordinate.X, frameAngle);
 
             // Tender wheels
             frameAngle = FrontWheelSpeed.AngularSpeed(_tenderLength, TenderWheels[0].SecondRotation.X);
 
-            TenderWheels.setRotation(FusionEnums.Coordinate.X, frameAngle);
+            TenderWheels.SetRotation(FusionEnums.Coordinate.X, frameAngle);
 
             AbsoluteDriveWheelSpeed = Math.Abs(DriveWheelSpeed);
         }

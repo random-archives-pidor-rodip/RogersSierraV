@@ -77,6 +77,11 @@ namespace RogersSierra
                 InteractiveRope.Ropes[i].OnTick();
             }
 
+
+            //if(Game.IsControlPressed(GTA.Control.Aim))
+            //{
+            //    train1.CustomTrain.ControlComponent.AirBrakeLeverState = FusionUtils.Lerp(train1.CustomTrain.ControlComponent.AirBrakeLeverState, 0, 0.1f);
+            //}
             if (train1 != null && train2 != null)
             {
                 //train1.CustomTrain.ControlComponent.ThrottleLeverState = 1;
@@ -105,17 +110,59 @@ namespace RogersSierra
             if(e.KeyCode == Keys.L)
             {
                 train1 = RogersSierra.Create(Game.Player.Character.Position, true);
-                //train2 = RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * 34, true);
+                train2 = RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * -34, false);
+                RogersSierra.Create(Game.Player.Character.Position + train1.CustomTrain.TrainHead.ForwardVector * 34, true);
+
             }
 
-            //if (e.KeyCode == Keys.U)
-            //{
-            //    var train = World.CreateVehicle(Models.VisibleSierra, Game.Player.Character.Position + GTA.Math.Vector3.RelativeFront * 10);
+            if (e.KeyCode == Keys.U)
+            {
+                train1.CustomTrain.SpeedComponent.Move(1);
 
-            //    //test = World.CreateProp(Models.Brake1, Game.Player.Character.Position, false, false);
-            //}
+                //var grab = Game.Player.Character.Euphoria.Grab;
+                //grab.Pos1 = train1.VisibleLocomotive.Bones["cab_center"].Position;
+                //grab.Pos2 = train1.VisibleLocomotive.Bones["seat_pside_f"].Position;
+                //grab.DontLetGo = true;
+                //grab.GrabDistance = 4;
+                //grab.UseHeadLookToTarget = true;
+                ////grab.UseRight = true;
+                ////grab.UseLeft = true;
+                //grab.UseLineGrab = true;
+                ////grab.Start(5000);
+                //var point = Game.Player.Character.Euphoria.PointArm;
+                //point.TargetLeft = train1.VisibleLocomotive.Bones["cab_center"].Position;
+                //point.UseLeftArm = true;
+                ////point.Start();
+                //var fall =
+                //Game.Player.Character.Euphoria.ShotFallToKnees;
+                //fall.FallToKnees = true;
+                ////fall.Start();
 
-            if(e.KeyCode == Keys.T)
+                //var dd = Game.Player.Character.Euphoria.LeanInDirection;
+                //dd.Dir = Game.Player.Character.ForwardVector;
+                //dd.LeanAmount = -0.1f;
+                //dd.Start(1220);
+                //var grab = Game.Player.Character.Euphoria.Grab;
+                //var closestVeh = World.GetClosestVehicle(Game.Player.Character.Position, 10);
+                //var point = closestVeh.Bones["handle_dside_f"].Position;
+
+                //grab.Pos1 = point;
+                ////grab.Pos2 = point;
+                ////grab.Pos3 = point;
+                ////grab.Pos4 = point;
+
+                //grab.UseRight = true;
+                //grab.GrabDistance = 10;
+                //grab.TurnToTarget = GTA.NaturalMotion.TurnType.ToTarget;
+                ////grab.SurfaceGrab = true;
+                //grab.Start();
+
+                //var train = World.CreateVehicle(Models.VisibleSierra, Game.Player.Character.Position + GTA.Math.Vector3.RelativeFront * 10);
+
+                //test = World.CreateProp(Models.Brake1, Game.Player.Character.Position, false, false);
+            }
+
+            if (e.KeyCode == Keys.T)
             {
                 //var head = World.GetClosestVehicle(Game.Player.Character.Position, 100);
                 //train1.CustomTrain.CollisionComponent.Derail();
