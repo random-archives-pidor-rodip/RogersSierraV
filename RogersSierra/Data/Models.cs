@@ -34,6 +34,7 @@ namespace RogersSierra.Data
         public static CustomModel CabAirBrakeLever = new CustomModel("sierra_cab_airbrake_lever");
         public static CustomModel CabSteamBrakeLever = new CustomModel("sierra_cab_brake_lever");
         public static CustomModel CabWindowRight = new CustomModel("sierra_cab_window_right");
+        public static CustomModel CabWindowLeft = new CustomModel("sierra_cab_window_left");
 
         // Brakes
         public static CustomModel AirbrakeMain = new CustomModel("sierra_airbrake_main");

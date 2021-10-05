@@ -10,11 +10,6 @@ namespace RogersSierra.Other
     public class Utils
     {
         /// <summary>
-        /// Random instance.
-        /// </summary>
-        public static readonly Random Random = new Random();
-
-        /// <summary>
         /// Useful for cases when you have few bones like bone_left1, bone_right1. 
         /// This functinon allows to process them by just base bone name and bone count.
         /// </summary>
@@ -91,29 +86,6 @@ namespace RogersSierra.Other
 
                 action(fieldValue);
             });
-        }
-
-        /// <summary>
-        /// Gets all field values of given type.
-        /// </summary>
-        /// <typeparam name="T">Field type.</typeparam>
-        /// <param name="instance">Class instance to get values from.</param>
-        /// <returns>Field values of given type.</returns>
-        public static List<T> GetAllFieldValues<T>(object instance)
-        {
-            var fields = instance.GetType().GetFields();
-            var list = new List<T>();
-            
-            // Go through every class field
-            for(int i = 0; i < fields.Length; i++)
-            {
-                var field = fields[i];
-
-                // Check if it have type of T
-                if(field.FieldType == typeof(T))
-                    list.Add((T)field.GetValue(instance));
-            }
-            return list;
         }
     }
 }

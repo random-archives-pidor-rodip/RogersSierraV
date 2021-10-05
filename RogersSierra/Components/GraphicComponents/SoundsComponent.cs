@@ -1,29 +1,29 @@
 ﻿using FusionLibrary.Extensions;
 using KlangRageAudioLibrary;
-using RogersSierra.Abstract;
+using RageComponent;
 using RogersSierra.Data;
 using System;
 using System.Collections.Generic;
 
-namespace RogersSierra.Components
+namespace RogersSierra.Components.GraphicComponents
 {
     /// <summary>
     /// Handles various sounds.
     /// </summary>
-    public class SoundsComponent : Component
+    public class SoundsComponent : Component<RogersSierra>
     {
-        private readonly AudioEngine _audioEngine;
+        private AudioEngine _audioEngine;
 
-        public readonly AudioPlayer SteamBrakeStart;
-        public readonly AudioPlayer SteamBrakeEnd;
-        public readonly AudioPlayer SteamBrakeLoop;
+        public AudioPlayer SteamBrakeStart;
+        public AudioPlayer SteamBrakeEnd;
+        public AudioPlayer SteamBrakeLoop;
 
         public readonly List<AudioPlayer> AmbientMove = new List<AudioPlayer>();
         public readonly List<AudioPlayer> PistonMove = new List<AudioPlayer>();
-        public readonly AudioPlayer WheelSlip;
-        public readonly AudioPlayer Start;
+        public AudioPlayer WheelSlip;
+        public AudioPlayer TrainStart;
 
-        public readonly AudioPlayer SteamIdle;
+        public AudioPlayer SteamIdle;
 
         /// <summary>
         /// Has brake end sound played after train stop or not.
@@ -43,7 +43,7 @@ namespace RogersSierra.Components
         /// <summary>
         /// Amount of piston move variations.
         /// </summary>
-        private const int _pistonMoveVariations = 5;
+        private const int _pistonMoveVariations = 8;
 
         /// <summary>
         /// Previous level of ambient sound;
@@ -61,28 +61,31 @@ namespace RogersSierra.Components
         private int _currentAmbientId;
 
         /// <summary>
-        /// Constructs new instance of <see cref="SoundsComponent"/>.
+        /// <inheritdoc/>
         /// </summary>
-        public SoundsComponent(RogersSierra train) : base(train)
+        public override void Start()
         {
             _audioEngine = new AudioEngine()
             {
                 BaseSoundFolder = Files.SoundsFolder,
-                DefaultSourceEntity = Locomotive
+                DefaultSourceEntity = Entity
             };
 
             // Brake sounds
             SteamBrakeStart = _audioEngine.Create(Files.SteamBrakeStart, Presets.ExteriorLoud);
             SteamBrakeEnd = _audioEngine.Create(Files.SteamBrakeEnd, Presets.ExteriorLoud);
             SteamBrakeLoop = _audioEngine.Create(Files.SteamBrakeLoop, Presets.ExteriorLoudLoop);
-            SteamBrakeLoop.FadeOutMultiplier = 1.3f;
+            SteamBrakeStart.Volume = 0.6f;
+            SteamBrakeEnd.Volume = 0.6f;
+            SteamBrakeLoop.Volume = 0.6f;
+            SteamBrakeLoop.FadeOutMultiplier = 0.7f;
 
             // Ambient sounds
-            for(int i = 0; i < _ambientMoveLevels; i++)
+            for (int i = 0; i < _ambientMoveLevels; i++)
             {
                 var ambientMove =
                     _audioEngine.Create($"{Files.AmbientMoving}{i + 1}.wav", Presets.ExteriorLoop);
-                ambientMove.Volume = 0.15f;
+                ambientMove.Volume = 0.05f;
 
                 AmbientMove.Add(ambientMove);
             }
@@ -92,55 +95,51 @@ namespace RogersSierra.Components
             {
                 var pistonMove =
                     _audioEngine.Create($"{Files.PistonMove}{i + 1}.wav", Presets.ExteriorLoud);
-                pistonMove.Volume = 0.35f;
+                pistonMove.Volume = 0.55f;
 
                 PistonMove.Add(pistonMove);
             }
 
             // Wheel slip
             WheelSlip = _audioEngine.Create(Files.WheelSlip, Presets.ExteriorLoud);
-            WheelSlip.Volume = 0.7f;
+            WheelSlip.Volume = 0.5f;
             WheelSlip.FadeOutMultiplier = 2f;
             WheelSlip.StopFadeOut = true;
 
             // Start
-            Start = _audioEngine.Create(Files.OnTrainStart, Presets.ExteriorLoud);
-            Start.Volume = 0.7f;
-            Start.FadeOutMultiplier = 2f;
-            Start.StopFadeOut = true;
+            TrainStart = _audioEngine.Create(Files.OnTrainStart, Presets.ExteriorLoud);
+            TrainStart.Volume = 0.17f;
+            TrainStart.FadeOutMultiplier = 2f;
+            TrainStart.StopFadeOut = true;
 
             // Idle
             SteamIdle = _audioEngine.Create(Files.SteamIdle, Presets.ExteriorLoudLoop);
             SteamIdle.FadeOutMultiplier = 0.7f;
-            SteamIdle.Volume = 0.3f;
+            SteamIdle.Volume = 0.05f;
 
             // Dispose audio engine on train dispose.
-            Train.OnDispose += () =>
+            Base.OnDispose += () =>
             {
                 _audioEngine.Dispose();
             };
-        }
 
-        public override void OnInit()
-        {
-            Train.DrivetrainComponent.OnPiston += () =>
+            Base.DrivetrainComponent.OnPiston += () =>
             {
                 ////var pistonVariation = Utils.Random.Next(1, _pistonMoveVariations);
-                
-                //PistonMove[_currentPistonId].Play();
-                //PistonMove[_currentPistonId].Last.
 
+                //PistonMove[_currentPistonId++].Play();
+                //PistonMove[_currentPistonId].Last.
                 _currentPistonId++;
                 if (_currentPistonId == _pistonMoveVariations)
                     _currentPistonId = 0;
 
-                //GTA.UI.Screen.ShowSubtitle(_currentPistonId.ToString());
+                //GTA.UI.Screen.ShowSubtitle($"{_currentPistonId} {Base.WheelComponent.DrivingWheelAngle}");
             };
 
-            Train.SpeedComponent.OnTrainStart += () =>
+            Base.CustomTrain.SpeedComponent.OnTrainStart += () =>
             {
-                if(!IsWheelSlipping() && !Train.IsLocomotiveDerailed)
-                    Start.Play();
+                if(!IsWheelSlipping() && !Base.CustomTrain.DerailComponent.IsDerailed)
+                    TrainStart.Play();
             };
         }
 
@@ -186,11 +185,11 @@ namespace RogersSierra.Components
                 WheelSlip.Stop();
 
             // Start
-            if (!Train.SpeedComponent.IsTrainAccelerating)
-                Start.Stop();
+            if (!Base.CustomTrain.SpeedComponent.IsTrainAccelerating)
+                TrainStart.Stop();
 
             // Steam brakes
-            if(Train.SpeedComponent.Speed > 0)
+            if(Base.CustomTrain.SpeedComponent.AbsoluteSpeed > 0)
             {
                 if(TrainStartedBraking())
                 {
@@ -234,7 +233,7 @@ namespace RogersSierra.Components
             _previousAmbientId = _currentAmbientId;
 
             // TODO: Add list with ability to define speed for every level
-            _currentAmbientId = (int)Train.SpeedComponent.Speed.Clamp(0, 20).Remap(0, 20, 0, _ambientMoveLevels - 1);
+            _currentAmbientId = (int)Base.CustomTrain.SpeedComponent.AbsoluteSpeed.Clamp(0, 20).Remap(0, 20, 0, _ambientMoveLevels - 1);
         }
 
         /// <summary>
@@ -243,7 +242,7 @@ namespace RogersSierra.Components
         /// <returns>True if wheel are slipping, otherwise False.</returns>
         private bool IsWheelSlipping()
         {
-            return Train.SpeedComponent.AreWheelSpark;
+            return Base.CustomTrain.SpeedComponent.AreWheelSpark && Base.WheelComponent.AbsoluteDriveWheelSpeed > 2;
         }
 
         /// <summary>
@@ -252,7 +251,7 @@ namespace RogersSierra.Components
         /// <returns>True if train is moving, otherwise False</returns>
         private bool IsTrainMoving()
         {
-            return Train.SpeedComponent.Speed > 1;
+            return Base.CustomTrain.SpeedComponent.AbsoluteSpeed > 1;
         }
 
         /// <summary>
@@ -261,7 +260,7 @@ namespace RogersSierra.Components
         /// <returns>True if train is idling, otherwise False.</returns>
         private bool TrainIdling()
         {
-            if (Train.SpeedComponent.Speed < 2)
+            if (Base.CustomTrain.SpeedComponent.AbsoluteSpeed < 2)
                 return true;
             else
                 return false;
@@ -273,8 +272,8 @@ namespace RogersSierra.Components
         /// <returns>True if player is currently braking, otherwise False.</returns>
         private bool TrainIsCurrentlyBraking()
         {
-            if (Train.BrakeComponent.SteamBrake == 1 &&
-                Train.SpeedComponent.Speed > 1)
+            if (Base.CustomTrain.BrakeComponent.FullBrakeForce == 1 &&
+                Base.CustomTrain.SpeedComponent.AbsoluteSpeed > 1)
             {
                 return true;
             }
@@ -287,8 +286,8 @@ namespace RogersSierra.Components
         /// <returns>True if train started braking, otherwise False.</returns>
         private bool TrainStartedBraking()
         {
-            if (Train.BrakeComponent.SteamBrake == 1 &&
-                Train.SpeedComponent.Speed > 2 &&
+            if (Base.CustomTrain.BrakeComponent.FullBrakeForce == 1 &&
+                Base.CustomTrain.SpeedComponent.AbsoluteSpeed > 2 &&
                 !SteamBrakeStart.IsAnyInstancePlaying &&
                 !SteamBrakeLoop.IsAnyInstancePlaying &&
                 !SteamBrakeEnd.IsAnyInstancePlaying)
@@ -307,7 +306,7 @@ namespace RogersSierra.Components
         /// <returns>True if train stopped after braking, otherwise Fale.</returns>
         private bool TrainStoppedAfterBraking()
         {
-            if (Train.SpeedComponent.Speed < 1 &&
+            if (Base.CustomTrain.SpeedComponent.AbsoluteSpeed < 1 &&
                 !SteamBrakeEnd.IsAnyInstancePlaying &&
                 SteamBrakeLoop.IsAnyInstancePlaying)
             {

@@ -15,6 +15,8 @@ namespace RogersSierra.Physics
 
         public float SegmentLength;
 
+        public Vector3 Pos;
+
         public CustomRope(Vector3 spawnPos)
         {
             float length = 1;
@@ -24,7 +26,7 @@ namespace RogersSierra.Physics
 
             RopeSegments = new List<RopeSegment>();
 
-            var segPos = spawnPos;
+            var segPos = Vector3.Zero;
             for(int i = 0; i < segmentCount; i++)
             {
                 RopeSegments.Add(new RopeSegment() { Position = segPos, Velocity = Vector3.Zero });
@@ -35,11 +37,12 @@ namespace RogersSierra.Physics
 
         private void RenderRope()
         {
+
             for(int i = 0; i < RopeSegments.Count -1; i++)
             {
                 var segment = RopeSegments[i];
                 var nextSegment = RopeSegments[i + 1];
-                World.DrawLine(segment.Position, nextSegment.Position, Color.Blue);
+                World.DrawLine(segment.Position + Pos, nextSegment.Position + Pos, Color.Blue);
             }
         }
 

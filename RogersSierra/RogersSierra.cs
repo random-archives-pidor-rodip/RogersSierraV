@@ -1,18 +1,20 @@
-﻿using FusionLibrary;
+﻿using AdvancedTrainSystem.Train;
+using FusionLibrary.Extensions;
+using GTA;
 using GTA.Math;
-using RogersSierra.Abstract;
-using RogersSierra.Components;
-using RogersSierra.Components.InteractionUtils;
+using GTA.Native;
+using RageComponent;
+using RogersSierra.Components.FunctionalComponent;
+using RogersSierra.Components.FunctionalComponents;
+using RogersSierra.Components.GraphicComponents;
 using RogersSierra.Data;
-using RogersSierra.Other;
-using RogersSierra.Train;
 using System;
 using System.Collections.Generic;
 
 namespace RogersSierra
 {
     /// <summary>
-    /// Rogers Sierra. Do i need to say anything else?
+    /// Rogers Sierra main class.
     /// </summary>
     public class RogersSierra
     {
@@ -42,14 +44,9 @@ namespace RogersSierra
         public readonly Carriage TenderCarriage;
 
         /// <summary>
-        /// List of all sierra components.
+        /// Visible locomotive vehicle.
         /// </summary>
-        public List<Component> Components { get; } = new List<Component>();
-
-        /// <summary>
-        /// Whether locomotive is derailed or not.
-        /// </summary>
-        public bool IsLocomotiveDerailed { get; private set; }
+        public readonly Vehicle VisibleLocomotive;
 
         /// <summary>
         /// Invokes on Dispose.
@@ -57,28 +54,35 @@ namespace RogersSierra
         public Action OnDispose { get; set; }
 
         /// <summary>
-        /// Returns True if all components are initialized, otherwise False.
-        /// </summary>
-        public bool AreComponentsInitialized { get; private set; }
-
-        public PropComponent PropComponent;
-        public BindComponent BindComponent;
-        public BoilerComponent BoilerComponent;
-        public BrakeComponent BrakeComponent;
-        public CabComponent CabComponent;
-        public ControlComponent ControlComponent;
-        public CollisionComponent DerailComponent;
-        public DynamoComponent DynamoComponent;
-        public ParticleComponent ParticleComponent;
-        public SoundsComponent SoundsComponent;
-        public SpeedComponent SpeedComponent;
-        public WheelComponent WheelComponent;
-        public DrivetrainComponent DrivetrainComponent;
-
-        /// <summary>
         /// Returns True if object was disposed, otherwise False.
         /// </summary>
         public bool Disposed { get; private set; }
+
+        /// <summary>
+        /// All train components.
+        /// </summary>
+        public ComponentsHandler<RogersSierra> TrainComponents;
+
+        [Entity(EntityProperty = nameof(VisibleLocomotive))]
+        public BrakeComponent BrakeComponent;
+
+        [Entity(EntityProperty = nameof(VisibleLocomotive))]
+        public CabComponent CabComponent;
+
+        [Entity(EntityProperty = nameof(VisibleLocomotive))]
+        public ControlComponent ControlComponent;
+
+        [Entity(EntityProperty = nameof(VisibleLocomotive))]
+        public ParticleComponent ParticleComponent;
+
+        [Entity(EntityProperty = nameof(VisibleLocomotive))]
+        public DrivetrainComponent DrivetrainComponent;
+
+        [Entity(EntityProperty = nameof(VisibleLocomotive))]
+        public SoundsComponent SoundsComponent;
+
+        public WheelComponent WheelComponent;
+        public CollisionComponent CollisionComponent;
 
         /// <summary>
         /// Base constructor of <see cref="RogersSierra"/>.
@@ -89,11 +93,16 @@ namespace RogersSierra
             LocomotiveCarriage = CustomTrain.GetCarriage(Models.VisibleSierra);
             TenderCarriage = CustomTrain.GetCarriage(Models.VisibleTender);
 
+            VisibleLocomotive = LocomotiveCarriage.VisibleVehicle;
+
             // Add train to trains list
             AllSierras.Add(this);
 
             // Initialize every component
-            RegisterHandlers();
+            TrainComponents = ComponentsHandler<RogersSierra>.RegisterComponentHandler();
+            TrainComponents.RegisterComponents(this);
+
+            //CustomTrain.CollisionComponent.Derail();
         }
 
         /// <summary>
@@ -104,14 +113,7 @@ namespace RogersSierra
         /// <returns>New <see cref="RogersSierra"/> instance.</returns>
         public static RogersSierra Create(Vector3 position, bool direction)
         {
-            // Create train for sierra
-            var trainModels = new List<TrainModel>()
-            {
-                new TrainModel(Models.InvisibleSierra, Models.VisibleSierra),
-                new TrainModel(Models.InvisibleTender, Models.VisibleTender)
-            };
-            var trainConfig = new TrainConfig(26, trainModels, "Rogers Sierra No.3");
-            var train = CustomTrain.Create(trainConfig, position, direction);
+            var train = CustomTrain.Create(TrainConfigs.SierraTrainConfig, position, direction);
 
             return new RogersSierra(train);
         }
@@ -127,91 +129,18 @@ namespace RogersSierra
         }
 
         /// <summary>
-        /// Adds all train components in the list.
-        /// </summary>
-        private void RegisterHandlers()
-        {
-            // Initialize all components
-            Utils.ProcessAllClassFieldsByType<Component>(this, componentField =>
-            {
-                var type = componentField.GetType();
-                if (type != typeof(DrivetrainComponent))
-                {
-                    // Create and set instance of component
-                    var component = (Component)Activator.CreateInstance(componentField.FieldType, this);
-                    componentField.SetValue(this, component);
-
-                    Components.Add(component);
-                }
-            });
-
-            // Add all props to prop component
-            for (int i = 0; i < Components.Count; i++)
-            {
-                var component = Components[i];
-
-                // AnimateProp
-                PropComponent.AnimateProps.AddRange(Utils.GetAllFieldValues<AnimateProp>(component));
-
-                // AnimatePropsHandler
-                var animatePropHandlers = Utils.GetAllFieldValues<AnimatePropsHandler>(component);
-                for (int k = 0; k < animatePropHandlers.Count; k++)
-                {
-                    var handler = animatePropHandlers[k];
-                    PropComponent.AnimateProps.AddRange(handler.Props);
-                }
-
-                // List<AnimateProp>
-                var animatePropList = Utils.GetAllFieldValues<List<AnimateProp>>(component);
-                for (int k = 0; k < animatePropList.Count; k++)
-                {
-                    var propList = animatePropList[i];
-                    PropComponent.AnimateProps.AddRange(propList);
-                }
-            }
-
-            // Call onInit
-            Utils.ProcessAllValuesFieldsByType<Component>(this, x =>
-            {
-                x.OnInit();
-            });
-
-            AreComponentsInitialized = true;
-        }
-        
-        /// <summary>
         /// Should be called from <see cref="Main"/> OnTick.
         /// </summary>
         public void OnTick()
         {
-            if (!AreComponentsInitialized)
-                return;
-
-            // Calls on tick for every component
-            for(int i = 0; i < Components.Count; i++)
-            {
-                Components[i].OnTick();
-            }
-
             // Remove dirt because it's not supported by train model
             LocomotiveCarriage.VisibleVehicle.DirtLevel = 0;
             TenderCarriage.VisibleVehicle.DirtLevel = 0;
 
             // May be damaged when spawning, we don't need it anyway
-            LocomotiveCarriage.VisibleVehicle.PetrolTankHealth = 0;
-            TenderCarriage.VisibleVehicle.PetrolTankHealth = 0;
+            LocomotiveCarriage.VisibleVehicle.PetrolTankHealth = 1000;
+            TenderCarriage.VisibleVehicle.PetrolTankHealth = 1000;
         }
-
-        ///// <summary>
-        ///// Derails train.
-        ///// </summary>
-        //public void Derail()
-        //{
-        //    LocotomiveVi.Detach();
-        //    IsDerailed = true;
-
-        //    OnDerail?.Invoke();
-        //}
 
         /// <summary>
         /// Destroys train instance.
@@ -231,15 +160,7 @@ namespace RogersSierra
             // Make sure to call OnDispose before removing all components.
             OnDispose?.Invoke();
 
-            // Remove all components
-            for (int i = 0; i < Components.Count; i++)
-            {
-                var component = Components[i];
-
-                Utils.ProcessAllValuesFieldsByType<InteractiveController>(component, x => x.Dispose());
-                Utils.ProcessAllValuesFieldsByType<InteractiveRope>(component, x => x.Dispose());
-            }
-            Components.Clear();
+            TrainComponents.OnAbort();
 
             // Mark train as disposed.
             Disposed = true;
